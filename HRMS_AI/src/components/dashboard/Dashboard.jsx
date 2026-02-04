@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import './Dashboard.css';
-import { Icons } from '../../assets/icons';
 import Panel from './Panel';
 import WidgetPanel from './WidgetPanel';
 import SearchAssistant from './SearchAssistant';
@@ -15,21 +14,72 @@ const Dashboard = () => {
 
         {/* LEFT COLUMN */}
         <div className="dashboard-left">
-          {!expandedPanel && (
+          {expandedPanel === 'assistant' && (
             <>
-              <Panel
-                title="Assistant"
-                icon={Icons.expand}
-                onExpand={() => setExpandedPanel('assistant')}
-              >
-                <SearchAssistant />
+              <Panel title="Widgets">
+                <WidgetPanel
+                  isExpanded={false}
+                  onExpand={() => setExpandedPanel('widgets')}
+                />
+              </Panel>
+              <Panel title="Schedule">
+                <Schedule
+                  isExpanded={false}
+                  onExpand={() => setExpandedPanel('schedule')}
+                />
+              </Panel>
+            </>
+          )}
+          
+          {expandedPanel === 'schedule' && (
+            <>
+              <Panel title="Assistant">
+                <SearchAssistant
+                  isExpanded={false}
+                  onExpand={() => setExpandedPanel('assistant')}
+                />
+              </Panel>
+              <Panel title="Widgets">
+                <WidgetPanel
+                  isExpanded={false}
+                  onExpand={() => setExpandedPanel('widgets')}
+                />
+              </Panel>
+            </>
+          )}
+          
+          {expandedPanel === 'widgets' && (
+            <>
+              <Panel title="Assistant">
+                <SearchAssistant
+                  isExpanded={false}
+                  onExpand={() => setExpandedPanel('assistant')}
+                />
               </Panel>
 
-              <Panel
-                title="Schedule"
-                onExpand={() => setExpandedPanel('schedule')}
-              >
-                <Schedule />
+              <Panel title="Schedule">
+                <Schedule
+                  isExpanded={false}
+                  onExpand={() => setExpandedPanel('schedule')}
+                />
+              </Panel>
+            </>
+          )}
+          
+          {!expandedPanel && (
+            <>
+              <Panel title="Assistant">
+                <SearchAssistant
+                  isExpanded={false}
+                  onExpand={() => setExpandedPanel('assistant')}
+                />
+              </Panel>
+
+              <Panel title="Schedule">
+                <Schedule
+                  isExpanded={false}
+                  onExpand={() => setExpandedPanel('schedule')}
+                />
               </Panel>
             </>
           )}
@@ -37,22 +87,51 @@ const Dashboard = () => {
 
         {/* RIGHT COLUMN */}
         <div className="dashboard-right">
-          {expandedPanel ? (
+          {expandedPanel === 'widgets' && (
             <Panel
-              title={expandedPanel}
+              title="Widgets"
               expanded
               onClose={() => setExpandedPanel(null)}
             >
-              {expandedPanel === 'widgets' && <WidgetPanel />}
-              {expandedPanel === 'assistant' && <SearchAssistant />}
-              {expandedPanel === 'schedule' && <Schedule />}
+              <WidgetPanel
+                isExpanded
+                onClose={() => setExpandedPanel(null)}
+              />
             </Panel>
-          ) : (
+          )}
+
+          {expandedPanel === 'assistant' && (
             <Panel
-              title="Widgets"
-              onExpand={() => setExpandedPanel('widgets')}
+              title="Assistant"
+              expanded
+              onClose={() => setExpandedPanel(null)}
             >
-              <WidgetPanel />
+              <SearchAssistant
+                isExpanded
+                onClose={() => setExpandedPanel(null)}
+              />
+            </Panel>
+          )}
+
+          {expandedPanel === 'schedule' && (
+            <Panel
+              title="Schedule"
+              expanded
+              onClose={() => setExpandedPanel(null)}
+            >
+              <Schedule
+                isExpanded
+                onClose={() => setExpandedPanel(null)}
+              />
+            </Panel>
+          )}
+          
+          {!expandedPanel && (
+            <Panel title="Widgets">
+              <WidgetPanel
+                isExpanded={false}
+                onExpand={() => setExpandedPanel('widgets')}
+              />
             </Panel>
           )}
         </div>

@@ -1,7 +1,8 @@
 import { Icons } from '../../assets/icons';
 import './Dashboard.css';
+import WidgetPanel from './WidgetPanel';
 
-const SearchAssistant = () => {
+const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
   return (
     <>
      <div className="card assistant-card justify-btw">
@@ -9,9 +10,15 @@ const SearchAssistant = () => {
                    <span className="assistant-badge bubbles">
                      <img src={Icons.bubbles} alt="" className="bubbles-icon" srcSet=""/>
                    </span>
-                   <span className="expand-icon">
-                     <img src={Icons.expand} alt="" srcSet=""/>
-                   </span>
+
+                    {!isExpanded ? (
+                    <span className="expand-icon" onClick={onExpand}>
+                        <img src={Icons.expand} alt="" />
+                    </span>
+                    ) : (
+                    <span className="expand-icon" onClick={onClose}>✕</span>
+                    )}
+                   
              </div>
      
                  <h3>Ready To Find Top Candidates Or Revisit Your Pipeline?</h3>
