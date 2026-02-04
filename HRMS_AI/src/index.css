@@ -41,4 +41,43 @@ root{
 body {
   font-family: 'Poppins', sans-serif;
   height: 100vh;
+  background: linear-gradient(
+    150deg,
+    var(--color-bg-dashboard) 0%,
+    var(--color-bg-dashboard) 50%,
+    #f04d4d3b 100%
+  );
 }
+
+.d-flex{
+    display: flex;
+}
+
+.justify-center{
+    justify-content: center;
+}
+
+.justify-btwn{
+    justify-content: space-between;
+}
+
+.align-center{
+    align-items: center;
+}
+
+.align-start{
+    align-items: flex-start;
+}
+
+.align-end{
+    align-items: flex-end;
+}
+
+.d-block{
+    display: block;
+}
+
+
+
+
+

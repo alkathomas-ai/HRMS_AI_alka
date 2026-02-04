@@ -1,12 +1,20 @@
+import { Icons } from "../../assets/icons";
 import "./Dashboard.css"
+import WidgetPanel from './WidgetPanel';
 
-const Schedule = () => {
+const Schedule = ({isExpanded, onExpand, onClose}) => {
   return (
     <>
       <div className="schedule-card">
             <div className="header">
               <h3>Schedule</h3>
-              <div className="arrow">↗</div>
+                {!isExpanded ? (
+                    <span className="expand-icon" onClick={onExpand}>
+                        <img src={Icons.expand} alt="" />
+                    </span>
+                    ) : (
+                    <span className="expand-icon" onClick={onClose}>✕</span>
+                )}
             </div>
 
             <div className="dates">
