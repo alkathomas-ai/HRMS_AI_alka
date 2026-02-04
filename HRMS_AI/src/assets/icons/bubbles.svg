@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" class="bubble-icon">
+  <style>
+    .bubble-icon { width: 100px; height: 100px; }
+    
+    /* Animation for the floating effect */
+    @keyframes float {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      33% { transform: translateY(-5px) translateX(2px); }
+      66% { transform: translateY(2px) translateX(-3px); }
+    }
+
+    .b-large { animation: float 4s ease-in-out infinite; transform-origin: center; }
+    .b-med { animation: float 3s ease-in-out infinite reverse; transform-origin: center; }
+    .b-small { animation: float 5s ease-in-out infinite; transform-origin: center; }
+    
+    .stroke-red { stroke: #fff; stroke-width: 16; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+  </style>
+
+  <g class="b-large">
+    <circle cx="88" cy="168" r="60" class="stroke-red"/>
+    <path d="M90 130C110 125 120 135 130 160" class="stroke-red"/>
+  </g>
+
+  <g class="b-med">
+    <circle cx="168" cy="88" r="40" class="stroke-red"/>
+    <path d="M160 80C175 75 195 85 200 105" class="stroke-red"/>
+  </g>
+
+  <g class="b-small">
+    <circle cx="90" cy="60" r="24" class="stroke-red"/>
+  </g>
+</svg>
