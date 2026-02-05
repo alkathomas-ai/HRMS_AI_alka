@@ -5,7 +5,7 @@ import './WidgetPanel.css'
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import { Icons } from '../../assets/icons';
-import { getProjectDistributions } from '../../services/api';
+import { getProjectDistributions, getEmployeeDirectory, getEmployeeCount, getDepartment } from '../../services/api';
 
 const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   // Mock data structure similar to what would come from API
@@ -30,14 +30,22 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     departments: []
   });
   
+  const [employeeDirectory, setEmployeeDirectory] = useState({
+    employees: []
+  });
+  
+  const [employeePage, setEmployeePage] = useState(0);
+  const employeesPerPage = 5;
+  
+  
   const [hoveredSegment, setHoveredSegment] = useState(null);
   const [layout, setLayout] = useState([
     { i: 'project-distribution', x: 0, y: 0, w: 2, h: 1 },
-    { i: 'backend', x: 2, y: 0, w: 2, h: 1 },
-    { i: 'devops', x: 0, y: 3, w: 4, h: 1 }
+    { i: 'department-overview', x: 2, y: 0, w: 2, h: 1 },
+    { i: 'employee-directory', x: 0, y: 3, w: 4, h: 1 }
   ]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedWidgets, setSelectedWidgets] = useState(['project-distribution', 'backend', 'devops']);
+  const [selectedWidgets, setSelectedWidgets] = useState(['project-distribution', 'department-overview', 'employee-directory']);
   const dropdownRef = useRef(null);
   const [dragEnabledWidgets, setDragEnabledWidgets] = useState(new Set());
 
@@ -59,11 +67,17 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           projects: projectDistribution?.projects || []
         }
       },
-      backend: { 
+      'department-overview': { 
         title: 'Department Overview', 
         content: `${departmentData?.departments?.length || 0} Departments`,
         type: 'progress',
         data: { departments: departmentData?.departments || [] }
+      },
+      'employee-directory': {
+        title: 'Employee Directory',
+        content: `${employeeDirectory?.employees?.length || 0} Employees`,
+        type: 'directory',
+        data: { employees: employeeDirectory?.employees || [] }
       },
       fullstack: { 
         title: 'Full Stack Overview', 
@@ -232,11 +246,33 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
 
   const departmentApi = async() => {
     try {
-      const response = await fetch('http://172.25.247.7:8000/dashboard/department_counts');
-      const data = await response.json();
-      setDepartmentData({ departments: data.departments });
+      const response = await getDepartment();
+      setDepartmentData({ departments: response.departments });
     } catch (error) {
       console.error('Error fetching department data:', error);
+    }
+  };
+
+  const employeeDirectoryApi = async() => {
+    try {
+      const response = await getEmployeeDirectory();
+      setEmployeeDirectory({ employees: response.employees });
+    } catch (error) {
+      console.error('Error fetching employee directory:', error);
+    }
+  };
+  const [EmployeeCount, setEmployeeCount] = useState({
+    employeeCount: 0,
+    freepoolCount: 0,
+    projectCount: 0,
+  });
+
+  const employeeCountApi = async() => {
+    try {
+      const response = await getEmployeeCount();
+      setEmployeeCount({...EmployeeCount, employeeCount:response.employee_count || 0, projectCount:response.project_count || 0, freepoolCount: response.freepool_count || 0})
+    } catch (error) {
+      console.error('Error fetching employee count:', error);
     }
   };
 
@@ -281,6 +317,8 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   useEffect(() => {
     projectDistributionApi();
     departmentApi();
+    employeeDirectoryApi();
+    employeeCountApi();
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
@@ -308,19 +346,19 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
 
         <div className="stats">
           <div className="stat">
-            <h3>{widgetData?.database_results?.select_employees_0?.data?.length || 67}</h3>
+            <h3>{EmployeeCount.employeeCount || 0}</h3>
             <span>
               <i className="fa-regular fa-user"></i> Total Employees
             </span>
           </div>
           <div className="stat">
-            <h3>{widgetData?.database_results?.select_employees_0?.data?.filter(emp => emp.is_free_pool === false).length || 24}</h3>
+            <h3>{EmployeeCount.projectCount || 0}</h3>
             <span>
               <i className="fa-regular fa-eye"></i> Active
             </span>
           </div>
           <div className="stat">
-            <h3>{widgetData?.database_results?.select_employees_0?.data?.filter(emp => emp.is_free_pool === true).length || 6}</h3>
+            <h3>{EmployeeCount.freepoolCount || 0}</h3>
             <span>
               <i className="fa-regular fa-circle-check"></i> Freepool
             </span>
@@ -346,7 +384,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
 
             {isDropdownOpen && (
             <div className={`dropdown-menu ${isDropdownOpen ? 'show' : ''}`}>
-              {['project-distribution', 'backend', 'fullstack', 'mobile', 'devops'].map(opt => (
+              {['project-distribution', 'department-overview', 'employee-directory', 'fullstack', 'mobile', 'devops'].map(opt => (
                 <div key={opt} className="option">
                   <input 
                     type="checkbox" 
@@ -444,7 +482,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                           </div>,
                           <div key="default2" className="modern-legend-item">
                             <div className="modern-legend-color" style={{background: 'linear-gradient(135deg, #f093fb, #f5576c)'}}></div>
-                            <span className="legend-text">Backend</span>
+                            <span className="legend-text">Department Overview</span>
                             <span className="legend-percentage">20%</span>
                           </div>,
                           <div key="default3" className="modern-legend-item">
@@ -459,6 +497,59 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                           </div>
                         ]}
                       </div>
+                    </div>
+                  </>
+                ) : widgetData.type === 'directory' ? (
+                  <>
+                    <span className="widget-subtitle">{widgetData.content}</span>
+                    <div className="employee-directory-container">
+                      {(() => {
+                        const employees = widgetData.data?.employees || [];
+                        const startIndex = employeePage * employeesPerPage;
+                        const endIndex = startIndex + employeesPerPage;
+                        const currentEmployees = employees.slice(startIndex, endIndex);
+                        const totalPages = Math.ceil(employees.length / employeesPerPage);
+                        
+                        return (
+                          <>
+                            {currentEmployees.map((employee) => (
+                              <div key={employee.employee_id} className="employee-item">
+                                <div className="employee-info">
+                                  <div className="employee-name">{employee.display_name}</div>
+                                  <div className="employee-details">
+                                    <span className="employee-dept">{employee.employee_department}</span>
+                                    <span className="employee-designation">{employee.designation}</span>
+                                  </div>
+                                  <div className="employee-location">
+                                    <i className="fa-solid fa-location-dot"></i>
+                                    {employee.emp_location}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                            {totalPages > 1 && (
+                              <div className="pagination">
+                                <button 
+                                  onClick={() => setEmployeePage(prev => Math.max(0, prev - 1))}
+                                  disabled={employeePage === 0}
+                                  className="page-btn"
+                                >
+                                  ‹
+                                </button>
+                                <span className="page-info">{employeePage + 1}/{totalPages}</span>
+                                <button 
+                                  onClick={() => setEmployeePage(prev => Math.min(totalPages - 1, prev + 1))}
+                                  disabled={employeePage >= totalPages - 1}
+                                  className="page-btn"
+                                >
+                                  ›
+                                </button>
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()
+                      }
                     </div>
                   </>
                 ) : (
