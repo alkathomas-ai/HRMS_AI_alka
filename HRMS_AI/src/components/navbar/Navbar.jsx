@@ -9,6 +9,11 @@ const Navbar = () => {
 
     const navigate = useNavigate()
 
+    const today = new Date();
+
+    const day = today.getDate();
+    const weekday = today.toLocaleDateString("en-US", { weekday: "short" });
+    const month = today.toLocaleDateString("en-US", { month: "long" });
 
 
 
@@ -49,10 +54,10 @@ const Navbar = () => {
    {/* Right section */}
   <div className="topbar-right">
     <div className="date">
-      <span className="day">19</span>
+      <span className="day">{day}</span>
       <div className="date-meta">
-        <span className="weekday">Thu</span>
-        <span className="month">September</span>
+        <span className="weekday">{weekday}</span>
+        <span className="month">{month}</span>
       </div>
     </div>
 

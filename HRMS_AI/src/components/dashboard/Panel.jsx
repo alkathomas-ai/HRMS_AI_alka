@@ -1,3 +1,5 @@
+import "./Panel.css"
+
 const Panel = ({ children, expanded, title, onClose }) => {
   return (
     <div className={`panel ${expanded ? "expanded" : ""}`}>
