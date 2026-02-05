@@ -1,9 +1,126 @@
-.expand-icon{
-    margin-left: 4rem;
+.expand-icon {
+  margin-left: 4rem;
+  cursor: pointer;
 }
-.dashboard-header{
-    margin-bottom: 10px;
+.dashboard-header {
+  margin-bottom: 10px;
 }
-.widget{
-    padding: 20px 0;
+.widget {
+  padding: 20px 0;
+}
+.close-btn{
+    cursor: pointer;
+}
+
+/* Drag and Resize Styles */
+.drag-handle {
+  cursor: grab;
+  user-select: none;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.drag-handle:hover {
+  background-color: #f0f0f0;
+}
+
+.widgets-container {
+  overflow: hidden;
+}
+
+.draggable-widget {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.draggable-widget:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.resize-handle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  cursor: nw-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #666;
+  background: rgba(255,255,255,0.8);
+  border-top-left-radius: 4px;
+}
+
+.resize-handle:hover {
+  background: rgba(0,0,0,0.1);
+  color: #333;
+}
+
+/* React Grid Layout Styles */
+.react-grid-layout {
+  position: relative;
+}
+
+.react-grid-item {
+  transition: all 200ms ease;
+  transition-property: left, top;
+}
+
+.react-grid-item.cssTransforms {
+  transition-property: transform;
+}
+
+.react-grid-item > .react-resizable-handle {
+  position: absolute;
+  /* width: 20px;
+  height: 20px; */
+  bottom: 0;
+  right: 0;
+  background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNiIgaGVpZ2h0PSI2IiB2aWV3Qm94PSIwIDAgNiA2IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnIGZpbGw9IiM0NDRCNEI0QiIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJtNSA0aDF2MWgtMXptLTEgMWgxdjFoLTF6bS0xIDFoMXYxaC0xem0tMSAxaDF2MWgtMXptLTEgMWgxdjFoLTF6Ii8+PC9nPjwvc3ZnPg==');
+  background-position: bottom right;
+  padding: 0 3px 3px 0;
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  box-sizing: border-box;
+  cursor: se-resize;
+}
+
+.grid-item {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  /* height: 100%; */
+}
+
+.grid-item-content {
+  padding: 16px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.grid-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  cursor: move;
+}
+
+.grid-item-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
 }

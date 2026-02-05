@@ -5,7 +5,7 @@ import WidgetPanel from './WidgetPanel';
 const Schedule = ({isExpanded, onExpand, onClose}) => {
   return (
     <>
-      <div className="schedule-card">
+      <div className={`schedule-card ${!isExpanded ? 'compact' : ''}`}>
             <div className="header">
               <h3>Schedule</h3>
                 {!isExpanded ? (

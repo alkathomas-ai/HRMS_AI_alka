@@ -1,16 +1,32 @@
 import React, { useState, useEffect, useRef } from 'react';
+import GridLayout from 'react-grid-layout';
 import './Dashboard.css';
+import 'react-grid-layout/css/styles.css';
+import 'react-resizable/css/styles.css';
 import { Icons } from '../../assets/icons';
 
 const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
-  const [widgets, setWidgets] = useState([
-    { id: 'frontend' },
-    { id: 'backend' },
-    { id: 'devops' }
+  const [layout, setLayout] = useState([
+    { i: 'frontend', x: 0, y: 0, w: 2, h: 1 },
+    { i: 'backend', x: 0, y: 0, w: 2, h: 1 },
+    { i: 'devops', x: 0, y: 0, w: 4, h: 1 }
   ]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedWidgets, setSelectedWidgets] = useState(['frontend', 'backend', 'devops']);
   const dropdownRef = useRef(null);
+  const [dragEnabledWidgets, setDragEnabledWidgets] = useState(new Set());
+
+  const widgetTemplates = {
+    frontend: { title: 'Frontend Dashboard', content: 'Frontend development metrics' },
+    backend: { title: 'Backend Dashboard', content: 'Backend services monitoring' },
+    fullstack: { title: 'Full Stack Dashboard', content: 'Complete application overview' },
+    mobile: { title: 'Mobile Dashboard', content: 'Mobile app development' },
+    devops: { title: 'DevOps Dashboard', content: 'Infrastructure status' }
+  };
+
+  const getWidgetData = (id) => {
+    return widgetTemplates[id] || { title: 'Widget', content: 'Content' };
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -24,51 +40,47 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   }, []);
 
   const toggleWidget = (widgetId) => {
-    setSelectedWidgets(prev => 
-      prev.includes(widgetId) 
-        ? prev.filter(id => id !== widgetId)
-        : [...prev, widgetId]
-    );
-    
-    // Add widget back to widgets array if it doesn't exist
-    setWidgets(prev => {
-      if (!prev.some(w => w.id === widgetId)) {
-        return [...prev, { id: widgetId }];
-      }
-      return prev;
-    });
+    if (selectedWidgets.includes(widgetId)) {
+      setSelectedWidgets(prev => prev.filter(id => id !== widgetId));
+      setLayout(prev => prev.filter(item => item.i !== widgetId));
+    } else {
+      setSelectedWidgets(prev => [...prev, widgetId]);
+      setLayout(prev => [...prev, { i: widgetId, x: 0, y: 0, w: 2, h: 3 }]);
+    }
   };
 
   const removeWidget = (id) => {
-    setWidgets(prev => prev.filter(w => w.id !== id));
+    setLayout(prev => prev.filter(item => item.i !== id));
     setSelectedWidgets(prev => prev.filter(widgetId => widgetId !== id));
   };
 
-  return (
-    <div className="grid-container">
+  const onLayoutChange = (newLayout) => {
+    setLayout(newLayout);
+  };
 
-      {/* HEADER */}
+  const handleDoubleClick = (widgetId) => {
+    setDragEnabledWidgets(prev => new Set([...prev, widgetId]));
+  };
+
+  const onDragStop = () => {
+    // Clear all drag enabled widgets after any drag operation
+    setDragEnabledWidgets(new Set());
+  };
+
+  return (
+    <div className={`grid-container ${!isExpanded && isExpanded !== null ? 'compact' : ''}`} data-expanded={isExpanded}>
       <div className="dashboard-header">
         <div className="welcome">
            <div className='d-flex justify-btwn align-center'>
                <h2>Welcome back,</h2>
-                {/* <span className="expand-icon">
-                {!isExpanded ? (
-                    <button onClick={onExpand}>⤢</button>
-                ) : (
-                    <button onClick={onClose}>✕</button>
-                )}
-                </span> */}
-                {!isExpanded && (
+                {!isExpanded && isExpanded !== null && (
                     <span className="expand-icon" onClick={onExpand}>
                         <img src={Icons.expand} alt="" />
                     </span>
-                    )
-                }
+                )}
            </div>
-          <p>Great talent awaits. Let’s hire smart!</p>
+          <p>Great talent awaits. Let's hire smart!</p>
         </div>
-
 
         <div className="stats">
           <div className="stat">
@@ -92,10 +104,8 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         </div>
       </div>
 
-      {/* FILTER BAR */}
       <div className="filter-bar">
         <div className="filter-controls">
-
           <div className="search-input">
             <input type="text" placeholder="Search Widgets..." />
             <i className="fa-solid fa-search"></i>
@@ -109,7 +119,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
 
             {isDropdownOpen && (
             <div className={`dropdown-menu ${isDropdownOpen ? 'show' : ''}`}>
-              {['frontend', 'backend', 'devops'].map(opt => (
+              {['frontend', 'backend', 'fullstack', 'mobile', 'devops'].map(opt => (
                 <div key={opt} className="option">
                   <input 
                     type="checkbox" 
@@ -123,7 +133,6 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             </div>
             )}
           </div>
-
         </div>
 
         <div className="actions">
@@ -133,19 +142,43 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         </div>
       </div>
 
-      {/* WIDGETS */}
-      <div className="responsive-grid">
-        {widgets.filter(widget => selectedWidgets.includes(widget.id)).map(widget => (
-          <div key={widget.id} className="grid-item-content">
-            <div className="grid-item-header">
-              <h4>{widget.id}</h4>
-              <button onClick={() => removeWidget(widget.id)}>×</button>
+      <GridLayout
+        className="layout"
+        layout={layout}
+        cols={6}
+        rowHeight={50}
+        width={1200}
+        onLayoutChange={onLayoutChange}
+        onDragStop={onDragStop}
+        isDraggable={false}
+        dragHandleClassName="drag-enabled"
+        isResizable={true}
+        compactType="vertical"
+        preventCollision={false}
+      >
+        {layout.filter(widget => selectedWidgets.includes(widget.i)).map(widget => {
+          const widgetData = getWidgetData(widget.i);
+          const isDragEnabled = dragEnabledWidgets.has(widget.i);
+          return (
+            <div 
+              key={widget.i} 
+              className={`grid-item ${isDragEnabled ? 'drag-mode' : ''} ${isDragEnabled ? 'drag-enabled' : ''}`}
+              onDoubleClick={() => handleDoubleClick(widget.i)}
+            >
+              <div className="grid-item-content">
+                <div className="grid-item-header">
+                  <h4>{widgetData.title}</h4>
+                  <span className='close-btn' onClick={() => removeWidget(widget.i)}>×</span>
+                </div>
+                <p>{widgetData.content}</p>
+                {isDragEnabled && (
+                  <div className="drag-indicator">Drag mode active - Click and drag to move</div>
+                )}
+              </div>
             </div>
-            <p>Widget content here</p>
-          </div>
-        ))}
-      </div>
-
+          );
+        })}
+      </GridLayout>
     </div>
   );
 };

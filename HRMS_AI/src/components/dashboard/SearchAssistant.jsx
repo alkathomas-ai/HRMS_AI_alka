@@ -5,7 +5,7 @@ import WidgetPanel from './WidgetPanel';
 const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
   return (
     <>
-     <div className="card assistant-card justify-btw">
+     <div className={`card assistant-card justify-btw ${!isExpanded ? 'compact' : ''}`}>
                  <div className="assistant-header">
                    <span className="assistant-badge bubbles">
                      <img src={Icons.bubbles} alt="" className="bubbles-icon" srcSet=""/>

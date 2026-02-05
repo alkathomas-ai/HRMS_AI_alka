@@ -1,4 +1,9 @@
 .topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   height: 72px;
   padding: 0 24px;
   background: var(--color-bg-topbar);

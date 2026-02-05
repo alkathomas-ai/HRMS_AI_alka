@@ -94,7 +94,8 @@ const Dashboard = () => {
               onClose={() => setExpandedPanel(null)}
             >
               <WidgetPanel
-                isExpanded
+                isExpanded={true}
+                onExpand={() => setExpandedPanel('widgets')}
                 onClose={() => setExpandedPanel(null)}
               />
             </Panel>
@@ -129,7 +130,7 @@ const Dashboard = () => {
           {!expandedPanel && (
             <Panel title="Widgets">
               <WidgetPanel
-                isExpanded={false}
+                isExpanded={null}
                 onExpand={() => setExpandedPanel('widgets')}
               />
             </Panel>

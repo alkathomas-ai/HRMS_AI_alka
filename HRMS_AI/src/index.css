@@ -1,4 +1,4 @@
-root{
+#root{
     height: 100vh;
 }
 :root {
@@ -48,6 +48,21 @@ body {
     #f04d4d3b 100%
   );
 }
+/* Hide scrollbar but allow scrolling */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Firefox */
+html {
+  scrollbar-width: none;
+}
+
+/* IE / Edge (legacy) */
+body {
+  -ms-overflow-style: none;
+}
+
 
 .d-flex{
     display: flex;
