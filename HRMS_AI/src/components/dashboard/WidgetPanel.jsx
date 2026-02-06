@@ -1,187 +1,108 @@
 import React, { useState, useEffect, useRef } from 'react';
 import GridLayout from 'react-grid-layout';
-import './Dashboard.css';
-import './WidgetPanel.css'
+import './WidgetPanel.css';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import { Icons } from '../../assets/icons';
 import { getProjectDistributions, getEmployeeDirectory, getEmployeeCount, getDepartment } from '../../services/api';
 
 const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
-  // Mock data structure similar to what would come from API
-  const [widgetData, setWidgetData] = useState({
-    database_results: {
-      select_employees_0: {
-        data: [
-          { employee_id: 1, display_name: 'John Doe', is_free_pool: false, employee_department: 'Engineering' },
-          { employee_id: 2, display_name: 'Jane Smith', is_free_pool: true, employee_department: 'Marketing' },
-          { employee_id: 3, display_name: 'Bob Johnson', is_free_pool: false, employee_department: 'Sales' }
-        ]
-      }
-    }
-  });
-  
-  const [projectDistribution, setProjectDistribution] = useState({
-    projects: [],
-    total_employees: ""
-  });
-  
-  const [departmentData, setDepartmentData] = useState({
-    departments: []
-  });
-  
-  const [employeeDirectory, setEmployeeDirectory] = useState({
-    employees: []
-  });
-  
-  const [employeePage, setEmployeePage] = useState(0);
-  const employeesPerPage = 5;
-  
-  
-  const [hoveredSegment, setHoveredSegment] = useState(null);
+  const [selectedWidgets, setSelectedWidgets] = useState(['project-distribution', 'department-overview', 'employee-directory']);
   const [layout, setLayout] = useState([
-    { i: 'project-distribution', x: 0, y: 0, w: 2, h: 1 },
-    { i: 'department-overview', x: 2, y: 0, w: 2, h: 1 },
-    { i: 'employee-directory', x: 0, y: 3, w: 4, h: 1 }
+    { i: 'project-distribution', x: 0, y: 0, w: 2, h: 2.5, minW: 2, minH: 2 },
+    { i: 'department-overview', x: 2, y: 0, w: 2, h: 3.5, minW: 2, minH: 2 },
+    { i: 'employee-directory', x: 0, y: 4, w: 4, h: 3, minW: 2, minH: 2 }
   ]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedWidgets, setSelectedWidgets] = useState(['project-distribution', 'department-overview', 'employee-directory']);
   const dropdownRef = useRef(null);
-  const [dragEnabledWidgets, setDragEnabledWidgets] = useState(new Set());
 
-  const getWidgetTemplates = () => {
-    const employees = widgetData?.database_results?.select_employees_0?.data || [];
-    const totalEmployees = employees.length;
-    const freepoolCount = employees.filter(emp => emp.is_free_pool === true).length;
-    const activeCount = employees.filter(emp => emp.is_free_pool === false).length;
-    const reviewedCount = employees.filter(emp => emp.employee_department && emp.employee_department !== 'Unknown').length;
-    
+  const [projectDistribution, setProjectDistribution] = useState({ projects: [], total_employees: 0 });
+  const [departmentData, setDepartmentData] = useState({ departments: [] });
+  const [employeeDirectory, setEmployeeDirectory] = useState({ employees: [] });
+  const [employeeCount, setEmployeeCount] = useState({ employeeCount: 0, freepoolCount: 0, projectCount: 0 });
+  const [employeePage, setEmployeePage] = useState(0);
+  const [hoveredSegment, setHoveredSegment] = useState(null);
+  const [containerWidth, setContainerWidth] = useState(1200);
+  const containerRef = useRef(null);
+  const employeesPerPage = 5;
 
-    return {
-      'project-distribution': { 
-        title: 'Project Distribution', 
-        content: `${projectDistribution?.total_employees || totalEmployees} Total employees`,
-        type: 'chart',
-        data: {
-          totalEmployees: projectDistribution?.total_employees || totalEmployees,
-          projects: projectDistribution?.projects || []
-        }
-      },
-      'department-overview': { 
-        title: 'Department Overview', 
-        content: `${departmentData?.departments?.length || 0} Departments`,
-        type: 'progress',
-        data: { departments: departmentData?.departments || [] }
-      },
-      'employee-directory': {
-        title: 'Employee Directory',
-        content: `${employeeDirectory?.employees?.length || 0} Employees`,
-        type: 'directory',
-        data: { employees: employeeDirectory?.employees || [] }
-      },
-      fullstack: { 
-        title: 'Full Stack Overview', 
-        content: `${reviewedCount} Assigned employees`,
-        data: { reviewedCount }
-      },
-      mobile: { 
-        title: 'Mobile Development', 
-        content: `${totalEmployees} Total resources`,
-        data: { totalEmployees }
-      },
-      devops: { 
-        title: 'DevOps Infrastructure', 
-        content: `${freepoolCount} Available resources`,
-        data: { freepoolCount }
+  const availableWidgets = [
+    { id: 'project-distribution', label: 'Project Distribution' },
+    { id: 'department-overview', label: 'Department Overview' },
+    { id: 'employee-directory', label: 'Employee Directory' }
+  ];
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [projects, departments, employees, counts] = await Promise.all([
+          getProjectDistributions(),
+          getDepartment(),
+          getEmployeeDirectory(),
+          getEmployeeCount()
+        ]);
+        setProjectDistribution({ projects: projects.projects, total_employees: projects.total_employees });
+        setDepartmentData({ departments: departments.departments });
+        setEmployeeDirectory({ employees: employees.employees });
+        setEmployeeCount({ 
+          employeeCount: counts.employee_count || 0, 
+          projectCount: counts.project_count || 0, 
+          freepoolCount: counts.freepool_count || 0 
+        });
+      } catch (error) {
+        console.error('Error fetching data:', error);
       }
     };
-  };
+    fetchData();
 
-  const renderProgressChart = (data) => {
-    const maxCount = Math.max(...data.departments.map(d => d.employee_count));
-    
-    return (
-      <div className="progress-chart-container">
-        {data.departments.slice(0, 6).map((dept, index) => {
-          const percentage = (dept.employee_count / maxCount) * 100;
-          const colors = ['#667eea', '#f093fb', '#4facfe', '#43e97b', '#fa709a', '#ff6b6b'];
-          
-          return (
-            <div key={dept.department} className="progress-item">
-              <div className="progress-header">
-                <span className="dept-name">{dept.department.length > 20 ? dept.department.substring(0, 20) + '...' : dept.department}</span>
-                <span className="dept-count">{dept.employee_count}</span>
-              </div>
-              <div className="progress-bar">
-                <div 
-                  className="progress-fill" 
-                  style={{
-                    width: `${percentage}%`,
-                    background: `linear-gradient(90deg, ${colors[index % colors.length]}, ${colors[index % colors.length]}aa)`
-                  }}
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
+      }
+    };
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
 
-  const getWidgetData = (id) => {
-    const templates = getWidgetTemplates();
-    return templates[id] || { title: 'Widget', content: 'Content' };
-  };
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('resize', updateWidth);
+    };
+  }, []);
 
-  const renderDynamicChart = (data) => {
-    if (!data?.projects?.length) {
-      // Fallback static chart with modern styling
-      return (
-        <div className="modern-pie-chart">
-          <svg width="140" height="140" viewBox="0 0 140 140">
-            <defs>
-              <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#667eea" />
-                <stop offset="100%" stopColor="#764ba2" />
-              </linearGradient>
-              <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#f093fb" />
-                <stop offset="100%" stopColor="#f5576c" />
-              </linearGradient>
-              <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#4facfe" />
-                <stop offset="100%" stopColor="#00f2fe" />
-              </linearGradient>
-              <linearGradient id="gradient4" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#43e97b" />
-                <stop offset="100%" stopColor="#38f9d7" />
-              </linearGradient>
-              <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-                <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="rgba(0,0,0,0.1)" />
-              </filter>
-            </defs>
-            <circle cx="70" cy="70" r="55" fill="#f8f9fa" stroke="url(#gradient1)" strokeWidth="16" strokeDasharray="103 345" strokeDashoffset="0" transform="rotate(-90 70 70)" filter="url(#shadow)" />
-            <circle cx="70" cy="70" r="55" fill="transparent" stroke="url(#gradient2)" strokeWidth="16" strokeDasharray="69 345" strokeDashoffset="-103" transform="rotate(-90 70 70)" filter="url(#shadow)" />
-            <circle cx="70" cy="70" r="55" fill="transparent" stroke="url(#gradient3)" strokeWidth="16" strokeDasharray="52 345" strokeDashoffset="-172" transform="rotate(-90 70 70)" filter="url(#shadow)" />
-            <circle cx="70" cy="70" r="55" fill="transparent" stroke="url(#gradient4)" strokeWidth="16" strokeDasharray="121 345" strokeDashoffset="-224" transform="rotate(-90 70 70)" filter="url(#shadow)" />
-            <circle cx="70" cy="70" r="25" fill="white" filter="url(#shadow)" />
-            <text x="70" y="75" textAnchor="middle" fontSize="14" fontWeight="600" fill="#333">100%</text>
-          </svg>
-        </div>
-      );
+  const toggleWidget = (widgetId) => {
+    if (selectedWidgets.includes(widgetId)) {
+      setSelectedWidgets(prev => prev.filter(id => id !== widgetId));
+      setLayout(prev => prev.filter(item => item.i !== widgetId));
+    } else {
+      setSelectedWidgets(prev => [...prev, widgetId]);
+      setLayout(prev => [...prev, { i: widgetId, x: 0, y: Infinity, w: 2, h: 4, minW: 2, minH: 3 }]);
     }
+  };
+
+  const removeWidget = (id) => {
+    setLayout(prev => prev.filter(item => item.i !== id));
+    setSelectedWidgets(prev => prev.filter(widgetId => widgetId !== id));
+  };
+
+  const renderPieChart = (data) => {
+    if (!data?.projects?.length) return null;
 
     const gradients = [
       { id: 'grad1', colors: ['#667eea', '#764ba2'] },
       { id: 'grad2', colors: ['#f093fb', '#f5576c'] },
       { id: 'grad3', colors: ['#4facfe', '#00f2fe'] },
-      { id: 'grad4', colors: ['#43e97b', '#38f9d7'] },
-      { id: 'grad5', colors: ['#fa709a', '#fee140'] }
+      { id: 'grad4', colors: ['#43e97b', '#38f9d7'] }
     ];
     
-    const circumference = 2 * Math.PI * 55; // radius = 55
+    const circumference = 2 * Math.PI * 55;
     let currentOffset = 0;
-    const totalEmployees = data.totalEmployees || 1;
+    const totalEmployees = data.total_employees || 1;
 
     return (
       <div className="modern-pie-chart">
@@ -193,12 +114,9 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                 <stop offset="100%" stopColor={grad.colors[1]} />
               </linearGradient>
             ))}
-            <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-              <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="rgba(0,0,0,0.1)" />
-            </filter>
           </defs>
           
-          {data.projects.slice(0, 5).map((project, index) => {
+          {data.projects.slice(0, 4).map((project, index) => {
             const percentage = project.employee_count / totalEmployees;
             const strokeDasharray = `${circumference * percentage} ${circumference}`;
             const strokeDashoffset = -currentOffset;
@@ -207,25 +125,20 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             return (
               <circle
                 key={project.project}
-                cx="70"
-                cy="70"
-                r="55"
+                cx="70" cy="70" r="55"
                 fill={index === 0 ? "#f8f9fa" : "transparent"}
                 stroke={`url(#${gradients[index].id})`}
                 strokeWidth="16"
                 strokeDasharray={strokeDasharray}
                 strokeDashoffset={strokeDashoffset}
                 transform="rotate(-90 70 70)"
-                filter="url(#shadow)"
-                className="chart-segment"
-                onMouseEnter={() => setHoveredSegment({ project: project.project, count: project.employee_count, index })}
+                onMouseEnter={() => setHoveredSegment({ project: project.project, count: project.employee_count })}
                 onMouseLeave={() => setHoveredSegment(null)}
-                style={{ cursor: 'pointer' }}
               />
             );
           })}
           
-          <circle cx="70" cy="70" r="25" fill="white" filter="url(#shadow)" />
+          <circle cx="70" cy="70" r="25" fill="white" />
           <text x="70" y="75" textAnchor="middle" fontSize="14" fontWeight="600" fill="#333">
             {totalEmployees}
           </text>
@@ -243,141 +156,161 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     );
   };
 
-
-  const departmentApi = async() => {
-    try {
-      const response = await getDepartment();
-      setDepartmentData({ departments: response.departments });
-    } catch (error) {
-      console.error('Error fetching department data:', error);
-    }
-  };
-
-  const employeeDirectoryApi = async() => {
-    try {
-      const response = await getEmployeeDirectory();
-      setEmployeeDirectory({ employees: response.employees });
-    } catch (error) {
-      console.error('Error fetching employee directory:', error);
-    }
-  };
-  const [EmployeeCount, setEmployeeCount] = useState({
-    employeeCount: 0,
-    freepoolCount: 0,
-    projectCount: 0,
-  });
-
-  const employeeCountApi = async() => {
-    try {
-      const response = await getEmployeeCount();
-      setEmployeeCount({...EmployeeCount, employeeCount:response.employee_count || 0, projectCount:response.project_count || 0, freepoolCount: response.freepool_count || 0})
-    } catch (error) {
-      console.error('Error fetching employee count:', error);
-    }
-  };
-
-    const projectDistributionApi = async() => {
-     const response = await  getProjectDistributions()
-     //  console.log("resp:", response);
-    setProjectDistribution({...projectDistribution, projects: response.projects, total_employees: response.total_employees})
+  const renderProgressChart = (data) => {
+    const maxCount = Math.max(...data.departments.map(d => d.employee_count));
+    const colors = ['#667eea', '#f093fb', '#4facfe', '#43e97b', '#fa709a', '#ff6b6b'];
     
+    return (
+      <div className="progress-chart-container">
+        {data.departments.slice(0, 6).map((dept, index) => {
+          const percentage = (dept.employee_count / maxCount) * 100;
+          return (
+            <div key={dept.department} className="progress-item">
+              <div className="progress-header">
+                <span className="dept-name">{dept.department.length > 20 ? dept.department.substring(0, 20) + '...' : dept.department}</span>
+                <span className="dept-count">{dept.employee_count}</span>
+              </div>
+              <div className="progress-bar">
+                <div className="progress-fill" style={{ width: `${percentage}%`, background: colors[index % colors.length] }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const renderWidget = (widgetId) => {
+    switch (widgetId) {
+      case 'project-distribution':
+        return (
+          <>
+            <div className="grid-item-header">
+              <h4>Project Distribution</h4>
+              <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+            </div>
+            <span className="widget-subtitle">{projectDistribution.total_employees} Total employees</span>
+            <div className="pie-chart-container">
+              {renderPieChart(projectDistribution)}
+              <div className="chart-legend">
+                {projectDistribution.projects.slice(0, 4).map((project, index) => {
+                  const percentage = Math.round((project.employee_count / projectDistribution.total_employees) * 100);
+                  const gradientColors = [
+                    { start: '#667eea', end: '#764ba2' },
+                    { start: '#f093fb', end: '#f5576c' },
+                    { start: '#4facfe', end: '#00f2fe' },
+                    { start: '#43e97b', end: '#38f9d7' }
+                  ];
+                  return (
+                    <div key={project.project} className="modern-legend-item">
+                      <div className="modern-legend-color" style={{ background: `linear-gradient(135deg, ${gradientColors[index].start}, ${gradientColors[index].end})` }} />
+                      <span className="legend-text">{project.project}</span>
+                      <span className="legend-percentage">{percentage}%</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </>
+        );
+      
+      case 'department-overview':
+        return (
+          <>
+            <div className="grid-item-header">
+              <h4>Department Overview</h4>
+              <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+            </div>
+            <div className="widget-subtitle">
+              <div className="subtitle-number">{departmentData.departments.reduce((sum, d) => sum + d.employee_count, 0)}</div>
+              <div className="subtitle-text">Total employees</div>
+            </div>
+            <div className="progress-container">
+              {renderProgressChart(departmentData)}
+            </div>
+          </>
+        );
+      
+      case 'employee-directory':
+        const startIndex = employeePage * employeesPerPage;
+        const currentEmployees = employeeDirectory.employees.slice(startIndex, startIndex + employeesPerPage);
+        const totalPages = Math.ceil(employeeDirectory.employees.length / employeesPerPage);
+        
+        return (
+          <>
+            <div className="grid-item-header">
+              <h4>Employee Directory</h4>
+              <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+            </div>
+            <span className="widget-subtitle">{employeeDirectory.employees.length} Employees</span>
+            <div className="employee-directory-container">
+              {currentEmployees.map((employee) => (
+                <div key={employee.employee_id} className="employee-item">
+                  <div className="employee-info">
+                    <div className="employee-name">{employee.display_name}</div>
+                    <div className="employee-details">
+                      <span className="employee-dept">{employee.employee_department}</span>
+                      <span className="employee-designation">{employee.designation}</span>
+                    </div>
+                    <div className="employee-location">
+                      <i className="fa-solid fa-location-dot"></i>
+                      {employee.emp_location}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {totalPages > 1 && (
+                <div className="pagination">
+                  <button onClick={() => setEmployeePage(prev => Math.max(0, prev - 1))} disabled={employeePage === 0} className="page-btn">‹</button>
+                  <span className="page-info">{employeePage + 1}/{totalPages}</span>
+                  <button onClick={() => setEmployeePage(prev => Math.min(totalPages - 1, prev + 1))} disabled={employeePage >= totalPages - 1} className="page-btn">›</button>
+                </div>
+              )}
+            </div>
+          </>
+        );
+      
+      default:
+        return null;
     }
-
-
-
-  const toggleWidget = (widgetId) => {
-    if (selectedWidgets.includes(widgetId)) {
-      setSelectedWidgets(prev => prev.filter(id => id !== widgetId));
-      setLayout(prev => prev.filter(item => item.i !== widgetId));
-    } else {
-      setSelectedWidgets(prev => [...prev, widgetId]);
-      setLayout(prev => [...prev, { i: widgetId, x: 0, y: 0, w: 2, h: 3 }]);
-    }
   };
-
-  const removeWidget = (id) => {
-    setLayout(prev => prev.filter(item => item.i !== id));
-    setSelectedWidgets(prev => prev.filter(widgetId => widgetId !== id));
-  };
-
-  const onLayoutChange = (newLayout) => {
-    const constrainedLayout = newLayout.map(item => ({
-      ...item,
-      x: Math.max(0, Math.min(item.x, 6 - item.w))
-    }));
-    setLayout(constrainedLayout);
-  };
-
-  const handleDoubleClick = (widgetId) => {
-    setDragEnabledWidgets(prev => new Set([...prev, widgetId]));
-  };
-
-  const onDragStop = () => {
-    // Clear all drag enabled widgets after any drag operation
-    setDragEnabledWidgets(new Set());
-  };
-
-
-  useEffect(() => {
-    projectDistributionApi();
-    departmentApi();
-    employeeDirectoryApi();
-    employeeCountApi();
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   return (
     <div className={`grid-container ${!isExpanded && isExpanded !== null ? 'compact' : ''}`} data-expanded={isExpanded}>
       <div className="dashboard-header">
-        <div className="welcome">
-           <div className='d-flex justify-btwn align-center'>
-               <h2>Welcome back,</h2>
-                {!isExpanded && isExpanded !== null && (
-                    <span className="expand-icon" onClick={onExpand}>
-                        <img src={Icons.expand} alt="" />
-                    </span>
-                )}
-           </div>
+        <div className='welcome'>
+          <div className='d-flex justify-btwn align-center'>
+            <h2>Welcome back,</h2>
+            {!isExpanded && isExpanded !== null && (
+              <span className="expand-icon" onClick={onExpand}>
+                <img src={Icons.expand} alt="" />
+              </span>
+            )}
+          </div>
           <p>Great talent awaits. Let's hire smart!</p>
         </div>
 
         <div className="stats">
           <div className="stat">
-            <h3>{EmployeeCount.employeeCount || 0}</h3>
-            <span>
-              <i className="fa-regular fa-user"></i> Total Employees
-            </span>
+            <h3>{employeeCount.employeeCount || 0}</h3>
+            <span><i className="fa-regular fa-user"></i> Total Employees</span>
           </div>
           <div className="stat">
-            <h3>{EmployeeCount.projectCount || 0}</h3>
-            <span>
-              <i className="fa-regular fa-eye"></i> Active
-            </span>
+            <h3>{employeeCount.projectCount || 0}</h3>
+            <span><i className="fa-regular fa-eye"></i> Active</span>
           </div>
           <div className="stat">
-            <h3>{EmployeeCount.freepoolCount || 0}</h3>
-            <span>
-              <i className="fa-regular fa-circle-check"></i> Freepool
-            </span>
+            <h3>{employeeCount.freepoolCount || 0}</h3>
+            <span><i className="fa-regular fa-circle-check"></i> Freepool</span>
           </div>
         </div>
       </div>
-      <div className="dashboard-content">
 
+      <div className="dashboard-content" ref={containerRef}>
         <div className="filter-bar">
           <div className="filter-controls">
             <div className="search-input">
-              <input 
-                type="text" 
-                placeholder={`Search ${widgetData?.database_results?.select_employees_0?.data?.length || 0} Widgets...`} 
-              />
+              <input type="text" placeholder="Search widgets..." />
               <i className="fa-solid fa-search"></i>
             </div>
 
@@ -388,186 +321,50 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
               </div>
 
               {isDropdownOpen && (
-              <div className={`dropdown-menu ${isDropdownOpen ? 'show' : ''}`}>
-                {['project-distribution', 'department-overview', 'employee-directory', 'fullstack', 'mobile', 'devops'].map(opt => (
-                  <div key={opt} className="option">
-                    <input 
-                      type="checkbox" 
-                      id={opt} 
-                      checked={selectedWidgets.includes(opt)}
-                      onChange={() => toggleWidget(opt)}
-                    />
-                    <label htmlFor={opt}>{opt.replace('-', ' ')}</label>
-                  </div>
-                ))}
-              </div>
+                <div className="dropdown-menu show">
+                  {availableWidgets.map(widget => (
+                    <div key={widget.id} className="option">
+                      <input 
+                        type="checkbox" 
+                        id={widget.id} 
+                        checked={selectedWidgets.includes(widget.id)}
+                        onChange={() => toggleWidget(widget.id)}
+                      />
+                      <label htmlFor={widget.id}>{widget.label}</label>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           </div>
               
-            <div className="actions">
-              <button className="primary-btn">
-                <span className='btn-content'>Create a Widget</span> <span className="plus">+</span>
-              </button>
-            </div>
+          <div className="actions">
+            <button className="primary-btn">
+              <span className='btn-content'>Create a Widget</span> <span className="plus">+</span>
+            </button>
           </div>
+        </div>
 
-          <GridLayout
-            className="layout"
-            layout={layout}
-            cols={6}
-            rowHeight={50}
-            width={1200}
-            onLayoutChange={onLayoutChange}
-            onDragStop={onDragStop}
-            isDraggable={false}
-            dragHandleClassName="drag-enabled"
-            isResizable={true}
-            compactType="vertical"
-            preventCollision={false}
-            allowOverlap={false}
-          >
-            {layout.filter(widget => selectedWidgets.includes(widget.i)).map(widget => {
-              const widgetData = getWidgetData(widget.i);
-              const isDragEnabled = dragEnabledWidgets.has(widget.i);
-              return (
-                <div 
-                  key={widget.i} 
-                  className={`grid-item ${isDragEnabled ? 'drag-mode' : ''} ${isDragEnabled ? 'drag-enabled' : ''}`}
-                  onDoubleClick={() => handleDoubleClick(widget.i)}
-                >
-                  <div className="grid-item-content">
-                    <div className="grid-item-header">
-                      <h4>{widgetData.title}</h4>
-                      <span className='close-btn' onClick={() => removeWidget(widget.i)}>×</span>
-                    </div>
-                    {widgetData.type === 'progress' ? (
-                      <>
-                        <div className="widget-subtitle">
-                          <div className="subtitle-number">{widgetData.data?.departments?.reduce((sum, d) => sum + d.employee_count, 0) || 0}</div>
-                          <div className="subtitle-text">Total employees</div>
-                        </div>
-                        <div className="progress-container">
-                          {renderProgressChart(widgetData.data)}
-                        </div>
-                      </>
-                    ) : widgetData.type === 'chart' ? (
-                      <>
-                        <span className="widget-subtitle">{widgetData.content}</span>
-                        <div className="pie-chart-container">
-                          {renderDynamicChart(widgetData.data)}
-                          <div className="chart-legend">
-                            {widgetData.data?.projects?.slice(0, 4).map((project, index) => {
-                              const gradientColors = [
-                                { start: '#667eea', end: '#764ba2' },
-                                { start: '#f093fb', end: '#f5576c' },
-                                { start: '#4facfe', end: '#00f2fe' },
-                                { start: '#43e97b', end: '#38f9d7' }
-                              ];
-                              const percentage = widgetData.data.totalEmployees > 0 
-                                ? Math.round((project.employee_count / widgetData.data.totalEmployees) * 100)
-                                : 0;
-                              return (
-                                <div key={project.project} className="modern-legend-item">
-                                  <div 
-                                    className="modern-legend-color" 
-                                    style={{
-                                      background: `linear-gradient(135deg, ${gradientColors[index].start}, ${gradientColors[index].end})`
-                                    }}
-                                  ></div>
-                                  <span className="legend-text">{project.project}</span>
-                                  <span className="legend-percentage">{percentage}%</span>
-                                </div>
-                              );
-                            }) || [
-                              <div key="default1" className="modern-legend-item">
-                                <div className="modern-legend-color" style={{background: 'linear-gradient(135deg, #667eea, #764ba2)'}}></div>
-                                <span className="legend-text">Frontend</span>
-                                <span className="legend-percentage">30%</span>
-                              </div>,
-                              <div key="default2" className="modern-legend-item">
-                                <div className="modern-legend-color" style={{background: 'linear-gradient(135deg, #f093fb, #f5576c)'}}></div>
-                                <span className="legend-text">Department Overview</span>
-                                <span className="legend-percentage">20%</span>
-                              </div>,
-                              <div key="default3" className="modern-legend-item">
-                                <div className="modern-legend-color" style={{background: 'linear-gradient(135deg, #4facfe, #00f2fe)'}}></div>
-                                <span className="legend-text">DevOps</span>
-                                <span className="legend-percentage">15%</span>
-                              </div>,
-                              <div key="default4" className="modern-legend-item">
-                                <div className="modern-legend-color" style={{background: 'linear-gradient(135deg, #43e97b, #38f9d7)'}}></div>
-                                <span className="legend-text">Others</span>
-                                <span className="legend-percentage">35%</span>
-                              </div>
-                            ]}
-                          </div>
-                        </div>
-                      </>
-                    ) : widgetData.type === 'directory' ? (
-                      <>
-                        <span className="widget-subtitle">{widgetData.content}</span>
-                        <div className="employee-directory-container">
-                          {(() => {
-                            const employees = widgetData.data?.employees || [];
-                            const startIndex = employeePage * employeesPerPage;
-                            const endIndex = startIndex + employeesPerPage;
-                            const currentEmployees = employees.slice(startIndex, endIndex);
-                            const totalPages = Math.ceil(employees.length / employeesPerPage);
-                            
-                            return (
-                              <>
-                                {currentEmployees.map((employee) => (
-                                  <div key={employee.employee_id} className="employee-item">
-                                    <div className="employee-info">
-                                      <div className="employee-name">{employee.display_name}</div>
-                                      <div className="employee-details">
-                                        <span className="employee-dept">{employee.employee_department}</span>
-                                        <span className="employee-designation">{employee.designation}</span>
-                                      </div>
-                                      <div className="employee-location">
-                                        <i className="fa-solid fa-location-dot"></i>
-                                        {employee.emp_location}
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                                {totalPages > 1 && (
-                                  <div className="pagination">
-                                    <button 
-                                      onClick={() => setEmployeePage(prev => Math.max(0, prev - 1))}
-                                      disabled={employeePage === 0}
-                                      className="page-btn"
-                                    >
-                                      ‹
-                                    </button>
-                                    <span className="page-info">{employeePage + 1}/{totalPages}</span>
-                                    <button 
-                                      onClick={() => setEmployeePage(prev => Math.min(totalPages - 1, prev + 1))}
-                                      disabled={employeePage >= totalPages - 1}
-                                      className="page-btn"
-                                    >
-                                      ›
-                                    </button>
-                                  </div>
-                                )}
-                              </>
-                            );
-                          })()
-                          }
-                        </div>
-                      </>
-                    ) : (
-                      <p>{widgetData.content}</p>
-                    )}
-                    {/* {isDragEnabled && (
-                      <div className="drag-indicator">Drag mode active - Click and drag to move</div>
-                    )} */}
-                  </div>
-                </div>
-              );
-            })}
-          </GridLayout>
+        <GridLayout
+          className="layout"
+          layout={layout}
+          cols={6}
+          rowHeight={50}
+          width={containerWidth}
+          onLayoutChange={setLayout}
+          isDraggable={true}
+          isResizable={true}
+          compactType="vertical"
+          preventCollision={false}
+        >
+          {layout.filter(item => selectedWidgets.includes(item.i)).map(item => (
+            <div key={item.i} className="grid-item">
+              <div className="grid-item-content">
+                {renderWidget(item.i)}
+              </div>
+            </div>
+          ))}
+        </GridLayout>
       </div>
     </div>
   );
