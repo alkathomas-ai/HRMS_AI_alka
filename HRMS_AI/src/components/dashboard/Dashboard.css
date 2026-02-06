@@ -1,4 +1,10 @@
 /* Dashboard Layout */
+@property --grad-angle {
+  syntax: "<angle>";
+  initial-value: 165deg;
+  inherits: false;
+}
+
 .dashboard {
   display: flex;
   flex-direction: column;
@@ -11,8 +17,15 @@
     var(--color-bg-dashboard) 50%,
     #f04d4d3b 100%
   ); */
-  background: linear-gradient(150deg, var(--color-bg-dashboard) 0%, var(--color-bg-dashboard) 50%, #f04d4d3b 100%);
+  background: linear-gradient(var(--grad-angle), var(--color-bg-dashboard) 0%, var(--color-bg-dashboard) 50%, #f04d4d3b 100%);
+  animation: rotateGradient 10s ease-in-out infinite alternate;
 }
+
+@keyframes rotateGradient {
+  from { --grad-angle: 150deg; }
+  to { --grad-angle: 170deg; }
+}
+
 
 
 .dashboard-header {
