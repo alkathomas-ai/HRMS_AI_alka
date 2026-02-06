@@ -34,8 +34,8 @@
   grid-template-columns: 370px 1fr;
   gap: 32px;
   height: calc(100vh - 72px);
-  padding: 20px;
-  padding-top: 92px;
+  padding: 20px 0 20px 20px;
+  /* padding-top: 92px; */
 }
 
 .dashboard-left {
@@ -539,15 +539,15 @@ padding: 10px 13px;
   font-size: 14px;
 }
 
-.dashboard-right {
+/* .dashboard-right {
   padding-right: 20px;
   height: auto;
-}
+} */
 .dashboard-content {
   min-height: 720px;
   background-color: rgba(255, 255, 255, 0.342);
     border-radius: 2px;
-    margin-top: 15px;
+    /* margin-top: 15px; */
   
   }
 
@@ -569,7 +569,7 @@ padding: 10px 13px;
 /* Grid Layout Styles */
 .grid-container {
   height: 100%;
-  overflow-y: auto;
+  /* overflow-y: auto; */
 }
 
 .grid-item-content {
@@ -622,9 +622,9 @@ padding: 10px 13px;
 }
 
 /* Animations */
-.bubbles-icon {
+/* .bubbles-icon {
   animation: float 3s ease-in-out infinite;
-}
+} */
 
 @keyframes float {
   0% { transform: translateY(0); }
@@ -660,29 +660,29 @@ padding: 10px 13px;
 
 /* Compact Styles for Non-Expanded Components */
 .grid-container.compact {
-  transform: scale(0.95) !important;
-  opacity: 0.8 !important;
+  /* transform: scale(0.95) !important;
+  opacity: 0.8 !important; */
   transition: all 0.3s ease !important;
 }
 
 .assistant-card.compact {
-  transform: scale(0.95) !important;
-  opacity: 0.8 !important;
+  /* transform: scale(0.95) !important;
+  opacity: 0.8 !important; */
   transition: all 0.3s ease !important;
 }
 
 .schedule-card.compact {
-  transform: scale(0.95) !important;
-  opacity: 0.8 !important;
+  /* transform: scale(0.95) !important;
+  opacity: 0.8 !important; */
   transition: all 0.3s ease !important;
 }
 
-.grid-container.compact:hover,
+/* .grid-container.compact:hover,
 .assistant-card.compact:hover,
 .schedule-card.compact:hover {
   transform: scale(1) !important;
   opacity: 1 !important;
-}
+} */
 
 /* Compact styles for WidgetPanel elements */
 .grid-container.compact .dashboard-header {

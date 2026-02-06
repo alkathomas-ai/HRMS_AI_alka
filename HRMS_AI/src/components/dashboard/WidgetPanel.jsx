@@ -301,7 +301,11 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   };
 
   const onLayoutChange = (newLayout) => {
-    setLayout(newLayout);
+    const constrainedLayout = newLayout.map(item => ({
+      ...item,
+      x: Math.max(0, Math.min(item.x, 6 - item.w))
+    }));
+    setLayout(constrainedLayout);
   };
 
   const handleDoubleClick = (widgetId) => {
@@ -365,204 +369,206 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           </div>
         </div>
       </div>
+      <div className="dashboard-content">
 
-      <div className="filter-bar">
-        <div className="filter-controls">
-          <div className="search-input">
-            <input 
-              type="text" 
-              placeholder={`Search ${widgetData?.database_results?.select_employees_0?.data?.length || 0} Widgets...`} 
-            />
-            <i className="fa-solid fa-search"></i>
-          </div>
-
-          <div className="multi-select" ref={dropdownRef}>
-            <div className="select-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-              <span className="placeholder">Select Widgets</span>
-              <i className="fa-solid fa-chevron-down"></i>
+        <div className="filter-bar">
+          <div className="filter-controls">
+            <div className="search-input">
+              <input 
+                type="text" 
+                placeholder={`Search ${widgetData?.database_results?.select_employees_0?.data?.length || 0} Widgets...`} 
+              />
+              <i className="fa-solid fa-search"></i>
             </div>
 
-            {isDropdownOpen && (
-            <div className={`dropdown-menu ${isDropdownOpen ? 'show' : ''}`}>
-              {['project-distribution', 'department-overview', 'employee-directory', 'fullstack', 'mobile', 'devops'].map(opt => (
-                <div key={opt} className="option">
-                  <input 
-                    type="checkbox" 
-                    id={opt} 
-                    checked={selectedWidgets.includes(opt)}
-                    onChange={() => toggleWidget(opt)}
-                  />
-                  <label htmlFor={opt}>{opt.replace('-', ' ')}</label>
-                </div>
-              ))}
-            </div>
-            )}
-          </div>
-        </div>
-
-        <div className="actions">
-          <button className="primary-btn">
-            <span className='btn-content'>Create a Widget</span> <span className="plus">+</span>
-          </button>
-        </div>
-      </div>
-
-      <GridLayout
-        className="layout"
-        layout={layout}
-        cols={6}
-        rowHeight={50}
-        width={1200}
-        onLayoutChange={onLayoutChange}
-        onDragStop={onDragStop}
-        isDraggable={false}
-        dragHandleClassName="drag-enabled"
-        isResizable={true}
-        compactType="vertical"
-        preventCollision={true}
-        allowOverlap={false}
-      >
-        {layout.filter(widget => selectedWidgets.includes(widget.i)).map(widget => {
-          const widgetData = getWidgetData(widget.i);
-          const isDragEnabled = dragEnabledWidgets.has(widget.i);
-          return (
-            <div 
-              key={widget.i} 
-              className={`grid-item ${isDragEnabled ? 'drag-mode' : ''} ${isDragEnabled ? 'drag-enabled' : ''}`}
-              onDoubleClick={() => handleDoubleClick(widget.i)}
-            >
-              <div className="grid-item-content">
-                <div className="grid-item-header">
-                  <h4>{widgetData.title}</h4>
-                  <span className='close-btn' onClick={() => removeWidget(widget.i)}>×</span>
-                </div>
-                {widgetData.type === 'progress' ? (
-                  <>
-                    <div className="widget-subtitle">
-                      <div className="subtitle-number">{widgetData.data?.departments?.reduce((sum, d) => sum + d.employee_count, 0) || 0}</div>
-                      <div className="subtitle-text">Total employees</div>
-                    </div>
-                    <div className="progress-container">
-                      {renderProgressChart(widgetData.data)}
-                    </div>
-                  </>
-                ) : widgetData.type === 'chart' ? (
-                  <>
-                    <span className="widget-subtitle">{widgetData.content}</span>
-                    <div className="pie-chart-container">
-                      {renderDynamicChart(widgetData.data)}
-                      <div className="chart-legend">
-                        {widgetData.data?.projects?.slice(0, 4).map((project, index) => {
-                          const gradientColors = [
-                            { start: '#667eea', end: '#764ba2' },
-                            { start: '#f093fb', end: '#f5576c' },
-                            { start: '#4facfe', end: '#00f2fe' },
-                            { start: '#43e97b', end: '#38f9d7' }
-                          ];
-                          const percentage = widgetData.data.totalEmployees > 0 
-                            ? Math.round((project.employee_count / widgetData.data.totalEmployees) * 100)
-                            : 0;
-                          return (
-                            <div key={project.project} className="modern-legend-item">
-                              <div 
-                                className="modern-legend-color" 
-                                style={{
-                                  background: `linear-gradient(135deg, ${gradientColors[index].start}, ${gradientColors[index].end})`
-                                }}
-                              ></div>
-                              <span className="legend-text">{project.project}</span>
-                              <span className="legend-percentage">{percentage}%</span>
-                            </div>
-                          );
-                        }) || [
-                          <div key="default1" className="modern-legend-item">
-                            <div className="modern-legend-color" style={{background: 'linear-gradient(135deg, #667eea, #764ba2)'}}></div>
-                            <span className="legend-text">Frontend</span>
-                            <span className="legend-percentage">30%</span>
-                          </div>,
-                          <div key="default2" className="modern-legend-item">
-                            <div className="modern-legend-color" style={{background: 'linear-gradient(135deg, #f093fb, #f5576c)'}}></div>
-                            <span className="legend-text">Department Overview</span>
-                            <span className="legend-percentage">20%</span>
-                          </div>,
-                          <div key="default3" className="modern-legend-item">
-                            <div className="modern-legend-color" style={{background: 'linear-gradient(135deg, #4facfe, #00f2fe)'}}></div>
-                            <span className="legend-text">DevOps</span>
-                            <span className="legend-percentage">15%</span>
-                          </div>,
-                          <div key="default4" className="modern-legend-item">
-                            <div className="modern-legend-color" style={{background: 'linear-gradient(135deg, #43e97b, #38f9d7)'}}></div>
-                            <span className="legend-text">Others</span>
-                            <span className="legend-percentage">35%</span>
-                          </div>
-                        ]}
-                      </div>
-                    </div>
-                  </>
-                ) : widgetData.type === 'directory' ? (
-                  <>
-                    <span className="widget-subtitle">{widgetData.content}</span>
-                    <div className="employee-directory-container">
-                      {(() => {
-                        const employees = widgetData.data?.employees || [];
-                        const startIndex = employeePage * employeesPerPage;
-                        const endIndex = startIndex + employeesPerPage;
-                        const currentEmployees = employees.slice(startIndex, endIndex);
-                        const totalPages = Math.ceil(employees.length / employeesPerPage);
-                        
-                        return (
-                          <>
-                            {currentEmployees.map((employee) => (
-                              <div key={employee.employee_id} className="employee-item">
-                                <div className="employee-info">
-                                  <div className="employee-name">{employee.display_name}</div>
-                                  <div className="employee-details">
-                                    <span className="employee-dept">{employee.employee_department}</span>
-                                    <span className="employee-designation">{employee.designation}</span>
-                                  </div>
-                                  <div className="employee-location">
-                                    <i className="fa-solid fa-location-dot"></i>
-                                    {employee.emp_location}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                            {totalPages > 1 && (
-                              <div className="pagination">
-                                <button 
-                                  onClick={() => setEmployeePage(prev => Math.max(0, prev - 1))}
-                                  disabled={employeePage === 0}
-                                  className="page-btn"
-                                >
-                                  ‹
-                                </button>
-                                <span className="page-info">{employeePage + 1}/{totalPages}</span>
-                                <button 
-                                  onClick={() => setEmployeePage(prev => Math.min(totalPages - 1, prev + 1))}
-                                  disabled={employeePage >= totalPages - 1}
-                                  className="page-btn"
-                                >
-                                  ›
-                                </button>
-                              </div>
-                            )}
-                          </>
-                        );
-                      })()
-                      }
-                    </div>
-                  </>
-                ) : (
-                  <p>{widgetData.content}</p>
-                )}
-                {/* {isDragEnabled && (
-                  <div className="drag-indicator">Drag mode active - Click and drag to move</div>
-                )} */}
+            <div className="multi-select" ref={dropdownRef}>
+              <div className="select-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                <span className="placeholder">Select Widgets</span>
+                <i className="fa-solid fa-chevron-down"></i>
               </div>
+
+              {isDropdownOpen && (
+              <div className={`dropdown-menu ${isDropdownOpen ? 'show' : ''}`}>
+                {['project-distribution', 'department-overview', 'employee-directory', 'fullstack', 'mobile', 'devops'].map(opt => (
+                  <div key={opt} className="option">
+                    <input 
+                      type="checkbox" 
+                      id={opt} 
+                      checked={selectedWidgets.includes(opt)}
+                      onChange={() => toggleWidget(opt)}
+                    />
+                    <label htmlFor={opt}>{opt.replace('-', ' ')}</label>
+                  </div>
+                ))}
+              </div>
+              )}
             </div>
-          );
-        })}
-      </GridLayout>
+          </div>
+              
+            <div className="actions">
+              <button className="primary-btn">
+                <span className='btn-content'>Create a Widget</span> <span className="plus">+</span>
+              </button>
+            </div>
+          </div>
+
+          <GridLayout
+            className="layout"
+            layout={layout}
+            cols={6}
+            rowHeight={50}
+            width={1200}
+            onLayoutChange={onLayoutChange}
+            onDragStop={onDragStop}
+            isDraggable={false}
+            dragHandleClassName="drag-enabled"
+            isResizable={true}
+            compactType="vertical"
+            preventCollision={false}
+            allowOverlap={false}
+          >
+            {layout.filter(widget => selectedWidgets.includes(widget.i)).map(widget => {
+              const widgetData = getWidgetData(widget.i);
+              const isDragEnabled = dragEnabledWidgets.has(widget.i);
+              return (
+                <div 
+                  key={widget.i} 
+                  className={`grid-item ${isDragEnabled ? 'drag-mode' : ''} ${isDragEnabled ? 'drag-enabled' : ''}`}
+                  onDoubleClick={() => handleDoubleClick(widget.i)}
+                >
+                  <div className="grid-item-content">
+                    <div className="grid-item-header">
+                      <h4>{widgetData.title}</h4>
+                      <span className='close-btn' onClick={() => removeWidget(widget.i)}>×</span>
+                    </div>
+                    {widgetData.type === 'progress' ? (
+                      <>
+                        <div className="widget-subtitle">
+                          <div className="subtitle-number">{widgetData.data?.departments?.reduce((sum, d) => sum + d.employee_count, 0) || 0}</div>
+                          <div className="subtitle-text">Total employees</div>
+                        </div>
+                        <div className="progress-container">
+                          {renderProgressChart(widgetData.data)}
+                        </div>
+                      </>
+                    ) : widgetData.type === 'chart' ? (
+                      <>
+                        <span className="widget-subtitle">{widgetData.content}</span>
+                        <div className="pie-chart-container">
+                          {renderDynamicChart(widgetData.data)}
+                          <div className="chart-legend">
+                            {widgetData.data?.projects?.slice(0, 4).map((project, index) => {
+                              const gradientColors = [
+                                { start: '#667eea', end: '#764ba2' },
+                                { start: '#f093fb', end: '#f5576c' },
+                                { start: '#4facfe', end: '#00f2fe' },
+                                { start: '#43e97b', end: '#38f9d7' }
+                              ];
+                              const percentage = widgetData.data.totalEmployees > 0 
+                                ? Math.round((project.employee_count / widgetData.data.totalEmployees) * 100)
+                                : 0;
+                              return (
+                                <div key={project.project} className="modern-legend-item">
+                                  <div 
+                                    className="modern-legend-color" 
+                                    style={{
+                                      background: `linear-gradient(135deg, ${gradientColors[index].start}, ${gradientColors[index].end})`
+                                    }}
+                                  ></div>
+                                  <span className="legend-text">{project.project}</span>
+                                  <span className="legend-percentage">{percentage}%</span>
+                                </div>
+                              );
+                            }) || [
+                              <div key="default1" className="modern-legend-item">
+                                <div className="modern-legend-color" style={{background: 'linear-gradient(135deg, #667eea, #764ba2)'}}></div>
+                                <span className="legend-text">Frontend</span>
+                                <span className="legend-percentage">30%</span>
+                              </div>,
+                              <div key="default2" className="modern-legend-item">
+                                <div className="modern-legend-color" style={{background: 'linear-gradient(135deg, #f093fb, #f5576c)'}}></div>
+                                <span className="legend-text">Department Overview</span>
+                                <span className="legend-percentage">20%</span>
+                              </div>,
+                              <div key="default3" className="modern-legend-item">
+                                <div className="modern-legend-color" style={{background: 'linear-gradient(135deg, #4facfe, #00f2fe)'}}></div>
+                                <span className="legend-text">DevOps</span>
+                                <span className="legend-percentage">15%</span>
+                              </div>,
+                              <div key="default4" className="modern-legend-item">
+                                <div className="modern-legend-color" style={{background: 'linear-gradient(135deg, #43e97b, #38f9d7)'}}></div>
+                                <span className="legend-text">Others</span>
+                                <span className="legend-percentage">35%</span>
+                              </div>
+                            ]}
+                          </div>
+                        </div>
+                      </>
+                    ) : widgetData.type === 'directory' ? (
+                      <>
+                        <span className="widget-subtitle">{widgetData.content}</span>
+                        <div className="employee-directory-container">
+                          {(() => {
+                            const employees = widgetData.data?.employees || [];
+                            const startIndex = employeePage * employeesPerPage;
+                            const endIndex = startIndex + employeesPerPage;
+                            const currentEmployees = employees.slice(startIndex, endIndex);
+                            const totalPages = Math.ceil(employees.length / employeesPerPage);
+                            
+                            return (
+                              <>
+                                {currentEmployees.map((employee) => (
+                                  <div key={employee.employee_id} className="employee-item">
+                                    <div className="employee-info">
+                                      <div className="employee-name">{employee.display_name}</div>
+                                      <div className="employee-details">
+                                        <span className="employee-dept">{employee.employee_department}</span>
+                                        <span className="employee-designation">{employee.designation}</span>
+                                      </div>
+                                      <div className="employee-location">
+                                        <i className="fa-solid fa-location-dot"></i>
+                                        {employee.emp_location}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                                {totalPages > 1 && (
+                                  <div className="pagination">
+                                    <button 
+                                      onClick={() => setEmployeePage(prev => Math.max(0, prev - 1))}
+                                      disabled={employeePage === 0}
+                                      className="page-btn"
+                                    >
+                                      ‹
+                                    </button>
+                                    <span className="page-info">{employeePage + 1}/{totalPages}</span>
+                                    <button 
+                                      onClick={() => setEmployeePage(prev => Math.min(totalPages - 1, prev + 1))}
+                                      disabled={employeePage >= totalPages - 1}
+                                      className="page-btn"
+                                    >
+                                      ›
+                                    </button>
+                                  </div>
+                                )}
+                              </>
+                            );
+                          })()
+                          }
+                        </div>
+                      </>
+                    ) : (
+                      <p>{widgetData.content}</p>
+                    )}
+                    {/* {isDragEnabled && (
+                      <div className="drag-indicator">Drag mode active - Click and drag to move</div>
+                    )} */}
+                  </div>
+                </div>
+              );
+            })}
+          </GridLayout>
+      </div>
     </div>
   );
 };
