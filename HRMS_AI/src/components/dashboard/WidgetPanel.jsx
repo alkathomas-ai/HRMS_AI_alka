@@ -9,9 +9,9 @@ import { getProjectDistributions, getEmployeeDirectory, getEmployeeCount, getDep
 const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const [selectedWidgets, setSelectedWidgets] = useState(['project-distribution', 'department-overview', 'employee-directory']);
   const [layout, setLayout] = useState([
-    { i: 'project-distribution', x: 0, y: 0, w: 2, h: 2.5, minW: 2, minH: 2 },
-    { i: 'department-overview', x: 2, y: 0, w: 2, h: 3.5, minW: 2, minH: 2 },
-    { i: 'employee-directory', x: 0, y: 4, w: 4, h: 3, minW: 2, minH: 2 }
+    { i: 'project-distribution', x: 0, y: 0, w: 4, h: 2.5, minW: 2, minH: 2 },
+    { i: 'department-overview', x: 2, y: 0, w: 4, h: 2.5, minW: 2, minH: 2 },
+    { i: 'employee-directory', x: 0, y: 1, w: 4, h: 2, minW: 2, minH: 2 }
   ]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
