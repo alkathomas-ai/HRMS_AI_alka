@@ -280,7 +280,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
       <div className="dashboard-header">
         <div className='welcome'>
           <div className='d-flex justify-btwn align-center'>
-            <h2>Welcome back,</h2>
+            <h2>Welcome back!</h2>
             {!isExpanded && isExpanded !== null && (
               <span className="expand-icon" onClick={onExpand}>
                 <img src={Icons.expand} alt="" />

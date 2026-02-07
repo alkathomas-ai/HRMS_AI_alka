@@ -1,0 +1,16 @@
+.schedule-card {
+    height: 370px;
+}
+
+.schedule-list {
+    height: 178px;
+    overflow-y: scroll;
+}
+
+.tabs span{
+    cursor: pointer;
+}
+
+.dates .today {
+    border: 2px solid #4e4e4e3d;
+}
