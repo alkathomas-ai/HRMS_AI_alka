@@ -65,18 +65,18 @@ const Schedule = ({ isExpanded, onExpand, onClose }) => {
   const weekDays = useMemo(() => {
     const today = new Date();
     const currentDay = today.getDay();
-    const monday = new Date(today);
-    monday.setDate(today.getDate() - (currentDay === 0 ? 6 : currentDay - 1));
+    const sunday = new Date(today);
+    sunday.setDate(today.getDate() - (currentDay === 0 ? currentDay : 6 ));
     
-    return Array.from({ length: 6 }, (_, i) => {
-      const date = new Date(monday);
-      date.setDate(monday.getDate() + i);
+    return Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(sunday);
+      date.setDate(sunday.getDate() + i);
       const isToday = date.toDateString() === today.toDateString();
       if (isToday && selectedDateIndex === null) {
         setSelectedDateIndex(i);
       }
       return {
-        day: ['M', 'T', 'W', 'T', 'F', 'S'][i],
+        day: [ 'S', 'M', 'T', 'W', 'T', 'F', 'S'][i],
         date: date.getDate(),
         isToday
       };
@@ -218,7 +218,9 @@ const Schedule = ({ isExpanded, onExpand, onClose }) => {
           <button className="btn-today">Today</button>
           <button className="btn-nav">›</button>
           <div className="dropdown-trigger">Day view ▾</div>
-          <button className="btn-settings" onClick={onClose}>⚙ Settings</button>
+          <button className="primary-btn btn-settings">
+            <span className='btn-content'>Create a Schedule</span> <span className="plus">+</span>
+          </button>
         </div>
       </header>
 

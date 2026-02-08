@@ -275,17 +275,96 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     }
   };
 
+  // Minimized view - Modern & Minimalistic Design
+  if (!isExpanded && isExpanded !== null) {
+    return (
+      <div className="widget-panel-minimized">
+        <div className="minimized-header">
+          <h3>Dashboard</h3>
+          <span className="expand-icon" onClick={onExpand}>
+            <img src={Icons.expand} alt="Expand" />
+          </span>
+        </div>
+        
+        {/* <div className="minimized-stats-grid">
+          <div className="mini-stat-card">
+            <div className="stat-icon employees">
+              <i className="fa-solid fa-users"></i>
+            </div>
+            <div className="stat-content">
+              <div className="stat-value">{employeeCount.employeeCount || 0}</div>
+              <div className="stat-label">Total Employees</div>
+            </div>
+          </div>
+          
+          <div className="mini-stat-card">
+            <div className="stat-icon active">
+              <i className="fa-solid fa-briefcase"></i>
+            </div>
+            <div className="stat-content">
+              <div className="stat-value">{employeeCount.projectCount || 0}</div>
+              <div className="stat-label">Active Projects</div>
+            </div>
+          </div>
+          
+          <div className="mini-stat-card">
+            <div className="stat-icon freepool">
+              <i className="fa-solid fa-user-clock"></i>
+            </div>
+            <div className="stat-content">
+              <div className="stat-value">{employeeCount.freepoolCount || 0}</div>
+              <div className="stat-label">In Freepool</div>
+            </div>
+          </div>
+        </div> */}
+
+        <div className="minimized-quick-actions">
+          <h4>Quick Overview</h4>
+          <div className="action-cards">
+            <div className="action-card" onClick={onExpand}>
+              <div className="action-icon">
+                <i className="fa-solid fa-chart-pie"></i>
+              </div>
+              <div className="action-text">
+                <div className="action-title">Projects</div>
+                <div className="action-subtitle">View distribution</div>
+              </div>
+              <i className="fa-solid fa-chevron-right action-arrow"></i>
+            </div>
+            
+            <div className="action-card" onClick={onExpand}>
+              <div className="action-icon">
+                <i className="fa-solid fa-building"></i>
+              </div>
+              <div className="action-text">
+                <div className="action-title">Departments</div>
+                <div className="action-subtitle">See overview</div>
+              </div>
+              <i className="fa-solid fa-chevron-right action-arrow"></i>
+            </div>
+            
+            <div className="action-card" onClick={onExpand}>
+              <div className="action-icon">
+                <i className="fa-solid fa-address-book"></i>
+              </div>
+              <div className="action-text">
+                <div className="action-title">Directory</div>
+                <div className="action-subtitle">Browse employees</div>
+              </div>
+              <i className="fa-solid fa-chevron-right action-arrow"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className={`grid-container ${!isExpanded && isExpanded !== null ? 'compact' : ''}`} data-expanded={isExpanded}>
+    <div className={`grid-container`} data-expanded={isExpanded}>
       <div className="dashboard-header">
         <div className='welcome'>
           <div className='d-flex justify-btwn align-center'>
             <h2>Welcome back!</h2>
-            {!isExpanded && isExpanded !== null && (
-              <span className="expand-icon" onClick={onExpand}>
-                <img src={Icons.expand} alt="" />
-              </span>
-            )}
           </div>
           <p>Great talent awaits. Let's hire smart!</p>
         </div>
