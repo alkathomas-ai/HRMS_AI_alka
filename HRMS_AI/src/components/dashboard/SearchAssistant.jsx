@@ -124,7 +124,8 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
             <div className="chat-messages">
             <div className="chat-welcome">
               <div className="chat-welcome-icon">
-                <span className="material-symbols-outlined">smart_toy</span>
+                {/* <span className="material-symbols-outlined">smart_toy</span> */}
+                <img src="src/assets/icons/bubbles.svg" alt="" srcset="" />
               </div>
               <h2>How can I help you today?</h2>
             </div>
@@ -162,7 +163,8 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
       <div className={`card assistant-card justify-btw ${!isExpanded ? 'compact' : ''}`}>
         <div className="assistant-header">
           <span className="assistant-badge bubbles">
-            <span className="material-symbols-outlined">smart_toy</span>
+            {/* <span className="material-symbols-outlined">smart_toy</span> */}
+            <img src="src/assets/icons/bubbles.svg" alt="" srcset="" />
           </span>
 
           {!isExpanded ? (
