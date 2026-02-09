@@ -11,6 +11,7 @@ import people from './people.svg';
 import pie from './pie.svg';
 import plus from './plus.svg';
 import search from './search.svg';
+import pin from './pin.svg';
 
 
 export const Icons = {
@@ -27,5 +28,6 @@ export const Icons = {
   pie,
   plus,
   search,
+  pin,
 };
 

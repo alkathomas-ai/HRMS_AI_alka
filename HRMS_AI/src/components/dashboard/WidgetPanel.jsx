@@ -1,19 +1,35 @@
 import React, { useState, useEffect, useRef } from 'react';
-import GridLayout from 'react-grid-layout';
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, useSortable, rectSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import './WidgetPanel.css';
-import 'react-grid-layout/css/styles.css';
-import 'react-resizable/css/styles.css';
 import { Icons } from '../../assets/icons';
 import { getProjectDistributions, getEmployeeDirectory, getEmployeeCount, getDepartment } from '../../services/api';
+import Alert from '../common/Alert';
+
+const SortableWidget = ({ id, children, isPinned }) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const itemRef = useRef(null);
+
+  const style = {
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    transition: isDragging ? 'none' : transition,
+    opacity: isDragging ? 0.8 : 1,
+    zIndex: isDragging ? 1000 : 'auto',
+  };
+
+  return (
+    <div ref={(node) => { setNodeRef(node); itemRef.current = node; }} style={style} {...attributes} {...listeners} className={`masonry-item ${isPinned ? 'pinned' : ''}`}>
+      {children}
+    </div>
+  );
+};
 
 const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const [selectedWidgets, setSelectedWidgets] = useState(['project-distribution', 'department-overview', 'employee-directory']);
-  const [layout, setLayout] = useState([
-    { i: 'project-distribution', x: 0, y: 0, w: 4, h: 2.5, minW: 2, minH: 2 },
-    { i: 'department-overview', x: 2, y: 0, w: 4, h: 2.5, minW: 2, minH: 2 },
-    { i: 'employee-directory', x: 0, y: 1, w: 4, h: 2, minW: 2, minH: 2 }
-  ]);
+  const [pinnedWidgets, setPinnedWidgets] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
   const dropdownRef = useRef(null);
 
   const [projectDistribution, setProjectDistribution] = useState({ projects: [], total_employees: 0 });
@@ -29,7 +45,8 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const availableWidgets = [
     { id: 'project-distribution', label: 'Project Distribution' },
     { id: 'department-overview', label: 'Department Overview' },
-    { id: 'employee-directory', label: 'Employee Directory' }
+    { id: 'employee-directory', label: 'Employee Directory' },
+    { id: 'available-employees', label: 'Available Employees' }
   ];
 
   useEffect(() => {
@@ -78,16 +95,50 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const toggleWidget = (widgetId) => {
     if (selectedWidgets.includes(widgetId)) {
       setSelectedWidgets(prev => prev.filter(id => id !== widgetId));
-      setLayout(prev => prev.filter(item => item.i !== widgetId));
     } else {
       setSelectedWidgets(prev => [...prev, widgetId]);
-      setLayout(prev => [...prev, { i: widgetId, x: 0, y: Infinity, w: 2, h: 4, minW: 2, minH: 3 }]);
+    }
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (active.id !== over.id) {
+      setSelectedWidgets((items) => {
+        const oldIndex = items.indexOf(active.id);
+        const newIndex = items.indexOf(over.id);
+        const newItems = [...items];
+        newItems.splice(oldIndex, 1);
+        newItems.splice(newIndex, 0, active.id);
+        return newItems;
+      });
     }
   };
 
   const removeWidget = (id) => {
-    setLayout(prev => prev.filter(item => item.i !== id));
     setSelectedWidgets(prev => prev.filter(widgetId => widgetId !== id));
+    setPinnedWidgets(prev => prev.filter(widgetId => widgetId !== id));
+  };
+
+  const togglePin = (id) => {
+    setPinnedWidgets(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(widgetId => widgetId !== id);
+      } else if (prev.length >= 3) {
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
+        return prev;
+      } else {
+        return [...prev, id];
+      }
+    });
   };
 
   const renderPieChart = (data) => {
@@ -187,7 +238,15 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           <>
             <div className="grid-item-header">
               <h4>Project Distribution</h4>
-              <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button
+                  onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
+                  className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
+                >
+                  <img src={Icons.pin} alt="" />
+                </button>
+                <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+              </div>
             </div>
             <span className="widget-subtitle">{projectDistribution.total_employees} Total employees</span>
             <div className="pie-chart-container">
@@ -219,7 +278,15 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           <>
             <div className="grid-item-header">
               <h4>Department Overview</h4>
-              <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button
+                  onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
+                  className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
+                >
+                  <img src={Icons.pin} alt="" />
+                </button>
+                <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+              </div>
             </div>
             <div className="widget-subtitle">
               <div className="subtitle-number">{departmentData.departments.reduce((sum, d) => sum + d.employee_count, 0)}</div>
@@ -240,7 +307,15 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           <>
             <div className="grid-item-header">
               <h4>Employee Directory</h4>
-              <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button
+                  onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
+                  className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
+                >
+                  <img src={Icons.pin} alt="" />
+                </button>
+                <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+              </div>
             </div>
             <span className="widget-subtitle">{employeeDirectory.employees.length} Employees</span>
             <div className="employee-directory-container">
@@ -266,6 +341,46 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                   <button onClick={() => setEmployeePage(prev => Math.min(totalPages - 1, prev + 1))} disabled={employeePage >= totalPages - 1} className="page-btn">›</button>
                 </div>
               )}
+            </div>
+          </>
+        );
+      
+      case 'available-employees':
+        const availableEmployees = employeeDirectory.employees.filter(emp => emp.is_free_pool);
+        return (
+          <>
+            <div className="grid-item-header">
+              <h4>Available Employees</h4>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button
+                  onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
+                  className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
+                >
+                  <img src={Icons.pin} alt="" />
+                </button>
+                <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+              </div>
+            </div>
+            <div className="widget-subtitle">
+              <div className="subtitle-number">{availableEmployees.length}</div>
+              <div className="subtitle-text">Available for assignment</div>
+            </div>
+            <div className="employee-directory-container">
+              {availableEmployees.slice(0, 5).map((employee) => (
+                <div key={employee.employee_id} className="employee-item">
+                  <div className="employee-info">
+                    <div className="employee-name">{employee.display_name}</div>
+                    <div className="employee-details">
+                      <span className="employee-dept">{employee.employee_department}</span>
+                      <span className="employee-designation">{employee.designation}</span>
+                    </div>
+                    <div className="employee-location">
+                      <i className="fa-solid fa-location-dot"></i>
+                      {employee.emp_location}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </>
         );
@@ -361,6 +476,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
 
   return (
     <div className={`grid-container`} data-expanded={isExpanded}>
+      <Alert message="Maximum 3 widgets can be pinned" show={showAlert} type="warning" />
       <div className="dashboard-header">
         <div className='welcome'>
           <div className='d-flex justify-btwn align-center'>
@@ -424,26 +540,25 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           </div>
         </div>
 
-        <GridLayout
-          className="layout"
-          layout={layout}
-          cols={6}
-          rowHeight={50}
-          width={containerWidth}
-          onLayoutChange={setLayout}
-          isDraggable={true}
-          isResizable={true}
-          compactType="vertical"
-          preventCollision={false}
-        >
-          {layout.filter(item => selectedWidgets.includes(item.i)).map(item => (
-            <div key={item.i} className="grid-item">
-              <div className="grid-item-content">
-                {renderWidget(item.i)}
-              </div>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={selectedWidgets} strategy={rectSortingStrategy}>
+            <div className="masonry-grid">
+              {selectedWidgets
+                .sort((a, b) => {
+                  const aIsPinned = pinnedWidgets.includes(a);
+                  const bIsPinned = pinnedWidgets.includes(b);
+                  if (aIsPinned && !bIsPinned) return -1;
+                  if (!aIsPinned && bIsPinned) return 1;
+                  return 0;
+                })
+                .map(widgetId => (
+                  <SortableWidget key={widgetId} id={widgetId} isPinned={pinnedWidgets.includes(widgetId)}>
+                    {renderWidget(widgetId)}
+                  </SortableWidget>
+                ))}
             </div>
-          ))}
-        </GridLayout>
+          </SortableContext>
+        </DndContext>
       </div>
     </div>
   );

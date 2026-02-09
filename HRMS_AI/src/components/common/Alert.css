@@ -1,0 +1,54 @@
+.custom-alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 10000;
+  animation: slideIn 0.3s ease;
+}
+
+.alert-info {
+  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+  background: linear-gradient(135deg, #66baea 0%, #4872a8 100%);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.alert-error {
+  /* background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); */
+  background: linear-gradient(135deg, #fb93a1 0%, #f5576c 100%);
+  box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+}
+
+.alert-success {
+  /* background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); */
+  background: linear-gradient(135deg, #6dc487 0%, #0f7e69 100%);
+  box-shadow: 0 4px 12px rgba(67, 233, 123, 0.4);
+}
+
+.alert-warning {
+  /* background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); */
+  background: linear-gradient(135deg, #ddb261 0%, #fe8640 100%);
+  box-shadow: 0 4px 12px rgba(243, 140, 55, 0.4);
+}
+
+.custom-alert i {
+  font-size: 16px;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

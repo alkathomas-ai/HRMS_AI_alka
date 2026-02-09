@@ -204,6 +204,38 @@
     cursor: pointer;
 }
 
+.pin-btn {
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  padding: 4px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+}
+
+.pin-btn img {
+  width: 16px;
+  height: 16px;
+  filter: brightness(0) saturate(100%) invert(64%) sepia(8%) saturate(629%) hue-rotate(177deg) brightness(92%) contrast(87%);
+}
+
+.pin-btn:hover {
+  background: #f1f5f9;
+}
+
+.pin-btn.pinned img {
+  filter: brightness(0) saturate(100%) invert(27%) sepia(98%) saturate(7426%) hue-rotate(358deg) brightness(99%) contrast(114%);
+}
+
+.pin-btn.pinned {
+  background: #fee2e2;
+}
+
+.pin-btn.pinned:hover {
+  background: #fecaca;
+}
+
 /* Drag and Resize Styles */
 .drag-handle {
   cursor: grab;
@@ -287,21 +319,59 @@
   cursor: se-resize;
 }
 
-.grid-item {
-  background: var(--color-bg-card);
-  border-radius: 8px;
+/* Masonry Grid Layout */
+.masonry-grid {
+  column-count: 3;
+  column-gap: 16px;
+  padding: 16px 0;
+  width: 100%;
   overflow: hidden;
-  padding: 0;
-  margin: 0;
 }
 
-.grid-item-content {
+@media (min-width: 1400px) {
+  .masonry-grid {
+    column-count: 3;
+  }
+}
+
+@media (max-width: 1200px) {
+  .masonry-grid {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .masonry-grid {
+    column-count: 1;
+  }
+}
+
+.masonry-item {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
   padding: 16px;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  height: 100%;
-  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+  cursor: grab;
+  break-inside: avoid;
+  margin-bottom: 16px;
+  /* display: inline-block; */
+  width: 100%;
+}
+
+.masonry-item.pinned {
+  border: 2px solid #f59e0b;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
+}
+
+.masonry-item:active {
+  cursor: grabbing;
+}
+
+.masonry-item:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
 }
 
 .grid-item-header {
@@ -309,14 +379,13 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
-  cursor: move;
 }
 
 .grid-item-header h4 {
   margin: 0;
   font-size: 16px;
-  font-weight: 500;
-  color: var(--color-text-primary);
+  font-weight: 600;
+  color: #111827;
 }
 /* Pie Chart Styles */
 .widget-subtitle {
