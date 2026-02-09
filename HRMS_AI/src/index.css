@@ -42,6 +42,22 @@
   --icon-filter-primary: invert(55%) sepia(85%) saturate(2274%) hue-rotate(346deg) brightness(101%) contrast(101%);
 }
 
+[data-theme="dark"] {
+  --color-bg-page: #0F1419;
+  --color-bg-card: #1A1F26;
+  --color-bg-muted: #252A31;
+  --color-bg-topbar: #1A1F26;
+  --color-bg-dashboard: #0F1419;
+
+  --color-text-primary: #E5E7EB;
+  --color-text-secondary: #9CA3AF;
+  --color-text-muted: #6B7280;
+  --color-text-inverse: #111;
+
+  --color-icon-default: #9CA3AF;
+  --icon-filter-default: invert(67%) sepia(6%) saturate(434%) hue-rotate(182deg) brightness(92%) contrast(87%);
+}
+
 * {
   margin: 0;
   padding: 0;

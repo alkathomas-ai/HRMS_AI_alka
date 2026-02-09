@@ -15,10 +15,10 @@
   z-index: 10;
   width: 40px;
   height: 40px;
-  background: #f5f5f5;
+  background: var(--color-bg-muted);
   border: none;
   border-radius: 8px;
-  color: #333;
+  color: var(--color-text-primary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -27,7 +27,7 @@
 }
 
 .sidebar-expand-btn:hover {
-  background: #e5e5e5;
+  background: var(--color-bg-muted);
 }
 
 /* Sidebar - ChatGPT Style */
@@ -191,7 +191,7 @@
   left: 0;
   width: 1px;
   height: 100%;
-  background: #e5e5e5;
+  background: var(--color-bg-muted);
 }
 
 .chat-messages {
@@ -202,7 +202,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid var(--color-bg-muted);
 }
 
 .chat-welcome {
@@ -224,6 +224,11 @@
 .chat-welcome-icon img {
   width: 30px;
   height: 30px;
+}
+
+.chat-welcome-icon .material-symbols-outlined {
+  font-size: 30px;
+  color: white;
 }
 
 .chat-welcome h2 {
@@ -250,8 +255,8 @@ padding: 5px 15px 10px 3px;
 }
 
 .chat-file .file-icon {
-  width: 16px;
-  height: 16px;
+  font-size: 16px;
+  color: var(--color-text-primary);
 }
 
 .chat-file span {
@@ -265,15 +270,14 @@ padding: 5px 15px 10px 3px;
   background: transparent;
   border: none;
   cursor: pointer;
-  color: #999;
+  color: var(--color-text-muted);
   font-size: 16px;
   padding: 0;
 }
 
 .assistant-filename-container {
-  background: #f5f5f5;
+  background: var(--color-bg-muted);
   padding: 14px 18px;
-  background: #f5f5f5;
   border-radius: 25px;
   max-width: 600px;
   margin: 0 auto;
@@ -292,6 +296,12 @@ padding: 5px 15px 10px 3px;
   cursor: pointer;
 }
 
+.chat-input-wrapper .material-symbols-outlined {
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--color-text-primary);
+}
+
 .chat-input-wrapper input[type="text"] {
   flex: 1;
   border: none;
@@ -302,7 +312,7 @@ padding: 5px 15px 10px 3px;
 }
 
 .chat-input-wrapper input[type="text"]::placeholder {
-  color: #999;
+  color: var(--color-text-muted);
 }
 
 .chat-submit-btn {

@@ -182,7 +182,7 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
         <div className="header">
           <h3>Schedule</h3>
           <span className="expand-icon" onClick={onExpand}>
-            <img src={Icons.expand} alt="" />
+            <span className="material-symbols-outlined">open_in_full</span>
           </span>
         </div>
 

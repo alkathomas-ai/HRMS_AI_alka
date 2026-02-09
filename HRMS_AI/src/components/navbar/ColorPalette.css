@@ -5,6 +5,7 @@
 .color-palette {
   cursor: pointer;
   transition: color 0.2s;
+  color: var(--color-text-primary);
 }
 
 .color-palette:hover {
@@ -15,7 +16,7 @@
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  background: #fff;
+  background: var(--color-bg-card);
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   padding: 8px;
@@ -34,7 +35,7 @@
 }
 
 .palette-item:hover {
-  background: #f9fafb;
+  background: var(--color-bg-muted);
 }
 
 .palette-color {
@@ -46,5 +47,5 @@
 
 .palette-item span {
   font-size: 14px;
-  color: #111827;
+  color: var(--color-text-primary);
 }
