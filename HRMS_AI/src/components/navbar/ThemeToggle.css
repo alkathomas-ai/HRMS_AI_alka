@@ -1,0 +1,9 @@
+.theme-toggle {
+  cursor: pointer;
+  transition: color 0.2s;
+  color: var(--color-text-primary);
+}
+
+.theme-toggle:hover {
+  color: var(--color-primary);
+}
