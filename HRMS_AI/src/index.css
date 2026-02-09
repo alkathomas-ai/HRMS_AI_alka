@@ -12,6 +12,16 @@
   --color-primary: #E22D30;
   --color-primary-soft: #F04D4D;
   --color-primary-hover: #B52226;
+  --color-primary-light: rgba(240, 77, 77, 0.23);
+
+  --assistant-base-start: #FFF1E6;
+  --assistant-base-end:   #FDD6D6;
+
+  --assistant-glow-primary:   rgba(255, 180, 180, 0.6);
+  --assistant-glow-secondary: rgba(255, 220, 190, 0.45);
+
+  --assistant-text-primary:   #2B1C1C;
+  --assistant-text-secondary: #6B4A4A;
   
   /* Backgrounds */
   --color-bg-page: #FAF7F5;

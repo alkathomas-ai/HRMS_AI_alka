@@ -17,7 +17,7 @@
     var(--color-bg-dashboard) 50%,
     #f04d4d3b 100%
   ); */
-  background: linear-gradient(var(--grad-angle), var(--color-bg-dashboard) 0%, var(--color-bg-dashboard) 50%, #f04d4d3b 100%);
+  background: linear-gradient(var(--grad-angle), var(--color-bg-dashboard) 0%, var(--color-bg-dashboard) 50%, var(--color-primary-light) 100%);
   animation: rotateGradient 10s ease-in-out infinite alternate;
 }
 
@@ -118,17 +118,30 @@
 @property --x2 { syntax: '<percentage>'; inherits: false; initial-value: 20%; }
 @property --y2 { syntax: '<percentage>'; inherits: false; initial-value: 80%; }
 
+@property --primary-r { syntax: '<number>'; inherits: true; initial-value: 255; }
+@property --primary-g { syntax: '<number>'; inherits: true; initial-value: 180; }
+@property --primary-b { syntax: '<number>'; inherits: true; initial-value: 180; }
+@property --primary-light-r { syntax: '<number>'; inherits: true; initial-value: 255; }
+@property --primary-light-g { syntax: '<number>'; inherits: true; initial-value: 220; }
+@property --primary-light-b { syntax: '<number>'; inherits: true; initial-value: 190; }
+
 .assistant-card {
-  position: relative;
-  overflow: hidden;
-  height: 100%;
-  border-radius: 16px;
-  background: radial-gradient(circle at var(--x1) var(--y1), rgba(255, 180, 180, 0.6), transparent 45%),
-              radial-gradient(circle at var(--x2) var(--y2), rgba(255, 220, 190, 0.45), transparent 50%),
-              linear-gradient(135deg, #fff1e6, #fdd6d6);
-  animation: gradientMove 10s linear infinite alternate;
-  cursor: pointer;
+  background:
+    radial-gradient(circle at var(--x1) var(--y1),
+      var(--assistant-glow-primary),
+      transparent 45%
+    ),
+    radial-gradient(circle at var(--x2) var(--y2),
+      var(--assistant-glow-secondary),
+      transparent 50%
+    ),
+    linear-gradient(135deg,
+      var(--assistant-base-start),
+      var(--assistant-base-end)
+    );
 }
+
+
 
 @keyframes gradientMove {
   0% { --x1: 80%; --y1: 20%; --x2: 20%; --y2: 80%; }
@@ -180,7 +193,7 @@
 }
 
 .remove-file-btn:hover {
-  color: #f04d4d;
+  color: var(--color-primary-soft);
 }
 
 .assistant-file .file-icon {
@@ -665,7 +678,7 @@ padding: 10px 13px;
 }
 
 .close-btn {
-  background: #ff4757;
+  background: var(--color-primary-soft);
   color: white;
   border: none;
   border-radius: 50%;
@@ -824,3 +837,7 @@ padding: 10px 13px;
   background-color: #e9ecef;
   color: #333;
 } */
+
+input[type="checkbox"] {
+  accent-color: var(--color-primary-soft);
+}

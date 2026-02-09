@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import "./Navbar.css"
 import { useNavigate } from 'react-router-dom'
 import { Icons } from '../../assets/icons'
+import ColorPalette from './ColorPalette'
 
 
 
@@ -56,6 +57,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
 
         {/* Right section */}
         <div className="topbar-right">
+          <ColorPalette />
           <div className="date">
             <span className="day">{day}</span>
             <div className="date-meta">
