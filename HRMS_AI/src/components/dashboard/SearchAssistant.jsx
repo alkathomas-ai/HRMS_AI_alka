@@ -91,9 +91,9 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
               {!sidebarCollapsed && (
                 <>
                   <button className="new-chat-btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 5v14M5 12h14"/>
-                    </svg>
+                    <span className="material-symbols-outlined">
+                      chat_add_on
+                    </span>
                     <span>New chat</span>
                   </button>
                   
@@ -131,18 +131,29 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
           </div>
           
           <div className="chat-input-container">
+            <div className="assistant-filename-container">
             {uploadedFile && (
               <div className="chat-file">
-                <img src={Icons.note} alt="File" />
+                <img src={Icons.note} alt="File" className="file-icon" />
                 <span>{uploadedFile.name}</span>
                 <button className="remove-file-btn" onClick={handleRemoveFile}>✕</button>
               </div>
             )}
             <div className="chat-input-wrapper">
-              <img src={Icons.plus} alt="Attach" onClick={handlePlusClick} style={{ cursor: 'pointer' }} />
+              {/* <img src={Icons.plus} alt="Attach" onClick={handlePlusClick} style={{ cursor: 'pointer' }} /> */}
+              <span alt="Attach" onClick={handlePlusClick} className="material-symbols-outlined">
+                upload_file
+              </span>
               <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".csv" style={{ display: 'none' }} />
               <input type="text" placeholder="Message Assistant..." />
               <img src={Icons.microphone} alt="Voice" onClick={handleMicClick} style={{ cursor: 'pointer', opacity: isRecording ? 0.5 : 1 }} />
+              <button className="chat-submit-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="22" y1="2" x2="11" y2="13"/>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+              </button>
+            </div>
             </div>
           </div>
           </div>
@@ -182,7 +193,10 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
             )}
             <div className="assistant-box">
               <div className="assistant-input dflex">
-                <img src={Icons.plus} alt="Search" className="input-icon" onClick={handlePlusClick} style={{ cursor: 'pointer' }} />
+                {/* <img src={Icons.plus} alt="Search" className="input-icon" onClick={handlePlusClick} style={{ cursor: 'pointer' }} /> */}
+                <span alt="Attach" onClick={handlePlusClick} className="material-symbols-outlined">
+                  upload_file
+                </span>
                 <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".csv" style={{ display: 'none' }} />
                 <input type="text" placeholder="Ask me anything..." />
               </div>

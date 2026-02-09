@@ -68,7 +68,7 @@
 }
 
 .sidebar-toggle:hover {
-  background: #2a2a2a;
+  background: var(--color-primary-hover);
 }
 
 .new-chat-btn {
@@ -77,7 +77,7 @@
   gap: 12px;
   padding: 10px 12px;
   background: transparent;
-  border: 1px solid #4d4d4d;
+  border: none;
   border-radius: 8px;
   color: #ececec;
   cursor: pointer;
@@ -86,7 +86,7 @@
 }
 
 .new-chat-btn:hover {
-  background: #2a2a2a;
+  background: var(--color-primary);
 }
 
 .sidebar-search {
@@ -94,9 +94,18 @@
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  background: #2a2a2a;
-  border-radius: 8px;
-  color: #8e8e8e;
+  background: transparent; /* Default state */
+  border-radius: 3px;
+  color: white;
+  transition: background 0.2s ease; /* Smooth transition */
+  border: 1px solid transparent; /* Prevents layout jump if you add a border later */
+}
+
+/* This triggers when the input inside is clicked/focused */
+.sidebar-search:focus-within {
+  background: var(--color-primary-hover);
+  /* Optional: add a subtle border or shadow to make it pop */
+  border-color: rgba(255, 255, 255, 0.1); 
 }
 
 .sidebar-search input {
@@ -148,11 +157,11 @@
 }
 
 .chat-history-item:hover {
-  background: #2a2a2a;
+  background: var(--color-primary-hover);
 }
 
 .chat-history-item.active {
-  background: #2a2a2a;
+  background: var(--color-primary);
 }
 
 .chat-history-item span {
@@ -232,38 +241,49 @@
 }
 
 .chat-file {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 15px;
-  background: #f5f5f5;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  font-size: 13px;
-  color: var(--color-text-primary);
+padding: 5px 15px 10px 3px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--color-text-primary);
 }
 
-.chat-file img {
+.chat-file .file-icon {
   width: 16px;
   height: 16px;
 }
 
 .chat-file span {
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.chat-file .remove-file-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  font-size: 16px;
+  padding: 0;
+}
+
+.assistant-filename-container {
+  background: #f5f5f5;
+  padding: 14px 18px;
+  background: #f5f5f5;
+  border-radius: 25px;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .chat-input-wrapper {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 18px;
-  background: #f5f5f5;
-  border-radius: 25px;
-  max-width: 600px;
-  margin: auto;
+  /* max-width: 600px; */
 }
 
 .chat-input-wrapper img {
@@ -283,4 +303,26 @@
 
 .chat-input-wrapper input[type="text"]::placeholder {
   color: #999;
+}
+
+.chat-submit-btn {
+  background: var(--color-primary);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.chat-submit-btn:hover {
+  background: var(--color-primary-hover);
+}
+
+.chat-submit-btn svg {
+  color: white;
 }
