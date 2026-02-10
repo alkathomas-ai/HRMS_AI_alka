@@ -84,20 +84,32 @@ const ColorPalette = () => {
 
   const applyTheme = (theme) => {
     const root = document.documentElement;
+    const isDark = root.getAttribute('data-theme') === 'dark';
 
     // Primary UI colors
     root.style.setProperty('--color-primary', theme.primary);
     root.style.setProperty('--color-primary-soft', theme.soft);
     root.style.setProperty('--color-primary-hover', theme.hover);
-    root.style.setProperty('--color-primary-light', theme.light);
+    root.style.setProperty('--color-primary-light', isDark ? theme.light.replace(/[\d.]+\)$/, '0.62)') : theme.light);
 
     // Assistant bar colors
-    root.style.setProperty('--assistant-base-start', theme.assistant.baseStart);
-    root.style.setProperty('--assistant-base-end', theme.assistant.baseEnd);
-    root.style.setProperty('--assistant-glow-primary', theme.assistant.glowPrimary);
-    root.style.setProperty('--assistant-glow-secondary', theme.assistant.glowSecondary);
-    root.style.setProperty('--assistant-text-primary', theme.assistant.textPrimary);
-    root.style.setProperty('--assistant-text-secondary', theme.assistant.textSecondary);
+    if (isDark) {
+      const darkStart = theme.assistant.baseStart.replace(/^#/, '').match(/.{2}/g).map(h => Math.max(0, parseInt(h, 16) - 200).toString(16).padStart(2, '0')).join('');
+      const darkEnd = theme.assistant.baseEnd.replace(/^#/, '').match(/.{2}/g).map(h => Math.max(0, parseInt(h, 16) - 200).toString(16).padStart(2, '0')).join('');
+      root.style.setProperty('--assistant-base-start', `#${darkStart}`);
+      root.style.setProperty('--assistant-base-end', `#${darkEnd}`);
+      root.style.setProperty('--assistant-glow-primary', theme.assistant.glowPrimary.replace(/[\d.]+\)$/, '0.15)'));
+      root.style.setProperty('--assistant-glow-secondary', theme.assistant.glowSecondary.replace(/[\d.]+\)$/, '0.1)'));
+      root.style.setProperty('--assistant-text-primary', '#E5E7EB');
+      root.style.setProperty('--assistant-text-secondary', '#9CA3AF');
+    } else {
+      root.style.setProperty('--assistant-base-start', theme.assistant.baseStart);
+      root.style.setProperty('--assistant-base-end', theme.assistant.baseEnd);
+      root.style.setProperty('--assistant-glow-primary', theme.assistant.glowPrimary);
+      root.style.setProperty('--assistant-glow-secondary', theme.assistant.glowSecondary);
+      root.style.setProperty('--assistant-text-primary', theme.assistant.textPrimary);
+      root.style.setProperty('--assistant-text-secondary', theme.assistant.textSecondary);
+    }
 
     localStorage.setItem('theme', JSON.stringify(theme));
     setShowPalette(false);
@@ -106,6 +118,13 @@ const ColorPalette = () => {
   useEffect(() => {
     const saved = localStorage.getItem('theme');
     if (saved) applyTheme(JSON.parse(saved));
+
+    const observer = new MutationObserver(() => {
+      const saved = localStorage.getItem('theme');
+      if (saved) applyTheme(JSON.parse(saved));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => observer.disconnect();
   }, []);
 
   return (

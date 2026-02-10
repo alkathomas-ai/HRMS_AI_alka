@@ -6,6 +6,8 @@ import './WidgetPanel.css';
 import { Icons } from '../../assets/icons';
 import { getProjectDistributions, getEmployeeDirectory, getEmployeeCount, getDepartment } from '../../services/api';
 import Alert from '../common/Alert';
+import DoughnutChart from './charts/DoughnutChart';
+import BarChart from './charts/BarChart';
 
 const SortableWidget = ({ id, children, isPinned }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
@@ -38,7 +40,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const [employeeDirectory, setEmployeeDirectory] = useState({ employees: [] });
   const [employeeCount, setEmployeeCount] = useState({ employeeCount: 0, freepoolCount: 0, projectCount: 0 });
   const [employeePage, setEmployeePage] = useState(0);
-  const [hoveredSegment, setHoveredSegment] = useState(null);
+  const [employeeSearch, setEmployeeSearch] = useState('');
   const [containerWidth, setContainerWidth] = useState(1200);
   const containerRef = useRef(null);
   const employeesPerPage = 5;
@@ -142,95 +144,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     });
   };
 
-  const renderPieChart = (data) => {
-    if (!data?.projects?.length) return null;
 
-    const gradients = [
-      { id: 'grad1', colors: ['#667eea', '#764ba2'] },
-      { id: 'grad2', colors: ['#f093fb', '#f5576c'] },
-      { id: 'grad3', colors: ['#4facfe', '#00f2fe'] },
-      { id: 'grad4', colors: ['#43e97b', '#38f9d7'] }
-    ];
-    
-    const circumference = 2 * Math.PI * 55;
-    let currentOffset = 0;
-    const totalEmployees = data.total_employees || 1;
-
-    return (
-      <div className="modern-pie-chart">
-        <svg width="140" height="140" viewBox="0 0 140 140">
-          <defs>
-            {gradients.map(grad => (
-              <linearGradient key={grad.id} id={grad.id} x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor={grad.colors[0]} />
-                <stop offset="100%" stopColor={grad.colors[1]} />
-              </linearGradient>
-            ))}
-          </defs>
-          
-          {data.projects.slice(0, 4).map((project, index) => {
-            const percentage = project.employee_count / totalEmployees;
-            const strokeDasharray = `${circumference * percentage} ${circumference}`;
-            const strokeDashoffset = -currentOffset;
-            currentOffset += circumference * percentage;
-            
-            return (
-              <circle
-                key={project.project}
-                cx="70" cy="70" r="55"
-                fill={index === 0 ? "#f8f9fa" : "transparent"}
-                stroke={`url(#${gradients[index].id})`}
-                strokeWidth="16"
-                strokeDasharray={strokeDasharray}
-                strokeDashoffset={strokeDashoffset}
-                transform="rotate(-90 70 70)"
-                onMouseEnter={() => setHoveredSegment({ project: project.project, count: project.employee_count })}
-                onMouseLeave={() => setHoveredSegment(null)}
-              />
-            );
-          })}
-          
-          <circle cx="70" cy="70" r="25" fill="white" />
-          <text x="70" y="75" textAnchor="middle" fontSize="14" fontWeight="600" fill="#333">
-            {totalEmployees}
-          </text>
-        </svg>
-        
-        {hoveredSegment && (
-          <div className="chart-tooltip">
-            <div className="tooltip-content">
-              <strong>{hoveredSegment.project}</strong>
-              <span>{hoveredSegment.count} employees</span>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const renderProgressChart = (data) => {
-    const maxCount = Math.max(...data.departments.map(d => d.employee_count));
-    const colors = ['#667eea', '#f093fb', '#4facfe', '#43e97b', '#fa709a', '#ff6b6b'];
-    
-    return (
-      <div className="progress-chart-container">
-        {data.departments.slice(0, 6).map((dept, index) => {
-          const percentage = (dept.employee_count / maxCount) * 100;
-          return (
-            <div key={dept.department} className="progress-item">
-              <div className="progress-header">
-                <span className="dept-name">{dept.department.length > 20 ? dept.department.substring(0, 20) + '...' : dept.department}</span>
-                <span className="dept-count">{dept.employee_count}</span>
-              </div>
-              <div className="progress-bar">
-                <div className="progress-fill" style={{ width: `${percentage}%`, background: colors[index % colors.length] }} />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
 
   const renderWidget = (widgetId) => {
     switch (widgetId) {
@@ -254,15 +168,18 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             </div>
             <span className="widget-subtitle">{projectDistribution.total_employees} Total employees</span>
             <div className="pie-chart-container">
-              {renderPieChart(projectDistribution)}
+              <div style={{ height: '180px', width: '100%', display: 'flex', justifyContent: 'center' }}>
+                <DoughnutChart data={projectDistribution.projects} total={projectDistribution.total_employees} />
+              </div>
               <div className="chart-legend">
-                {projectDistribution.projects.slice(0, 4).map((project, index) => {
+                {projectDistribution.projects.map((project, index) => {
                   const percentage = Math.round((project.employee_count / projectDistribution.total_employees) * 100);
                   const gradientColors = [
                     { start: '#667eea', end: '#764ba2' },
                     { start: '#f093fb', end: '#f5576c' },
                     { start: '#4facfe', end: '#00f2fe' },
-                    { start: '#43e97b', end: '#38f9d7' }
+                    { start: '#43e97b', end: '#38f9d7' },
+                    { start: '#fa709a', end: '#fee140' }
                   ];
                   return (
                     <div key={project.project} className="modern-legend-item">
@@ -299,16 +216,21 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
               <div className="subtitle-number">{departmentData.departments.reduce((sum, d) => sum + d.employee_count, 0)}</div>
               <div className="subtitle-text">Total employees</div>
             </div>
-            <div className="progress-container">
-              {renderProgressChart(departmentData)}
+            <div className="progress-container" style={{ height: '250px' }}>
+              <BarChart data={departmentData.departments.slice(0, 6)} />
             </div>
           </>
         );
       
       case 'employee-directory':
+        const filteredEmployees = employeeDirectory.employees.filter(emp => 
+          emp.display_name.toLowerCase().includes(employeeSearch.toLowerCase()) ||
+          emp.employee_department.toLowerCase().includes(employeeSearch.toLowerCase()) ||
+          emp.designation.toLowerCase().includes(employeeSearch.toLowerCase())
+        );
         const startIndex = employeePage * employeesPerPage;
-        const currentEmployees = employeeDirectory.employees.slice(startIndex, startIndex + employeesPerPage);
-        const totalPages = Math.ceil(employeeDirectory.employees.length / employeesPerPage);
+        const currentEmployees = filteredEmployees.slice(startIndex, startIndex + employeesPerPage);
+        const totalPages = Math.ceil(filteredEmployees.length / employeesPerPage);
         
         return (
           <>
@@ -327,14 +249,26 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                 <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
               </div>
             </div>
-            <span className="widget-subtitle">{employeeDirectory.employees.length} Employees</span>
+            <div style={{ marginBottom: '12px' }}>
+              <input 
+                type="text" 
+                placeholder="Search employees..." 
+                value={employeeSearch}
+                onChange={(e) => { setEmployeeSearch(e.target.value); setEmployeePage(0); }}
+                className="employee-search-input"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+            <span className="widget-subtitle">{filteredEmployees.length} Employees</span>
             <div className="employee-directory-container">
               {currentEmployees.map((employee) => (
                 <div key={employee.employee_id} className="employee-item">
+                  <div className="employee-avatar">{employee.display_name.charAt(0).toUpperCase()}</div>
                   <div className="employee-info">
                     <div className="employee-name">{employee.display_name}</div>
-                    <div className="employee-details">
+                    <div className="employee-meta">
                       <span className="employee-dept">{employee.employee_department}</span>
+                      <span className="employee-dot">•</span>
                       <span className="employee-designation">{employee.designation}</span>
                     </div>
                     <div className="employee-location">

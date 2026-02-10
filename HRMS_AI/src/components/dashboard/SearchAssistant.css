@@ -34,7 +34,7 @@
 .chat-sidebar {
   width: 260px;
   /* background: var(--color-primary-soft); */
-  background: radial-gradient(circle at var(--x1) var(--y1), rgba(255, 180, 180, 0.6), transparent 45%), radial-gradient(circle at var(--x2) var(--y2), rgba(255, 220, 190, 0.45), transparent 50%), linear-gradient(135deg, #fff1e6, #fdd6d6);
+  background: radial-gradient(circle at var(--x1) var(--y1), var(--assistant-glow-primary), transparent 45%), radial-gradient(circle at var(--x2) var(--y2), var(--assistant-glow-secondary), transparent 50%), linear-gradient(135deg, var(--assistant-base-start), var(--assistant-base-end));
   display: flex;
   flex-direction: column;
   transition: width 0.2s ease;
@@ -158,11 +158,11 @@
 }
 
 .chat-history-item:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--color-primary-soft);
 }
 
 .chat-history-item.active {
-  background: rgba(255, 180, 180, 0.4);
+  background: var(--assistant-glow-primary);
 }
 
 .chat-history-item span {
@@ -170,6 +170,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--assistant-text-primary);
 }
 
 .chat-history-item svg {
