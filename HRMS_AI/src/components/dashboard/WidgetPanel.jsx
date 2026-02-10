@@ -48,7 +48,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     { id: 'project-distribution', label: 'Project Distribution' },
     { id: 'department-overview', label: 'Department Overview' },
     { id: 'employee-directory', label: 'Employee Directory' },
-    { id: 'available-employees', label: 'Available Employees' }
+    { id: 'available-employees', label: 'Available Employees' },
   ];
 
   useEffect(() => {

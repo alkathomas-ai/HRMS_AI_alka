@@ -125,7 +125,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
             <div className="chat-welcome">
               <div className="chat-welcome-icon">
                 {/* <span className="material-symbols-outlined">smart_toy</span> */}
-                <img src="src/assets/icons/bubbles.svg" alt="" srcset="" />
+                <img src="src/assets/icons/bubbles.svg" alt="" srcSet="" />
               </div>
               <h2>How can I help you today?</h2>
             </div>
@@ -164,7 +164,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
         <div className="assistant-header">
           <span className="assistant-badge bubbles">
             {/* <span className="material-symbols-outlined">smart_toy</span> */}
-            <img src="src/assets/icons/bubbles.svg" alt="" srcset="" />
+            <img src="src/assets/icons/bubbles.svg" alt="" srcSet="" />
           </span>
 
           {!isExpanded ? (
