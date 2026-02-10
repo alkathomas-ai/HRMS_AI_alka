@@ -724,7 +724,7 @@ padding: 10px 13px;
 }
 
 .close-btn:hover {
-  background: #ff3742;
+  background: var(--color-primary);
 }
 
 .grid-item-body p {
