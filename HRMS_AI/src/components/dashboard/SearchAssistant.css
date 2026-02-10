@@ -248,7 +248,7 @@
 }
 
 .chat-file {
-padding: 5px 15px 10px 3px;
+/* padding: 5px 15px 10px 3px; */
     display: flex;
     align-items: center;
     gap: 6px;
@@ -289,7 +289,11 @@ padding: 5px 15px 10px 3px;
   display: flex;
   align-items: center;
   gap: 12px;
-  /* max-width: 600px; */
+  max-width: 600px;
+  margin: auto;
+  background: var(--color-bg-muted);
+  padding: 8px 10px;
+  border-radius: 27px;
 }
 
 .chat-input-wrapper img {

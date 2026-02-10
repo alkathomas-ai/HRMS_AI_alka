@@ -163,10 +163,11 @@
   /* gap:3px; */
   background-color: var(--color-bg-card);
   border-radius: 12px;
+  max-width: 322px;
 }
 
 .assistant-file {
-  padding: 5px 15px 0 15px;
+  /* padding: 5px 15px 0 15px; */
   display: flex;
   align-items: center;
   gap: 6px;
@@ -178,7 +179,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 200px;
+  max-width: 170px;
 }
 
 .remove-file-btn {
