@@ -20,7 +20,7 @@ const ThemeToggle = () => {
 
   return (
     <span
-      className="material-symbols-outlined theme-toggle"
+      className="material-symbols-outlined theme-toggle icon-btn"
       onClick={toggle}
     >
       {isDark ? 'light_mode' : 'dark_mode'}

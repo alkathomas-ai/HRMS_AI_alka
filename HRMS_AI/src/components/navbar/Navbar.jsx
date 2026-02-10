@@ -37,23 +37,28 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
         <div className="topbar-center">
           <button onClick={() => {
             navigate("/")
-          }} className="icon-btn" aria-label="Home">
-            <img src={Icons.home} alt="Home" className="icon-svg" />
-          </button>
+          }} className="icon-btn active" aria-label="Home">
+<span class="material-symbols-outlined">
+home
+</span>          </button>
           <button onClick={() => {
             navigate("/user")
           }} className="icon-btn" aria-label="Users">
-            <img src={Icons.people} alt="Users" className="icon-svg" />
-          </button>
+<span class="material-symbols-outlined">
+group
+</span>          </button>
           <button className="icon-btn" aria-label="Documents">
-            <img src={Icons.doc} alt="Documents" className="icon-svg" />
-          </button>
+<span class="material-symbols-outlined">
+stacks
+</span>          </button>
           <button className="icon-btn" aria-label="Reports">
-            <img src={Icons.pie} alt="Reports" className="icon-svg" />
-          </button>
+<span class="material-symbols-outlined">
+pie_chart
+</span>          </button>
           <button className="icon-btn" aria-label="Notes">
-            <img src={Icons.note} alt="Notes" className="icon-svg" />
-          </button>
+<span class="material-symbols-outlined">
+description
+</span>          </button>
         </div>
 
         {/* Right section */}
@@ -70,8 +75,10 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
 
 
           <div className="notif-wrapper">
-            <button className="icon-btn" aria-label="Notifications" onClick={() => setShowNotifDropdown(!showNotifDropdown)}>
-              <img src={Icons.bell} alt="Notifications" className="icon-svg" />
+            <button className={`icon-btn ${showNotifDropdown ? 'active' : ''}`} aria-label="Notifications" onClick={() => setShowNotifDropdown(!showNotifDropdown)}>
+              <span class="material-symbols-outlined">
+notifications
+</span>
               {hasUnread && <span className="notif-badge"></span>}
             </button>
             {showNotifDropdown && (

@@ -62,27 +62,29 @@ const themes = [
       textSecondary: '#5A3E85'
     }
   },
-  {
-    name: 'Amber',
-    primary: '#C2410C',
-    soft: '#F97316',
-    hover: '#9A3412',
-    light: 'rgba(249, 115, 22, 0.23)',
-    assistant: {
-      baseStart: '#FFF7ED',
-      baseEnd: '#FFE4CC',
-      glowPrimary: 'rgba(255, 205, 170, 0.6)',
-      glowSecondary: 'rgba(255, 235, 210, 0.45)',
-      textPrimary: '#4A260F',
-      textSecondary: '#7A4A2D'
-    }
-  }
+  // {
+  //   name: 'Amber',
+  //   primary: '#C2410C',
+  //   soft: '#F97316',
+  //   hover: '#9A3412',
+  //   light: 'rgba(249, 115, 22, 0.23)',
+  //   assistant: {
+  //     baseStart: '#FFF7ED',
+  //     baseEnd: '#FFE4CC',
+  //     glowPrimary: 'rgba(255, 205, 170, 0.6)',
+  //     glowSecondary: 'rgba(255, 235, 210, 0.45)',
+  //     textPrimary: '#4A260F',
+  //     textSecondary: '#7A4A2D'
+  //   }
+  // }
 ];
 
 const ColorPalette = () => {
   const [showPalette, setShowPalette] = useState(false);
+  const [selectedTheme, setSelectedTheme] = useState(themes[0].name);
 
   const applyTheme = (theme) => {
+    setSelectedTheme(theme.name);
     const root = document.documentElement;
     const isDark = root.getAttribute('data-theme') === 'dark';
 
@@ -117,7 +119,11 @@ const ColorPalette = () => {
 
   useEffect(() => {
     const saved = localStorage.getItem('theme');
-    if (saved) applyTheme(JSON.parse(saved));
+    if (saved) {
+      const theme = JSON.parse(saved);
+      setSelectedTheme(theme.name);
+      applyTheme(theme);
+    }
 
     const observer = new MutationObserver(() => {
       const saved = localStorage.getItem('theme');
@@ -130,7 +136,7 @@ const ColorPalette = () => {
   return (
     <div className="palette-wrapper">
       <span
-        className="material-symbols-outlined color-palette"
+        className={`material-symbols-outlined color-palette icon-btn ${showPalette ? 'active' : ''}`}
         onClick={() => setShowPalette(!showPalette)}
       >
         palette
@@ -141,7 +147,7 @@ const ColorPalette = () => {
           {themes.map((theme) => (
             <div
               key={theme.name}
-              className="palette-item"
+              className={`palette-item ${selectedTheme === theme.name ? 'selected' : ''}`}
               onClick={() => applyTheme(theme)}
             >
               <div
