@@ -253,7 +253,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                           )}
                           {msg.text && <p>{msg.text}</p>}
                           {msg.data?.all_employees && (() => {
-                            const pageSize = 10;
+                            const pageSize = 8;
                             const currentPage = tablePage[msg.id] || 1;
                             const totalPages = Math.ceil(msg.data.all_employees.length / pageSize);
                             const startIdx = (currentPage - 1) * pageSize;
@@ -419,7 +419,7 @@ csv
               </div>
               <div 
                 className="assistant-microphone" 
-                onClick={!uploadedFile ? handleMicClick : undefined} 
+                // onClick={!uploadedFile ? handleMicClick : undefined} 
                 style={{ 
                   cursor: uploadedFile ? 'not-allowed' : 'pointer' 
                 }}
