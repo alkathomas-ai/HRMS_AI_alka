@@ -16,6 +16,9 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [inputText, setInputText] = useState('');
   const [tablePage, setTablePage] = useState({});
+  const [rowsPerPage, setRowsPerPage] = useState({});
+  const [searchQuery, setSearchQuery] = useState({});
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [chatHistory] = useState([
     { id: 1, title: 'Top Candidates Search' },
     { id: 2, title: 'Pipeline Review' },
@@ -214,6 +217,22 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
           </div>
           
           <div className="chat-main">
+            {selectedEmployee && (
+              <div className="employee-detail-overlay" onClick={() => setSelectedEmployee(null)}>
+                <div className="employee-detail-card" onClick={(e) => e.stopPropagation()}>
+                  <button className="close-detail-btn" onClick={() => setSelectedEmployee(null)}>✕</button>
+                  <h3>Employee Details</h3>
+                  <div className="detail-grid">
+                    {Object.entries(selectedEmployee).map(([key, value]) => (
+                      <div key={key} className="detail-item">
+                        <strong>{key.replace(/_/g, ' ').toUpperCase()}:</strong>
+                        <span>{Array.isArray(value) ? value.join(', ') : value || '-'}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="chat-messages">
             {messages.length === 0 ? (
               <div className="chat-welcome">
@@ -253,12 +272,16 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                           )}
                           {msg.text && <p>{msg.text}</p>}
                           {msg.data?.all_employees && (() => {
-                            const pageSize = 8;
+                            const columns = msg.data.file_metadata?.columns_list || [];
+                            const query = (searchQuery[msg.id] || '').toLowerCase();
+                            const filteredData = query ? msg.data.all_employees.filter(emp => 
+                              columns.some(col => String(emp[col] || '').toLowerCase().includes(query))
+                            ) : msg.data.all_employees;
+                            const pageSize = rowsPerPage[msg.id] || 10;
                             const currentPage = tablePage[msg.id] || 1;
-                            const totalPages = Math.ceil(msg.data.all_employees.length / pageSize);
+                            const totalPages = Math.ceil(filteredData.length / pageSize);
                             const startIdx = (currentPage - 1) * pageSize;
                             const endIdx = startIdx + pageSize;
-                            const columns = msg.data.file_metadata?.columns_list || [];
                             
                             return (
                               <div className="response-table-container">
@@ -276,8 +299,8 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                                       </tr>
                                     </thead>
                                     <tbody>
-                                      {msg.data.all_employees.slice(startIdx, endIdx).map((emp, idx) => (
-                                        <tr key={idx}>
+                                      {filteredData.slice(startIdx, endIdx).map((emp, idx) => (
+                                        <tr key={idx} onClick={() => setSelectedEmployee(emp)} style={{cursor: 'pointer'}}>
                                           {columns.map(col => (
                                             <td key={col}>
                                               {col === 'projects' && Array.isArray(emp[col]) 
@@ -291,19 +314,36 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                                   </table>
                                 </div>
                                 <div className="table-pagination">
-                                  <button 
-                                    onClick={() => setTablePage(prev => ({...prev, [msg.id]: Math.max(1, currentPage - 1)}))}
-                                    disabled={currentPage === 1}
-                                  >
-                                    Previous
-                                  </button>
-                                  <span>Page {currentPage} of {totalPages}</span>
-                                  <button 
-                                    onClick={() => setTablePage(prev => ({...prev, [msg.id]: Math.min(totalPages, currentPage + 1)}))}
-                                    disabled={currentPage === totalPages}
-                                  >
-                                    Next
-                                  </button>
+                                  <div>
+                                    <label>Rows per page: </label>
+                                    <select 
+                                      value={pageSize} 
+                                      onChange={(e) => {
+                                        setRowsPerPage(prev => ({...prev, [msg.id]: Number(e.target.value)}));
+                                        setTablePage(prev => ({...prev, [msg.id]: 1}));
+                                      }}
+                                    >
+                                      <option value={10}>10</option>
+                                      <option value={15}>15</option>
+                                      <option value={20}>20</option>
+                                      <option value={25}>25</option>
+                                    </select>
+                                  </div>
+                                  <div>
+                                    <button 
+                                      onClick={() => setTablePage(prev => ({...prev, [msg.id]: Math.max(1, currentPage - 1)}))}
+                                      disabled={currentPage === 1}
+                                    >
+                                      Previous
+                                    </button>
+                                    <span>Page {currentPage} of {totalPages}</span>
+                                    <button 
+                                      onClick={() => setTablePage(prev => ({...prev, [msg.id]: Math.min(totalPages, currentPage + 1)}))}
+                                      disabled={currentPage === totalPages}
+                                    >
+                                      Next
+                                    </button>
+                                  </div>
                                 </div>
                               </div>
                             );

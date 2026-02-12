@@ -184,6 +184,7 @@
   flex-direction: column;
   background: var(--color-bg-card);
   position: relative;
+  width: calc(100% - 260px);
 }
 
 .chat-main::before {
@@ -354,13 +355,14 @@
   padding: 20px;
   overflow-y: auto;
   font-size: 12px;
-  width: 800px;
+  min-width: 800px;
+  max-width: 95%;
 }
 
 .chat-message {
   display: flex;
   gap: 12px;
-  max-width: 80%;
+  max-width: 90%;
 }
 
 .chat-message.user {
@@ -480,7 +482,6 @@
 
 .table-wrapper {
   overflow-x: auto;
-  max-height: 400px;
   overflow-y: auto;
   border-radius: 2px;
   border: 1px solid #e0e0e0;
@@ -516,17 +517,34 @@
   white-space: nowrap;
 }
 
-.employee-table tbody tr:hover {
-  background: #f9f9f9;
-}
-
 .table-pagination {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 16px;
   margin-top: 12px;
   font-size: 13px;
+}
+
+.table-pagination > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-pagination select {
+  padding: 4px 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background: white;
+  color: var(--color-text-primary);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.table-pagination label {
+  font-size: 12px;
+  color: var(--color-text-primary);
 }
 
 .table-pagination button {
