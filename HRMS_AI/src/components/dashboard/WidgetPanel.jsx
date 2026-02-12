@@ -41,6 +41,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const [employeeCount, setEmployeeCount] = useState({ employeeCount: 0, freepoolCount: 0, projectCount: 0 });
   const [employeePage, setEmployeePage] = useState(0);
   const [employeeSearch, setEmployeeSearch] = useState('');
+  const [widgetSearch, setWidgetSearch] = useState('');
   const [containerWidth, setContainerWidth] = useState(1200);
   const containerRef = useRef(null);
   const employeesPerPage = 5;
@@ -278,14 +279,14 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                   </div>
                 </div>
               ))}
-              {totalPages > 1 && (
-                <div className="pagination">
-                  <button onClick={() => setEmployeePage(prev => Math.max(0, prev - 1))} disabled={employeePage === 0} className="page-btn">‹</button>
-                  <span className="page-info">{employeePage + 1}/{totalPages}</span>
-                  <button onClick={() => setEmployeePage(prev => Math.min(totalPages - 1, prev + 1))} disabled={employeePage >= totalPages - 1} className="page-btn">›</button>
-                </div>
-              )}
             </div>
+            {totalPages > 1 && (
+              <div className="pagination">
+                <button onClick={() => setEmployeePage(prev => Math.max(0, prev - 1))} disabled={employeePage === 0} className="page-btn">‹</button>
+                <span className="page-info">{employeePage + 1}/{totalPages}</span>
+                <button onClick={() => setEmployeePage(prev => Math.min(totalPages - 1, prev + 1))} disabled={employeePage >= totalPages - 1} className="page-btn">›</button>
+              </div>
+            )}
           </>
         );
       
@@ -469,7 +470,12 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         <div className="filter-bar">
           <div className="filter-controls">
             <div className="search-input">
-              <input type="text" placeholder="Search widgets..." />
+              <input 
+                type="text" 
+                placeholder="Search widgets..." 
+                value={widgetSearch}
+                onChange={(e) => setWidgetSearch(e.target.value)}
+              />
               <i className="fa-solid fa-search"></i>
             </div>
 
@@ -508,6 +514,10 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           <SortableContext items={selectedWidgets} strategy={rectSortingStrategy}>
             <div className="masonry-grid">
               {selectedWidgets
+                .filter(widgetId => {
+                  const widget = availableWidgets.find(w => w.id === widgetId);
+                  return widget?.label.toLowerCase().includes(widgetSearch.toLowerCase());
+                })
                 .sort((a, b) => {
                   const aIsPinned = pinnedWidgets.includes(a);
                   const bIsPinned = pinnedWidgets.includes(b);
