@@ -62,42 +62,56 @@ const themes = [
       textSecondary: '#5A3E85'
     }
   },
-  {
-    name: 'Amber',
-    primary: '#C2410C',
-    soft: '#F97316',
-    hover: '#9A3412',
-    light: 'rgba(249, 115, 22, 0.23)',
-    assistant: {
-      baseStart: '#FFF7ED',
-      baseEnd: '#FFE4CC',
-      glowPrimary: 'rgba(255, 205, 170, 0.6)',
-      glowSecondary: 'rgba(255, 235, 210, 0.45)',
-      textPrimary: '#4A260F',
-      textSecondary: '#7A4A2D'
-    }
-  }
+  // {
+  //   name: 'Amber',
+  //   primary: '#C2410C',
+  //   soft: '#F97316',
+  //   hover: '#9A3412',
+  //   light: 'rgba(249, 115, 22, 0.23)',
+  //   assistant: {
+  //     baseStart: '#FFF7ED',
+  //     baseEnd: '#FFE4CC',
+  //     glowPrimary: 'rgba(255, 205, 170, 0.6)',
+  //     glowSecondary: 'rgba(255, 235, 210, 0.45)',
+  //     textPrimary: '#4A260F',
+  //     textSecondary: '#7A4A2D'
+  //   }
+  // }
 ];
 
 const ColorPalette = () => {
   const [showPalette, setShowPalette] = useState(false);
+  const [selectedTheme, setSelectedTheme] = useState(themes[0].name);
 
   const applyTheme = (theme) => {
+    setSelectedTheme(theme.name);
     const root = document.documentElement;
+    const isDark = root.getAttribute('data-theme') === 'dark';
 
     // Primary UI colors
     root.style.setProperty('--color-primary', theme.primary);
     root.style.setProperty('--color-primary-soft', theme.soft);
     root.style.setProperty('--color-primary-hover', theme.hover);
-    root.style.setProperty('--color-primary-light', theme.light);
+    root.style.setProperty('--color-primary-light', isDark ? theme.light.replace(/[\d.]+\)$/, '0.62)') : theme.light);
 
     // Assistant bar colors
-    root.style.setProperty('--assistant-base-start', theme.assistant.baseStart);
-    root.style.setProperty('--assistant-base-end', theme.assistant.baseEnd);
-    root.style.setProperty('--assistant-glow-primary', theme.assistant.glowPrimary);
-    root.style.setProperty('--assistant-glow-secondary', theme.assistant.glowSecondary);
-    root.style.setProperty('--assistant-text-primary', theme.assistant.textPrimary);
-    root.style.setProperty('--assistant-text-secondary', theme.assistant.textSecondary);
+    if (isDark) {
+      const darkStart = theme.assistant.baseStart.replace(/^#/, '').match(/.{2}/g).map(h => Math.max(0, parseInt(h, 16) - 200).toString(16).padStart(2, '0')).join('');
+      const darkEnd = theme.assistant.baseEnd.replace(/^#/, '').match(/.{2}/g).map(h => Math.max(0, parseInt(h, 16) - 200).toString(16).padStart(2, '0')).join('');
+      root.style.setProperty('--assistant-base-start', `#${darkStart}`);
+      root.style.setProperty('--assistant-base-end', `#${darkEnd}`);
+      root.style.setProperty('--assistant-glow-primary', theme.assistant.glowPrimary.replace(/[\d.]+\)$/, '0.15)'));
+      root.style.setProperty('--assistant-glow-secondary', theme.assistant.glowSecondary.replace(/[\d.]+\)$/, '0.1)'));
+      root.style.setProperty('--assistant-text-primary', '#E5E7EB');
+      root.style.setProperty('--assistant-text-secondary', '#9CA3AF');
+    } else {
+      root.style.setProperty('--assistant-base-start', theme.assistant.baseStart);
+      root.style.setProperty('--assistant-base-end', theme.assistant.baseEnd);
+      root.style.setProperty('--assistant-glow-primary', theme.assistant.glowPrimary);
+      root.style.setProperty('--assistant-glow-secondary', theme.assistant.glowSecondary);
+      root.style.setProperty('--assistant-text-primary', theme.assistant.textPrimary);
+      root.style.setProperty('--assistant-text-secondary', theme.assistant.textSecondary);
+    }
 
     localStorage.setItem('theme', JSON.stringify(theme));
     setShowPalette(false);
@@ -105,13 +119,24 @@ const ColorPalette = () => {
 
   useEffect(() => {
     const saved = localStorage.getItem('theme');
-    if (saved) applyTheme(JSON.parse(saved));
+    if (saved) {
+      const theme = JSON.parse(saved);
+      setSelectedTheme(theme.name);
+      applyTheme(theme);
+    }
+
+    const observer = new MutationObserver(() => {
+      const saved = localStorage.getItem('theme');
+      if (saved) applyTheme(JSON.parse(saved));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => observer.disconnect();
   }, []);
 
   return (
     <div className="palette-wrapper">
       <span
-        className="material-symbols-outlined color-palette"
+        className={`material-symbols-outlined color-palette icon-btn ${showPalette ? 'active' : ''}`}
         onClick={() => setShowPalette(!showPalette)}
       >
         palette
@@ -122,7 +147,7 @@ const ColorPalette = () => {
           {themes.map((theme) => (
             <div
               key={theme.name}
-              className="palette-item"
+              className={`palette-item ${selectedTheme === theme.name ? 'selected' : ''}`}
               onClick={() => applyTheme(theme)}
             >
               <div
