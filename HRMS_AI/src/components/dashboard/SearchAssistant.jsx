@@ -10,6 +10,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
   const fileInputRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -28,7 +29,12 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
   ]);
 
   const handlePlusClick = () => {
+    setShowUploadModal(true);
+  };
+
+  const handleModalFileSelect = () => {
     fileInputRef.current?.click();
+    setShowUploadModal(false);
   };
 
   const handleFileChange = (e) => {
@@ -164,6 +170,26 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
 
   return (
     <>
+      {showUploadModal && (
+        <div className="upload-modal-overlay" onClick={() => setShowUploadModal(false)}>
+          <div className="upload-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="upload-modal-header">
+              <h3>Upload CSV File</h3>
+              <button className="modal-close-btn" onClick={() => setShowUploadModal(false)}>✕</button>
+            </div>
+            <div className="upload-modal-body">
+              <div className="upload-icon">
+                <span className="material-symbols-outlined">upload_file</span>
+              </div>
+              <p>Select a CSV file to upload and process</p>
+              <button className="choose-csv-btn" onClick={handleModalFileSelect}>
+                <span className="material-symbols-outlined">folder_open</span>
+                Choose CSV
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {isExpanded ? (
         <div className="card assistant-card assistant-card-expanded">
           <div className="assistant-header">
@@ -213,9 +239,9 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                   </div>
                 </div>
               </div>
-              <div alt="Attach" onClick={handlePlusClick} className="material-symbols-outlined">
-                  upload_file
-              </div>
+              <button alt="Attach" onClick={handlePlusClick} className="upload-btn">
+                  <img src={Icons.upload} alt="" />
+              </button>
             </div>
           </div>
         </div>

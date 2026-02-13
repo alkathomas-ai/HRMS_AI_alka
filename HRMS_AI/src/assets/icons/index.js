@@ -14,6 +14,7 @@ import search from './search.svg';
 import pin from './pin.svg';
 import fullscreen from './fullscreen.svg';
 import close from './close.svg';
+import upload from './upload.svg';
 
 
 export const Icons = {
@@ -33,5 +34,6 @@ export const Icons = {
   pin,
   fullscreen,
   close,
+  upload,
 };
 
