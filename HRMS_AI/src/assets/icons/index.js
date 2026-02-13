@@ -15,6 +15,8 @@ import pin from './pin.svg';
 import fullscreen from './fullscreen.svg';
 import close from './close.svg';
 import upload from './upload.svg';
+import avatar from './circle-user-solid-full.svg'
+import uploadImg from './upload-solid-full.svg'
 
 
 export const Icons = {
@@ -35,5 +37,7 @@ export const Icons = {
   fullscreen,
   close,
   upload,
+  avatar,
+  uploadImg
 };
 

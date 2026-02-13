@@ -75,19 +75,19 @@ body {
   );
 }
 /* Hide scrollbar but allow scrolling */
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
   display: none;
-}
+} */
 
 /* Firefox */
-html {
+/* html {
   scrollbar-width: none;
-}
+} */
 
 /* IE / Edge (legacy) */
-body {
+/* body {
   -ms-overflow-style: none;
-}
+} */
 
 
 .d-flex{

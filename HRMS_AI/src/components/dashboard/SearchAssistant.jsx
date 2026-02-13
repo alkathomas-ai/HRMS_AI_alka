@@ -1,25 +1,27 @@
 import { Icons } from '../../assets/icons';
 import './Dashboard.css';
 import './SearchAssistant.css';
-import WidgetPanel from './WidgetPanel';
 import { useRef, useState } from 'react';
 import { uploadAPI,searchAPI } from '../../services/api';
 
 
 const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
   const fileInputRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
-  const [isRecording, setIsRecording] = useState(false);
+  // const mediaRecorderRef = useRef(null);
+  // const [isRecording, setIsRecording] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  // const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [inputText, setInputText] = useState('');
-  const [tablePage, setTablePage] = useState({});
-  const [rowsPerPage, setRowsPerPage] = useState({});
-  const [searchQuery, setSearchQuery] = useState({});
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  // const [tablePage, setTablePage] = useState({});
+  // const [rowsPerPage, setRowsPerPage] = useState({});
+  // const [searchQuery, setSearchQuery] = useState({});
+  // const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [mouseHover, setMouseHover] =  useState(false)
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+
   const [chatHistory] = useState([
     { id: 1, title: 'Top Candidates Search' },
     { id: 2, title: 'Pipeline Review' },
@@ -141,33 +143,35 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
     }
   };
 
-  const handleMicClick = async () => {
-    if (isRecording) {
-      mediaRecorderRef.current?.stop();
-      setIsRecording(false);
-    } else {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const mediaRecorder = new MediaRecorder(stream);
-        const chunks = [];
+  // const handleMicClick = async () => {
+  //   if (isRecording) {
+  //     mediaRecorderRef.current?.stop();
+  //     setIsRecording(false);
+  //   } else {
+  //     try {
+  //       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  //       const mediaRecorder = new MediaRecorder(stream);
+  //       const chunks = [];
 
-        mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-        mediaRecorder.onstop = () => {
-          const blob = new Blob(chunks, { type: 'audio/webm' });
-          console.log('Audio recorded:', blob);
-          // Add your audio processing logic here
-          stream.getTracks().forEach(track => track.stop());
-        };
+  //       mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+  //       mediaRecorder.onstop = () => {
+  //         const blob = new Blob(chunks, { type: 'audio/webm' });
+  //         console.log('Audio recorded:', blob);
+  //         // Add your audio processing logic here
+  //         stream.getTracks().forEach(track => track.stop());
+  //       };
 
-        mediaRecorderRef.current = mediaRecorder;
-        mediaRecorder.start();
-        setIsRecording(true);
-      } catch (err) {
-        alert('Microphone access denied');
-      }
-    }
-  };
+  //       mediaRecorderRef.current = mediaRecorder;
+  //       mediaRecorder.start();
+  //       setIsRecording(true);
+  //     } catch (err) {
+  //       alert('Microphone access denied');
+  //     }
+  //   }
+  // };
 
+  // console.log(messages);
+  
   return (
     <>
       {showUploadModal && (
@@ -239,10 +243,131 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                   </div>
                 </div>
               </div>
-              <button alt="Attach" onClick={handlePlusClick} className="upload-btn">
+              {/* <button alt="Attach" onClick={handlePlusClick} className="choose-csv-btn upload-btn">
                   <img src={Icons.upload} alt="" />
+                  Filter
+              </button>
+              <button alt="Attach" onClick={handlePlusClick} className="choose-csv-btn upload-btn">
+                  <img src={Icons.uploadImg} alt="" />
+                  Upload
+              </button> */}
+
+              <button className="choose-csv-btn" onClick={()=> {}} style={{width: "10%"}}>
+                <span className="material-symbols-outlined">filter</span>
+                Filter
+              </button>
+
+              <button className="choose-csv-btn" onClick={handlePlusClick} style={{width: "12%"}}>
+                <span className="material-symbols-outlined">upload</span>
+                Upload CSV
               </button>
             </div>
+          </div>
+          <div className="search-card-header">
+            {messages.filter(
+                item =>
+                  item.type === "assistant" &&
+                  item.data?.status === "success" &&
+                  item.data?.all_employees?.length > 0
+              ).length > 0 ? (
+                <div className='search-card'>
+                  {messages.filter(
+                      item =>
+                        item.type === "assistant" &&
+                        item.data?.status === "success" &&
+                        item.data?.all_employees?.length > 0
+                    ).flatMap(item => item.data.all_employees).map((employee, index) => (
+                      
+                      <div className='search-card-layout' key={index} 
+                        onMouseEnter={() => setHoveredIndex(index)}
+                        onMouseLeave={() => setHoveredIndex(null)}
+                      >
+                        <div className="search-card-layout-container">
+                          <div className="search-card-avatar">
+                            {/* <img className='search-card-avatar-img' src={Icons.avatar} alt="" /> */}
+                            <i class="fa-solid fa-circle-user search-card-avatar-img"></i>
+                            <div className="name-header">
+                              <span style={{fontSize: 16, fontWeight: 500}}>{employee.display_name}</span>
+                            </div>
+                          </div>
+
+                          <div className="search-card-avatar">
+                            <div className="name-header">
+                              <span>{employee.designation}</span>
+                            </div>
+                          </div>
+
+                          <div className="search-card-avatar">
+                            <div className="name-header">
+                              <span>{employee.total_exp}</span>
+                            </div>
+                          </div>
+
+
+                          <div className="search-card-avatar">
+                            <div className="name-header">
+                              <span>{employee.tech_group}</span>
+                            </div>
+                          </div>
+
+                          <div className="search-card-avatar">
+                            <div className="name-header">
+                              <span>{employee.emp_location}</span>
+                            </div>
+                          </div>
+                          {hoveredIndex === index && (
+                            <div className="employee-hover-popup">
+                              <div className="popup-header">
+                                <img className="popup-avatar" src={Icons.avatar} alt="" />
+                                <div>
+                                  <h4>{employee.display_name}</h4>
+                                  <span>{employee.designation}</span>
+                                </div>
+                              </div>
+
+                              <div className="popup-body">
+                                <div className="popup-fist-container">
+                                  <div className="popup-container-left">
+                                    <p><b>VVDN ID:</b> <br/>  {employee.employee_id}</p>
+                                    <p><b>Tech:</b> <br/>  {employee.tech_group}</p>
+                                    <p><b>Location:</b> <br/>  {employee.emp_location}</p>
+                                  </div>
+                                  <div className="popup-container-right">
+                                    <p><b>Department: <br/> </b> {employee.employee_department}</p>
+                                    <p><b>Total Experience: <br/> </b> {employee.total_exp}</p>
+                                    <p><b>VVDN Experience:</b> <br/>  {employee.vvdn_exp}</p>
+                                  </div>
+                                </div>
+                                <div className="">
+                                    <p><b>Reporting Manger: <br/> </b> {employee.rm_name}</p>
+                                </div>
+                                <div className="">
+                                    <p><b>Skills:</b></p>
+                                    <div className="skills-container">
+                                    {employee.skill_set
+                                      ?.split(',')
+                                      .map((skill, index) => (
+                                        <span key={index} className="skill-chip">
+                                          {skill.trim()}
+                                        </span>
+                                      ))}
+                                    </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
+
+                        </div>
+
+                        
+                        
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <>Please upload CSV File to generate datas...</>
+              )}
           </div>
         </div>
       ) : (
@@ -280,9 +405,10 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                 <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".csv" style={{ display: 'none' }} />
                 {uploadedFile ? (
                   <div className="assistant-file" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
-<span class="material-symbols-outlined">
-csv
-</span>                    <span>{uploadedFile.name}</span>
+                  <span class="material-symbols-outlined">
+                    csv
+                  </span>                    
+                  <span>{uploadedFile.name}</span>
                     <button className="remove-file-btn" onClick={handleRemoveFile}>✕</button>
                   </div>
                 ) : (
@@ -304,7 +430,7 @@ csv
                 >
                   mic
                 </span> */}
-                              <button className="chat-submit-btn">
+                <button className="chat-submit-btn" onClick={handleSendMessage}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="22" y1="2" x2="11" y2="13"/>
                   <polygon points="22 2 15 22 11 13 2 9 22 2"/>

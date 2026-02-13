@@ -165,7 +165,7 @@
   flex-direction: column;
   /* gap:3px; */
   background-color: var(--color-bg-card);
-  border-radius: 12px;
+  border-radius: 10px;
   max-width: 322px;
 }
 
