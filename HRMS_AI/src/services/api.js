@@ -1,6 +1,6 @@
 import axios from 'axios'
 // const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const BASE_URL = 'http://172.25.247.7:8000'
+const BASE_URL = 'http://localhost:8000'
 
 
 export async function searchAPI(query) {

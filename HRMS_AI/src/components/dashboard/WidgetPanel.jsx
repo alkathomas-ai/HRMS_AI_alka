@@ -69,7 +69,6 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         setDepartmentData({ departments: departments.departments });
         setEmployeeDirectory({ employees: employees.employees });
         setSoonAvailableEmployees(availableEmployees?.data || []);
-
         setEmployeeCount({ 
           employeeCount: counts.employee_count || 0, 
           projectCount: counts.project_count || 0, 
@@ -339,35 +338,59 @@ case 'available-employees': {
     <>
       <div className="grid-item-header">
         <h4>Available Timeline</h4>
-        <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <button
+            onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
+            className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
+          >
+            <img src={Icons.pin} alt="" />
+          </button>
+          <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+        </div>
       </div>
 
       <div className="timeline-wrapper">
 
         {/* LEFT SIDE — CHRONOLOGICAL BAR */}
-        <div className="timeline-bar" ref={timelineRef}>
-          {timelineItems.map(item => (
-            <div
-              key={item}
-              className={`timeline-date-item ${
-                activeReleaseDate === item ? 'active' : ''
-              }`}
-              onClick={() => setActiveReleaseDate(item)}
-            >
-              {item === "FREE"
-                ? `Free (${freeEmployees.length})`
-                : new Date(item).toLocaleDateString()
-              }
-            </div>
-          ))}
+<div className="timeline-bar" ref={timelineRef}>
+  {timelineItems.map(item => {
 
-          <div
-            className="timeline-slider"
-            style={{
-              top: activeIndex * 48 + 'px'
-            }}
-          />
-        </div>
+    const itemCount =
+      item === "FREE"
+        ? freeEmployees.length
+        : releasingEmployees.filter(
+            emp => emp.committed_relieving_date === item
+          ).length;
+
+    return (
+      <div
+        key={item}
+        className={`timeline-date-item ${
+          activeReleaseDate === item ? 'active' : ''
+        }`}
+        onClick={() => setActiveReleaseDate(item)}
+      >
+        <span>
+          {item === "FREE"
+            ? "Free"
+            : new Date(item).toLocaleDateString()}
+        </span>
+
+        <span className="timeline-freepool-count">
+          {itemCount}
+        </span>
+      </div>
+    );
+  })}
+
+  <div
+    className="timeline-slider"
+    style={{
+      top: activeIndex * 48 + 'px'
+    }}
+  />
+</div>
+
 
         {/* RIGHT SIDE — EMPLOYEES */}
         <div className="timeline-content">
@@ -389,6 +412,10 @@ case 'available-employees': {
                 <div className="timeline-employee-meta">
                   {emp.tech_group} • {emp.emp_location}
                 </div>
+                {emp.projects.map(p => {
+                  return <span key={p.project_id} className="timeline-employee-project">{p.project_name}</span>
+                  })
+                }
                 <div
                   className="timeline-employee-badge"
                   style={
