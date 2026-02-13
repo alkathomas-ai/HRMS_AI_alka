@@ -32,6 +32,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const [pinnedWidgets, setPinnedWidgets] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [fullscreenWidget, setFullscreenWidget] = useState(null);
   const dropdownRef = useRef(null);
 
   const [projectDistribution, setProjectDistribution] = useState({ projects: [], total_employees: 0 });
@@ -154,6 +155,9 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             <div className="grid-item-header">
               <h4>Project Distribution</h4>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button className="expand-btn-widget" onClick={(e) => { e.stopPropagation(); setFullscreenWidget(widgetId); }}>
+                 <img src={Icons.fullscreen} alt="" />
+                </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
                   className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
@@ -197,6 +201,9 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             <div className="grid-item-header">
               <h4>Department Overview</h4>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button className="expand-btn-widget" onClick={(e) => { e.stopPropagation(); setFullscreenWidget(widgetId); }}>
+                 <img src={Icons.fullscreen} alt="" />
+                </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
                   className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
@@ -231,6 +238,9 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             <div className="grid-item-header">
               <h4>Employee Directory</h4>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button className="expand-btn-widget" onClick={(e) => { e.stopPropagation(); setFullscreenWidget(widgetId); }}>
+                 <img src={Icons.fullscreen} alt="" />
+                </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
                   className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
@@ -287,6 +297,9 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             <div className="grid-item-header">
               <h4>Available Employees</h4>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button className="expand-btn-widget" onClick={(e) => { e.stopPropagation(); setFullscreenWidget(widgetId); }}>
+                 <img src={Icons.fullscreen} alt="" />
+                </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
                   className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
@@ -412,6 +425,23 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   return (
     <div className={`grid-container`} data-expanded={isExpanded}>
       <Alert message="Maximum 3 widgets can be pinned" show={showAlert} type="warning" />
+      
+      {fullscreenWidget && (
+        <div className="fullscreen-modal">
+          <div className="fullscreen-content">
+            <div className="fullscreen-header">
+              <h3>{availableWidgets.find(w => w.id === fullscreenWidget)?.label}</h3>
+              <button className="close-fullscreen-btn" onClick={() => setFullscreenWidget(null)}>
+                <img src={Icons.close} alt="Close" style={{ width: '16px', height: '16px' }} />
+              </button>
+            </div>
+            <div className="fullscreen-body">
+              {renderWidget(fullscreenWidget)}
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="dashboard-header">
         <div className='welcome'>
           <div className='d-flex justify-btwn align-center'>

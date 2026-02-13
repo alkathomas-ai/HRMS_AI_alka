@@ -12,6 +12,8 @@ import pie from './pie.svg';
 import plus from './plus.svg';
 import search from './search.svg';
 import pin from './pin.svg';
+import fullscreen from './fullscreen.svg';
+import close from './close.svg';
 
 
 export const Icons = {
@@ -29,5 +31,7 @@ export const Icons = {
   plus,
   search,
   pin,
+  fullscreen,
+  close,
 };
 
