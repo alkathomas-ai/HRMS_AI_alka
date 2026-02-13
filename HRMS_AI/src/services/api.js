@@ -4,7 +4,7 @@ const BASE_URL = 'http://172.25.247.7:8000'
 
 
 export async function searchAPI(query) {
-    const response = await fetch(`${BASE_URL}/search-rank`, 
+    const response = await fetch(`${BASE_URL}/search-rank-simplified-new`, 
     {
       method: 'POST',
       headers: {

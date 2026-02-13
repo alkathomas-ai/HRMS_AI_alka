@@ -565,3 +565,33 @@
 .table-pagination button:not(:disabled):hover {
   background: var(--color-primary-hover);
 }
+
+.assistant-card.assistant-card-expanded {
+  height: auto;
+  /* min-height: 300px; */
+}
+
+.assistant-card-expanded .assistant-header {
+  display: flex;
+  justify-content: center;
+}
+.assistant-card-expanded .assistant-links {
+    justify-content: center;
+    font-size: 12px;
+}
+.search-icon{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.search-header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width:100%;
+}
+
+.search-header .assistant-control {
+  flex: 0 0 50%;
+  max-width: 50%;
+}
