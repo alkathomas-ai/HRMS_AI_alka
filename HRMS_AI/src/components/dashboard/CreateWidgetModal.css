@@ -98,12 +98,13 @@
   transition: all 0.2s ease;
   font-family: inherit;
   resize: vertical;
+  outline: 1px none var(--assistant-base-end);
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
-  outline: none;
-  border-color: var(--color-primary);
+  outline: 1px solid var(--assistant-base-end);
+  /* border-color: 1px solid red; */
   background: var(--color-bg-card);
 }
 
@@ -128,14 +129,35 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  height: 40px;
+  width: 155px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .btn-generate:hover {
   background: var(--color-primary-hover);
-  transform: translateY(-1px);
+  /* transform: translateY(-1px); */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .btn-generate:active {
   transform: translateY(0);
+}
+
+.btn-generate:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-generate:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-generate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }

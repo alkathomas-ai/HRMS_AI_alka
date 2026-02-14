@@ -31,9 +31,15 @@ const SortableWidget = ({ id, children, isPinned }) => {
 };
 
 const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
-  const [selectedWidgets, setSelectedWidgets] = useState(['project-distribution', 'department-overview', 'employee-directory', 'available-employees']);
+  const [selectedWidgets, setSelectedWidgets] = useState(() => {
+    const saved = localStorage.getItem('selectedWidgets');
+    return saved ? JSON.parse(saved) : ['project-distribution', 'department-overview', 'employee-directory', 'available-employees'];
+  });
   const [pinnedWidgets, setPinnedWidgets] = useState([]);
-  const [dynamicWidgets, setDynamicWidgets] = useState([]);
+  const [dynamicWidgets, setDynamicWidgets] = useState(() => {
+    const saved = localStorage.getItem('dynamicWidgets');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -59,6 +65,14 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     { id: 'employee-directory', label: 'Employee Directory' },
     { id: 'available-employees', label: 'Available Employees' },
   ];
+
+  useEffect(() => {
+    localStorage.setItem('selectedWidgets', JSON.stringify(selectedWidgets));
+  }, [selectedWidgets]);
+
+  useEffect(() => {
+    localStorage.setItem('dynamicWidgets', JSON.stringify(dynamicWidgets));
+  }, [dynamicWidgets]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -149,6 +163,9 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const removeWidget = (id) => {
     setSelectedWidgets(prev => prev.filter(widgetId => widgetId !== id));
     setPinnedWidgets(prev => prev.filter(widgetId => widgetId !== id));
+    if (id.startsWith('dynamic-')) {
+      setDynamicWidgets(prev => prev.filter(w => w.id !== id));
+    }
   };
 
   const togglePin = (id) => {
@@ -168,6 +185,27 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
 
 
   const renderWidget = (widgetId) => {
+    const dynamicWidget = dynamicWidgets.find(w => w.id === widgetId);
+    if (dynamicWidget) {
+      return (
+        <>
+          <div className="grid-item-header">
+            <h4>{dynamicWidget.title}</h4>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <button
+                onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
+                className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
+              >
+                <img src={Icons.pin} alt="" />
+              </button>
+              <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+            </div>
+          </div>
+          <DynamicWidget widgetData={dynamicWidget} />
+        </>
+      );
+    }
+
     switch (widgetId) {
       case 'project-distribution':
         return (
@@ -620,7 +658,9 @@ case 'available-employees': {
               {selectedWidgets
                 .filter(widgetId => {
                   const widget = availableWidgets.find(w => w.id === widgetId);
-                  return widget?.label.toLowerCase().includes(widgetSearch.toLowerCase());
+                  const dynamicWidget = dynamicWidgets.find(w => w.id === widgetId);
+                  const label = widget?.label || dynamicWidget?.title || '';
+                  return label.toLowerCase().includes(widgetSearch.toLowerCase());
                 })
                 .sort((a, b) => {
                   const aIsPinned = pinnedWidgets.includes(a);
@@ -634,12 +674,6 @@ case 'available-employees': {
                     {renderWidget(widgetId)}
                   </SortableWidget>
                 ))}
-              {dynamicWidgets.map(widget => (
-                <SortableWidget key={widget.id} id={widget.id}>
-                  <DynamicWidget widget={widget} />
-                </SortableWidget>
-              ))}
-
             </div>
           </SortableContext>
         </DndContext>
@@ -648,14 +682,10 @@ case 'available-employees': {
 <CreateWidgetModal 
   isOpen={isModalOpen} 
   onClose={() => setIsModalOpen(false)}
-  onGenerate={(widget) => {
-    setDynamicWidgets(prev => [
-      ...prev,
-      {
-        id: `dynamic-${Date.now()}`,
-        ...widget
-      }
-    ]);
+  onGenerate={(widgetData) => {
+    const newWidget = { id: `dynamic-${Date.now()}`, ...widgetData };
+    setDynamicWidgets(prev => [...prev, newWidget]);
+    setSelectedWidgets(prev => [...prev, newWidget.id]);
     setIsModalOpen(false);
   }}
 />
