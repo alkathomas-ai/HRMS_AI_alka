@@ -47,7 +47,10 @@ home
 <span class="material-symbols-outlined">
 group
 </span>          </button>
-          <button className="icon-btn" aria-label="Documents">
+          <button onClick={() => {
+            navigate("/d")
+          }}
+          className="icon-btn" aria-label="Documents">
 <span class="material-symbols-outlined">
 stacks
 </span>          </button>

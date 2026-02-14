@@ -158,8 +158,11 @@
 }
 
 .action-card:hover .action-icon {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--color-primary-hover);
   color: white;
+}
+.action-card:hover .action-icon img {
+  filter: brightness(0) invert(1);
 }
 
 .action-text {
@@ -648,17 +651,22 @@
 }
 
 .modern-legend-color {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   flex-shrink: 0;
+}
+
+.action-icon .pie-icon {
+  width: 26px;
+  height: 26px;
 }
 
 .legend-text {
   flex: 1;
   font-weight: 400;
   color: var(--color-text-primary);
-  font-size: 10px;
+  font-size: 9px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -667,7 +675,7 @@
 .legend-percentage {
   font-weight: 500;
   color: var(--color-text-secondary);
-  font-size: 10px;
+  font-size: 9px;
   flex-shrink: 0;
 }
 
@@ -785,7 +793,7 @@
 }
 
 .employee-name {
-  font-size: 13px;
+  font-size: 13px !important;
   font-weight: 600;
   color: var(--color-text-primary);
   white-space: nowrap;

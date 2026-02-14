@@ -1,185 +1,226 @@
 import React, { useState } from 'react'
-// import "/components/dashboard/Dashboard.css";
 import "./Dashboard.css";
+import "./D.css";
 import { Icons } from '../../assets/icons';
 
+const RequirementCard = ({ employee }) => {
+  const [showAllSkills, setShowAllSkills] = useState(false);
+  const [showReason, setShowReason] = useState(false);
+  
+  if (!employee) return null;
 
-const D = () => {
+  const {
+    display_name,
+    designation,
+    employee_id,
+    employee_department,
+    emp_location,
+    tech_group,
+    total_exp,
+    ai_score,
+    skill_set,
+    ai_reason
+  } = employee;
 
-const [dropdownOpen, setDropdownOpen] = useState(false)
-const [selectedRoles, setSelectedRoles] = useState([])
+  const getScoreClass = () => {
+    if (ai_score >= 70) return 'high';
+    if (ai_score >= 50) return 'medium';
+    return 'low';
+  };
 
-
-const toggleDropdown = () => {
-    setDropdownOpen(prev => !prev)
-}
-
-const selectOption = (value) => {
-    setSelectedRoles(prev =>
-      prev.includes(value)
-        ? prev.filter(role => role !== value)
-        : [...prev, value]
-    )
-}
-
-const [layout, setLayout] = useState([
-  { id: 'frontend' },
-  { id: 'backend' }
-])
-
-const removeItem = (id) => {
-  setLayout(prev => prev.filter(item => item.id !== id))
-}
-
-  const getWidgetData = (id) => ({
-    title: `Widget ${id}`,
-    content: 'Widget content here'
-  })
-
- 
-const visibleLayout =
-  selectedRoles.length === 0
-    ? layout
-    : layout.filter(item => selectedRoles.includes(item.id))
-
+  const scoreClass = getScoreClass();
 
   return (
-    <div className="dashboard">
-      <div className="dashboard-grid">
-
-        {/* LEFT COLUMN */}
-        <div className="dashboard-left">
-          <div className="card assistant-card justify-btw">
-            <div className="assistant-header">
-              <span className="assistant-badge bubbles">
-                <img src={Icons.bubbles} alt="" className="bubbles-icon" srcSet=""/>
-              </span>
-              <span className="expand-icon">
-                <img src={Icons.expand} alt="" srcSet=""/>
-              </span>
-        </div>
-
-            <h3>Ready To Find Top Candidates Or Revisit Your Pipeline?</h3>
-
-            <div className="assistant-links">
-              <span><img src={Icons.search} alt="" srcSet=""/>Find Matches</span>
-              <span><img src={Icons.briefcase} alt="" srcSet=""/>My Pipeline</span>
-              <span><img src={Icons.pie} alt="" srcSet=""/>Insights</span>
+    <div className={`employee-card ${scoreClass}-score`}>
+      <div className={`match-badge ${scoreClass}`}>
+        <div className="score-text">{ai_score || 0}%</div>
+      </div>
+      <div className="employee-card-content">
+        <div className="employee-info-section">
+          <div className="employee-header">
+            <div className="employee-name-row">
+              <h2 className="employee-name">{display_name}</h2>
+              <span className="employee-designation-badge">{designation}</span>
             </div>
-
-            <div className="assistant-control">            
-            <div className="assistant-input dflex">
-              <img src={Icons.plus} alt="Search" className="input-icon"/>
-              <input type="text" placeholder="Ask me anything..."/>
-            </div>
-            <div className="assistant-microphone">
-              <img src={Icons.microphone} alt="Microphone" className="mic-icon"/>
-            </div>
+            <p className="employee-details-text">
+              <i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;
+              <i className="fa-solid fa-building"></i> {employee_department} &nbsp;
+              <i className="fa-solid fa-location-dot"></i> {emp_location} &nbsp;
+              <i className="fa-solid fa-laptop-code"></i> {tech_group} &nbsp;
+              <i className="fa-solid fa-business-time"></i> {total_exp}
+            </p>
           </div>
 
-          </div>
-
-          <div className="schedule-card">
-            <div className="header">
-              <h3>Schedule</h3>
-              <div className="arrow">↗</div>
-            </div>
-
-            <div className="dates">
-              <div><span>M</span><p>16</p></div>
-              <div><span>T</span><p>17</p></div>
-              <div><span>W</span><p>18</p></div>
-              <div className="active"><span>T</span><p>19</p></div>
-              <div><span>F</span><p>20</p></div>
-              <div><span>S</span><p>21</p></div>
-            </div>
-
-            <div className="tabs">
-              <span className="active">Screening</span>
-              <span>Design Task</span>
-              <span>Interview</span>
-            </div>
-
-            <div className="schedule-list">
-              <div className="item">
-                <span className="time">09:30</span>
-                <span className="text">Interview with Habibur Rahman</span>
-              </div>
-              <div className="item">
-                <span className="time">11:00</span>
-                <span className="text">Design Task Review & QA</span>
-              </div>
-              <div className="item">
-                <span className="time">12:30</span>
-                <span className="text">Design Task Review</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT COLUMN */}
-        <div className="dashboard-right">
-
-          {/* FILTER BAR */}
-          <div className="filter-bar">
-            <div className="filter-controls">
-
-              <div className="multi-select">
-                <div
-                  className={`select-trigger ${dropdownOpen ? 'active' : ''}`}
-                  onClick={toggleDropdown}
-                >
-                  <span className="placeholder">
-                    {selectedRoles.length > 0
-                      ? selectedRoles.join(', ')
-                      : 'Select Widgets'}
-                  </span>
-                </div>
-
-                {dropdownOpen && (
-                  <div className="dropdown-menu">
-                    {['frontend', 'backend', 'fullstack', 'mobile', 'devops'].map(role => (
-                      <label key={role} className="option">
-                        <input
-                          type="checkbox"
-                          checked={selectedRoles.includes(role)}
-                          onChange={() => selectOption(role)}
-                        />
-                        {role}
-                      </label>
-                    ))}
-                  </div>
+          {skill_set && (
+            <div className="employee-skills-section">
+              <span className="skills-label">Skills:</span>
+              <div className="skills-container">
+                {skill_set.split(',').slice(0, showAllSkills ? undefined : 5).map((skill, skillIndex) => (
+                  <span key={skillIndex} className="skill-badge">{skill.trim()}</span>
+                ))}
+                {skill_set.split(',').length > 5 && (
+                  <button onClick={() => setShowAllSkills(!showAllSkills)} className="skill-more-btn">
+                    {showAllSkills ? 'Show Less' : `+${skill_set.split(',').length - 5} More`}
+                  </button>
                 )}
               </div>
             </div>
-          </div>
+          )}
 
-          {/* GRID */}
-          {visibleLayout.length > 0 && (
-            <div className="grid-container">
-              {layout.map(item => (
-                <div key={item.id} className="grid-item-content">
-                  <div className="grid-item-header">
-                    <h4>{getWidgetData(item.id).title}</h4>
-                    <button
-                      className="close-btn"
-                      onClick={() => removeItem(item.id)}
-                    >
-                      ×
-                    </button>
-                  </div>
-                  <div className="grid-item-body">
-                    <p>{getWidgetData(item.id).content}</p>
-                  </div>
-                </div>
-              ))}
+          {employee.projects && employee.projects.length > 0 && (
+            <div className="employee-projects-section">
+              <span className="projects-label">Projects: </span>
+              <span className="projects-text">
+                {employee.projects.map((project, projectIndex) => (
+                  <span key={projectIndex}>
+                    <span className="project-name">{project.project_name}</span>
+                    <span className="project-customer"> ({project.customer})</span>
+                    {projectIndex < employee.projects.length - 1 && <span>, </span>}
+                  </span>
+                ))}
+              </span>
             </div>
           )}
 
+          {ai_reason && (
+            <div className="ai-reason-section">
+              <button onClick={() => setShowReason(!showReason)} className="reason-toggle-btn">
+                <span>Why this match?</span>
+                <i className={`fa-solid fa-chevron-${showReason ? 'up' : 'down'}`}></i>
+              </button>
+              {showReason && <p className="reason-text">{ai_reason}</p>}
+            </div>
+          )}
+        </div>
+        
+        <div className="employee-score-section">
+          <div className="score-circle-container">
+            {/* <div className="score-circle-wrapper">
+              <svg className="score-circle-svg" viewBox="0 0 36 36">
+                <path
+                  className="score-bg-path"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  fill="transparent"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <path
+                  className={`score-progress-path ${scoreClass}`}
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeDasharray={`${ai_score || 0}, 100`}
+                  strokeLinecap="round"
+                  fill="transparent"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+              </svg>
+              <div className="score-value">
+                <div className={`score-text ${scoreClass}`}>{ai_score || 0}%</div>
+              </div>
+            </div> */}
+          </div>
+          
+          {employee.ai_criteria && (
+            <div className="criteria-list">
+              {Object.entries(employee.ai_criteria).map(([criteria, criteriaScore]) => {
+                const criteriaClass = criteriaScore >= 80 ? 'high' : criteriaScore >= 60 ? 'medium' : 'low';
+                return (
+                  <div key={criteria} className="criteria-item">
+                    <div className="criteria-header">
+                      <span className="criteria-name">{criteria}</span>
+                      <span className="criteria-score">{criteriaScore}%</span>
+                    </div>
+                    <div className="criteria-bar-bg">
+                      <div className={`criteria-bar-fill ${criteriaClass}`} style={{ width: `${criteriaScore}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default D
+const D = () => {
+  const [employees] = useState([
+    {
+      display_name: "John Doe",
+      designation: "Senior Developer",
+      employee_id: "EMP001",
+      employee_department: "Engineering",
+      emp_location: "New York",
+      tech_group: "Full Stack",
+      total_exp: "8 years",
+      ai_score: 85,
+      skill_set: "React, Node.js, Python, AWS, Docker, Kubernetes",
+      ai_reason: "Strong match based on technical skills and experience level",
+      projects: [
+        { project_name: "E-Commerce Platform", customer: "ABC Corp" },
+        { project_name: "Mobile App", customer: "XYZ Inc" }
+      ],
+      ai_criteria: {
+        "Technical Skills": 90,
+        "Experience": 85,
+        "Domain Knowledge": 80
+      }
+    },
+    {
+      display_name: "Jane Smith",
+      designation: "Tech Lead",
+      employee_id: "EMP002",
+      employee_department: "Engineering",
+      emp_location: "San Francisco",
+      tech_group: "Backend",
+      total_exp: "10 years",
+      ai_score: 42,
+      skill_set: "Java, Spring Boot, Microservices, PostgreSQL, Redis",
+      ai_reason: "Excellent technical expertise and leadership experience",
+      projects: [
+        { project_name: "Banking System", customer: "Finance Co" }
+      ],
+      ai_criteria: {
+        "Technical Skills": 50,
+        "Experience": 48,
+        "Domain Knowledge": 54
+      }
+    },
+    {
+      display_name: "Mike Johnson",
+      designation: "Junior Developer",
+      employee_id: "EMP003",
+      employee_department: "Engineering",
+      emp_location: "Austin",
+      tech_group: "Frontend",
+      total_exp: "3 years",
+      ai_score: 65,
+      skill_set: "React, JavaScript, CSS, HTML, Git",
+      ai_reason: "Good foundational skills with growth potential",
+      projects: [
+        { project_name: "Dashboard UI", customer: "Tech Startup" }
+      ],
+      ai_criteria: {
+        "Technical Skills": 70,
+        "Experience": 60,
+        "Domain Knowledge": 65
+      }
+    }
+  ]);
+
+  return (
+    <div className="employee-matches-container">
+      <div className="employee-matches-wrapper">
+        <h1 className="employee-matches-title">Employee Matches</h1>
+        <div className="employee-cards-list">
+          {employees.map((employee) => (
+            <RequirementCard key={employee.employee_id} employee={employee} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default D;

@@ -727,7 +727,7 @@
   width: 10%
 }
 
-.upload-btn:hover {
+.upload-btn:hover, .filter-btn:hover {
   background: var(--color-bg-muted);
   color: black;
 
@@ -737,7 +737,14 @@
   width: 24px;
   height: 24px;
 }
-
+.filter-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
 .search-card-header {
   margin-top: 40px;
   display: flex;
