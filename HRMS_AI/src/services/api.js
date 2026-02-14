@@ -82,3 +82,17 @@ export async function getSoonAvailableEmployees() {
     console.log(error);
   }
 }
+
+export async function generateWidgetFromPrompt(payload) {
+  try {
+    console.log(payload)
+    const response = await axios.post(`${BASE_URL}/ai-analytics`, {
+      "prompt": payload.prompt
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}

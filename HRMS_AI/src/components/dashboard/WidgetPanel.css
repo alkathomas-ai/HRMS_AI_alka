@@ -925,6 +925,12 @@
   margin-left: 5px;
 }
 
+.timeline-employee-projects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
 .timeline-employee-project {
   font-size: 10px;
   font-weight: 500;
@@ -932,5 +938,4 @@
   color: var(--color-text-inverse);
   padding: 2px 3px;
   border-radius: 3px;
-  margin-right: 5px;
 }

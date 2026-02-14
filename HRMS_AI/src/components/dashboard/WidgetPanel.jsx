@@ -8,6 +8,9 @@ import { getProjectDistributions, getEmployeeDirectory, getEmployeeCount, getDep
 import Alert from '../common/Alert';
 import DoughnutChart from './charts/DoughnutChart';
 import BarChart from './charts/BarChart';
+import CreateWidgetModal from './CreateWidgetModal';
+import DynamicWidget from './DynamicWidget';
+
 
 const SortableWidget = ({ id, children, isPinned }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
@@ -30,8 +33,10 @@ const SortableWidget = ({ id, children, isPinned }) => {
 const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const [selectedWidgets, setSelectedWidgets] = useState(['project-distribution', 'department-overview', 'employee-directory', 'available-employees']);
   const [pinnedWidgets, setPinnedWidgets] = useState([]);
+  const [dynamicWidgets, setDynamicWidgets] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   const [projectDistribution, setProjectDistribution] = useState({ projects: [], total_employees: 0 });
@@ -412,10 +417,18 @@ case 'available-employees': {
                 <div className="timeline-employee-meta">
                   {emp.tech_group} • {emp.emp_location}
                 </div>
-                {emp.projects.map(p => {
-                  return <span key={p.project_id} className="timeline-employee-project">{p.project_name}</span>
-                  })
-                }
+                <div className="timeline-employee-projects">
+
+{emp.projects.map(p => (
+  <span
+    key={p.project_id || p.project_name}
+    className="timeline-employee-project"
+  >
+    {p.project_name}
+  </span>
+))}
+                </div>
+
                 <div
                   className="timeline-employee-badge"
                   style={
@@ -595,7 +608,7 @@ case 'available-employees': {
           </div>
               
           <div className="actions">
-            <button className="primary-btn">
+            <button className="primary-btn" onClick={() => setIsModalOpen(true)}>
               <span className='btn-content'>Create a Widget</span> <span className="plus">+</span>
             </button>
           </div>
@@ -621,10 +634,32 @@ case 'available-employees': {
                     {renderWidget(widgetId)}
                   </SortableWidget>
                 ))}
+              {dynamicWidgets.map(widget => (
+                <SortableWidget key={widget.id} id={widget.id}>
+                  <DynamicWidget widget={widget} />
+                </SortableWidget>
+              ))}
+
             </div>
           </SortableContext>
         </DndContext>
       </div>
+
+<CreateWidgetModal 
+  isOpen={isModalOpen} 
+  onClose={() => setIsModalOpen(false)}
+  onGenerate={(widget) => {
+    setDynamicWidgets(prev => [
+      ...prev,
+      {
+        id: `dynamic-${Date.now()}`,
+        ...widget
+      }
+    ]);
+    setIsModalOpen(false);
+  }}
+/>
+
     </div>
   );
 };
