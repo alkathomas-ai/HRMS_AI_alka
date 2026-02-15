@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import "./Dashboard.css";
+// import "./Dashboard.css";
 import "./D.css";
-import { Icons } from '../../assets/icons';
+import { Icons } from '../assets/icons';
 
 const RequirementCard = ({ employee }) => {
   const [showAllSkills, setShowAllSkills] = useState(false);
@@ -39,7 +39,7 @@ const RequirementCard = ({ employee }) => {
         <div className="employee-info-section">
           <div className="employee-header">
             <div className="employee-name-row">
-              <h2 className="employee-name">{display_name}</h2>
+              <h2 className="employee-name-search">{display_name}</h2>
               <span className="employee-designation-badge">{designation}</span>
             </div>
             <p className="employee-details-text">
@@ -51,46 +51,48 @@ const RequirementCard = ({ employee }) => {
             </p>
           </div>
 
-          {skill_set && (
-            <div className="employee-skills-section">
-              <span className="skills-label">Skills:</span>
-              <div className="skills-container">
-                {skill_set.split(',').slice(0, showAllSkills ? undefined : 5).map((skill, skillIndex) => (
-                  <span key={skillIndex} className="skill-badge">{skill.trim()}</span>
-                ))}
-                {skill_set.split(',').length > 5 && (
-                  <button onClick={() => setShowAllSkills(!showAllSkills)} className="skill-more-btn">
-                    {showAllSkills ? 'Show Less' : `+${skill_set.split(',').length - 5} More`}
-                  </button>
-                )}
+          <div>
+            {skill_set && (
+              <div className="employee-skills-section">
+                <span className="skills-label">Skills:</span>
+                <div className="skills-container">
+                  {skill_set.split(',').slice(0, showAllSkills ? undefined : 5).map((skill, skillIndex) => (
+                    <span key={skillIndex} className="skill-badge">{skill.trim()}</span>
+                  ))}
+                  {skill_set.split(',').length > 5 && (
+                    <button onClick={() => setShowAllSkills(!showAllSkills)} className="skill-more-btn">
+                      {showAllSkills ? 'Show Less' : `+${skill_set.split(',').length - 5} More`}
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
-
-          {employee.projects && employee.projects.length > 0 && (
-            <div className="employee-projects-section">
-              <span className="projects-label">Projects: </span>
-              <span className="projects-text">
-                {employee.projects.map((project, projectIndex) => (
-                  <span key={projectIndex}>
-                    <span className="project-name">{project.project_name}</span>
-                    <span className="project-customer"> ({project.customer})</span>
-                    {projectIndex < employee.projects.length - 1 && <span>, </span>}
-                  </span>
-                ))}
-              </span>
-            </div>
-          )}
-
-          {ai_reason && (
-            <div className="ai-reason-section">
-              <button onClick={() => setShowReason(!showReason)} className="reason-toggle-btn">
-                <span>Why this match?</span>
-                <i className={`fa-solid fa-chevron-${showReason ? 'up' : 'down'}`}></i>
-              </button>
-              {showReason && <p className="reason-text">{ai_reason}</p>}
-            </div>
-          )}
+            )}
+  
+            {employee.projects && employee.projects.length > 0 && (
+              <div className="employee-projects-section">
+                <span className="projects-label">Projects: </span>
+                <span className="projects-text">
+                  {employee.projects.map((project, projectIndex) => (
+                    <span key={projectIndex}>
+                      <span className="project-name">{project.project_name}</span>
+                      <span className="project-customer"> ({project.customer})</span>
+                      {projectIndex < employee.projects.length - 1 && <span>, </span>}
+                    </span>
+                  ))}
+                </span>
+              </div>
+            )}
+  
+            {ai_reason && (
+              <div className="ai-reason-section">
+                <button onClick={() => setShowReason(!showReason)} className="reason-toggle-btn">
+                  <span className="reason-label">Why this match?</span>
+                  <i className={`fa-solid fa-chevron-${showReason ? 'up' : 'down'}`}></i>
+                </button>
+                {!showReason && <p className="reason-text">{ai_reason}</p>}
+              </div>
+            )}
+          </div>
         </div>
         
         <div className="employee-score-section">

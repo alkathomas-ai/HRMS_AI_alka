@@ -111,8 +111,8 @@
   margin-bottom: 6px;
 }
 
-.employee-name {
-  font-size: 22px !important;
+.employee-name-search {
+  font-size: 22px;
   font-weight: 700;
   color: #111827;
   margin: 0;
@@ -143,7 +143,7 @@
 }
 
 .skills-label {
-  color: #64748b;
+  color: #373737;
   font-size: 12px;
   font-weight: 500;
 }
@@ -185,7 +185,7 @@
 }
 
 .projects-label {
-  color: #64748b;
+  color: #373737;
   font-size: 12px;
   font-weight: 500;
 }
@@ -206,6 +206,12 @@
 .ai-reason-section {
   margin-top: 8px;
 }
+.reason-label {
+  color: #373737;
+  font-size: 12px;
+  font-weight: 500;
+}
+
 
 .reason-toggle-btn {
   display: flex;

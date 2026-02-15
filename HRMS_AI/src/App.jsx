@@ -2,9 +2,9 @@ import {  Route, Routes } from 'react-router-dom'
 import React from 'react' 
 import './App.css'
 import User from './user/User'
-import D from './components/dashboard/D'
+import D from './pages/D'
 import Dashboard from './components/dashboard/Dashboard'
-import MainLayout from './components/layout/MainLayout'
+import MainLayout from './layout/MainLayout'
 
 const App = () => { 
   return (
