@@ -903,8 +903,8 @@
 .timeline-employee-badge {
   margin-top: 6px;
   font-size: 10px;
-  background: #dbeafe;
-  color: #1d4ed8;
+  background: var(--color-primary-light);
+  color: var(--color-primary-soft);
   padding: 4px 8px;
   border-radius: 12px;
   display: inline-block;

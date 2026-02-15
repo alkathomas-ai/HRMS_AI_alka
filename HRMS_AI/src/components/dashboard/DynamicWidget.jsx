@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Pie } from 'react-chartjs-2';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, ArcElement, Tooltip } from 'chart.js';
+import './DynamicWidget.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, ArcElement, Tooltip);
 
@@ -12,10 +13,22 @@ const DynamicWidget = ({ widgetData }) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const dataKeys = data[0] ? Object.keys(data[0]) : [];
   const xKey = dataKeys[0] || xAxis;
   const yKey = dataKeys[1] || yAxis;
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const renderChart = () => {
     switch (chartType.toLowerCase()) {
@@ -58,25 +71,31 @@ const DynamicWidget = ({ widgetData }) => {
             <div style={{ paddingBottom: '5px', borderBottom: '1px solid #e0e0e0', display: 'flex', gap: '12px', alignItems: 'center' }}>
               <input
                 type="text"
+                className='dynamic-table-search'
                 placeholder="Search..."
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-                style={{ flex: 1, padding: '8px 12px', border: '1px solid #e0e0e0', borderRadius: '4px', fontSize: '14px' }}
+                // style={{ flex: 1, padding: '8px 12px', border: '1px solid #e0e0e0', borderRadius: '4px', fontSize: '14px' }}
               />
-              <select
-                value={rowsPerPage}
-                onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(0); }}
-                style={{ padding: '8px', border: '1px solid #e0e0e0', borderRadius: '4px', fontSize: '14px' }}
-              >
-                <option value={5}>5 rows</option>
-                <option value={10}>10 rows</option>
-                <option value={25}>25 rows</option>
-                <option value={50}>50 rows</option>
-              </select>
+              <div className="custom-select-wrapper" ref={dropdownRef}>
+                <div className="select-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                  <span>{rowsPerPage} rows</span>
+                  <i className="fa-solid fa-chevron-down"></i>
+                </div>
+                {isDropdownOpen && (
+                  <div className="dropdown-menu show">
+                    {[5, 10, 25, 50].map(num => (
+                      <div key={num} className="option" onClick={() => { setRowsPerPage(num); setPage(0); setIsDropdownOpen(false); }}>
+                        {num} rows
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
             <div style={{ flex: 1, overflow: 'auto', maxHeight: '400px' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead style={{ position: 'sticky', top: 0, background: '#f5f5f5', zIndex: 1 }}>
+              <table className='dynmaic-table' style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                   <tr>
                     {dataKeys.map(key => (
                       <th key={key} style={{ padding: '12px', textAlign: 'left', fontWeight: 600, fontSize: '14px', color: '#424242', borderBottom: '2px solid #e0e0e0', whiteSpace: 'nowrap' }}>
@@ -108,6 +127,22 @@ const DynamicWidget = ({ widgetData }) => {
           </div>
         );
       }
+
+      case 'card': {
+        const value = data[0] ? Object.values(data[0])[0] : 0;
+        const label = dataKeys[0] ? dataKeys[0].replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : '';
+        return (
+          <div className="stat-card">
+            <div className="stat-card-icon">
+              <i className="fa-solid fa-chart-simple"></i>
+            </div>
+            <div className="stat-card-content">
+              <div className="stat-card-value">{value}</div>
+              <div className="stat-card-label">{label || 'Total'}</div>
+            </div>
+          </div>
+        );
+      }
       
       default:
         return <div>Unsupported chart type: {chartType}</div>;
@@ -116,7 +151,7 @@ const DynamicWidget = ({ widgetData }) => {
 
   return (
     <div className="dynamic-widget">
-      <div className="chart-wrapper" style={{ height: chartType === 'table' ? '500px' : '250px', display: 'flex', flexDirection: 'column' }}>
+      <div className="chart-wrapper" style={{ height: chartType === 'table' ? '500px' : chartType === 'card' ? 'auto' : '250px', display: 'flex', flexDirection: 'column' }}>
         {renderChart()}
       </div>
     </div>

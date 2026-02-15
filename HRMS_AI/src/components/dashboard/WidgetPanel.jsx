@@ -88,10 +88,10 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         setDepartmentData({ departments: departments.departments });
         setEmployeeDirectory({ employees: employees.employees });
         setSoonAvailableEmployees(availableEmployees?.data || []);
-        setEmployeeCount({ 
-          employeeCount: counts.employee_count || 0, 
-          projectCount: counts.project_count || 0, 
-          freepoolCount: counts.freepool_count || 0 
+        setEmployeeCount({
+          employeeCount: counts.employee_count || 0,
+          projectCount: counts.project_count || 0,
+          freepoolCount: counts.freepool_count || 0
         });
         if (availableEmployees?.data?.length) {
           const sorted = [...availableEmployees.data]
@@ -249,7 +249,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             </div>
           </>
         );
-      
+
       case 'department-overview':
         return (
           <>
@@ -274,9 +274,9 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             </div>
           </>
         );
-      
+
       case 'employee-directory':
-        const filteredEmployees = employeeDirectory.employees.filter(emp => 
+        const filteredEmployees = employeeDirectory.employees.filter(emp =>
           emp.display_name.toLowerCase().includes(employeeSearch.toLowerCase()) ||
           emp.employee_department.toLowerCase().includes(employeeSearch.toLowerCase()) ||
           emp.designation.toLowerCase().includes(employeeSearch.toLowerCase())
@@ -284,7 +284,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         const startIndex = employeePage * employeesPerPage;
         const currentEmployees = filteredEmployees.slice(startIndex, startIndex + employeesPerPage);
         const totalPages = Math.ceil(filteredEmployees.length / employeesPerPage);
-        
+
         return (
           <>
             <div className="grid-item-header">
@@ -300,9 +300,9 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
               </div>
             </div>
             <div style={{ marginBottom: '12px' }}>
-              <input 
-                type="text" 
-                placeholder="Search employees..." 
+              <input
+                type="text"
+                placeholder="Search employees..."
                 value={employeeSearch}
                 onChange={(e) => { setEmployeeSearch(e.target.value); setEmployeePage(0); }}
                 className="employee-search-input"
@@ -338,160 +338,159 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             )}
           </>
         );
-      
-case 'available-employees': {
 
-  // 1️⃣ Split Employees
-  const freeEmployees = soonAvailableEmployees.filter(emp =>
-    !emp.committed_relieving_date &&
-    emp.projects?.some(p => p.project_name === "CLUD_FREE")
-  );
+      case 'available-employees': {
 
-  const releasingEmployees = soonAvailableEmployees
-    .filter(emp => emp.committed_relieving_date)
-    .sort((a, b) =>
-      new Date(a.committed_relieving_date) -
-      new Date(b.committed_relieving_date)
-    );
+        // 1️⃣ Split Employees
+        const freeEmployees = soonAvailableEmployees.filter(emp =>
+          !emp.committed_relieving_date &&
+          emp.projects?.some(p => p.project_name === "CLUD_FREE")
+        );
 
-  const dateGroups = [
-    ...new Set(releasingEmployees.map(emp => emp.committed_relieving_date))
-  ];
+        const releasingEmployees = soonAvailableEmployees
+          .filter(emp => emp.committed_relieving_date)
+          .sort((a, b) =>
+            new Date(a.committed_relieving_date) -
+            new Date(b.committed_relieving_date)
+          );
 
-  // 2️⃣ Build Timeline Items (FREE first)
-  const timelineItems = [
-    ...(freeEmployees.length ? ["FREE"] : []),
-    ...dateGroups
-  ];
+        const dateGroups = [
+          ...new Set(releasingEmployees.map(emp => emp.committed_relieving_date))
+        ];
 
-  // 3️⃣ Determine Employees for Selected Item
-  let filteredEmployees = [];
+        // 2️⃣ Build Timeline Items (FREE first)
+        const timelineItems = [
+          ...(freeEmployees.length ? ["FREE"] : []),
+          ...dateGroups
+        ];
 
-  if (activeReleaseDate === "FREE") {
-    filteredEmployees = freeEmployees;
-  } else {
-    filteredEmployees = releasingEmployees.filter(
-      emp => emp.committed_relieving_date === activeReleaseDate
-    );
-  }
+        // 3️⃣ Determine Employees for Selected Item
+        let filteredEmployees = [];
 
-  const activeIndex = Math.max(timelineItems.indexOf(activeReleaseDate), 0);
+        if (activeReleaseDate === "FREE") {
+          filteredEmployees = freeEmployees;
+        } else {
+          filteredEmployees = releasingEmployees.filter(
+            emp => emp.committed_relieving_date === activeReleaseDate
+          );
+        }
 
-  return (
-    <>
-      <div className="grid-item-header">
-        <h4>Available Timeline</h4>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <button
-            onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
-            className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
-          >
-            <img src={Icons.pin} alt="" />
-          </button>
-          <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
-        </div>
-      </div>
+        const activeIndex = Math.max(timelineItems.indexOf(activeReleaseDate), 0);
 
-      <div className="timeline-wrapper">
+        return (
+          <>
+            <div className="grid-item-header">
+              <h4>Available Timeline</h4>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button
+                  onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
+                  className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
+                >
+                  <img src={Icons.pin} alt="" />
+                </button>
+                <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+              </div>
+            </div>
 
-        {/* LEFT SIDE — CHRONOLOGICAL BAR */}
-<div className="timeline-bar" ref={timelineRef}>
-  {timelineItems.map(item => {
+            <div className="timeline-wrapper">
 
-    const itemCount =
-      item === "FREE"
-        ? freeEmployees.length
-        : releasingEmployees.filter(
-            emp => emp.committed_relieving_date === item
-          ).length;
+              {/* LEFT SIDE — CHRONOLOGICAL BAR */}
+              <div className="timeline-bar" ref={timelineRef}>
+                {timelineItems.map(item => {
 
-    return (
-      <div
-        key={item}
-        className={`timeline-date-item ${
-          activeReleaseDate === item ? 'active' : ''
-        }`}
-        onClick={() => setActiveReleaseDate(item)}
-      >
-        <span>
-          {item === "FREE"
-            ? "Free"
-            : new Date(item).toLocaleDateString()}
-        </span>
+                  const itemCount =
+                    item === "FREE"
+                      ? freeEmployees.length
+                      : releasingEmployees.filter(
+                        emp => emp.committed_relieving_date === item
+                      ).length;
 
-        <span className="timeline-freepool-count">
-          {itemCount}
-        </span>
-      </div>
-    );
-  })}
+                  return (
+                    <div
+                      key={item}
+                      className={`timeline-date-item ${activeReleaseDate === item ? 'active' : ''
+                        }`}
+                      onClick={() => setActiveReleaseDate(item)}
+                    >
+                      <span>
+                        {item === "FREE"
+                          ? "Free"
+                          : new Date(item).toLocaleDateString()}
+                      </span>
 
-  <div
-    className="timeline-slider"
-    style={{
-      top: activeIndex * 48 + 'px'
-    }}
-  />
-</div>
-
-
-        {/* RIGHT SIDE — EMPLOYEES */}
-        <div className="timeline-content">
-          {filteredEmployees.map(emp => {
-            const releaseDate = emp.committed_relieving_date
-              ? new Date(emp.committed_relieving_date)
-              : null;
-
-            const today = new Date();
-            const daysLeft = releaseDate
-              ? Math.ceil((releaseDate - today) / (1000 * 60 * 60 * 24))
-              : null;
-
-            return (
-              <div key={emp.employee_id} className="timeline-employee-card">
-                <div className="timeline-employee-name">
-                  {emp.display_name}
-                </div>
-                <div className="timeline-employee-meta">
-                  {emp.tech_group} • {emp.emp_location}
-                </div>
-                <div className="timeline-employee-projects">
-
-{emp.projects.map(p => (
-  <span
-    key={p.project_id || p.project_name}
-    className="timeline-employee-project"
-  >
-    {p.project_name}
-  </span>
-))}
-                </div>
+                      <span className="timeline-freepool-count">
+                        {itemCount}
+                      </span>
+                    </div>
+                  );
+                })}
 
                 <div
-                  className="timeline-employee-badge"
-                  style={
-                    activeReleaseDate === "FREE"
-                      ? { background: "#dcfce7", color: "#166534" }
-                      : {}
-                  }
-                >
-                  {activeReleaseDate === "FREE"
-                    ? "Available Now"
-                    : `${daysLeft} days remaining`}
-                </div>
+                  className="timeline-slider"
+                  style={{
+                    top: activeIndex * 48 + 'px'
+                  }}
+                />
               </div>
-            );
-          })}
-        </div>
-      </div>
-    </>
-  );
-}
+
+
+              {/* RIGHT SIDE — EMPLOYEES */}
+              <div className="timeline-content">
+                {filteredEmployees.map(emp => {
+                  const releaseDate = emp.committed_relieving_date
+                    ? new Date(emp.committed_relieving_date)
+                    : null;
+
+                  const today = new Date();
+                  const daysLeft = releaseDate
+                    ? Math.ceil((releaseDate - today) / (1000 * 60 * 60 * 24))
+                    : null;
+
+                  return (
+                    <div key={emp.employee_id} className="timeline-employee-card">
+                      <div className="timeline-employee-name">
+                        {emp.display_name}
+                      </div>
+                      <div className="timeline-employee-meta">
+                        {emp.tech_group} • {emp.emp_location}
+                      </div>
+                      <div className="timeline-employee-projects">
+
+                        {emp.projects.map(p => (
+                          <span
+                            key={p.project_id || p.project_name}
+                            className="timeline-employee-project"
+                          >
+                            {p.project_name}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div
+                        className="timeline-employee-badge"
+                        style={
+                          activeReleaseDate === "FREE"
+                            ? { background: "#dcfce7", color: "#166534" }
+                            : {}
+                        }
+                      >
+                        {activeReleaseDate === "FREE"
+                          ? "Available Now"
+                          : `${daysLeft} days remaining`}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </>
+        );
+      }
 
 
 
 
-      
+
       default:
         return null;
     }
@@ -507,7 +506,7 @@ case 'available-employees': {
             <img src={Icons.expand} alt="Expand" />
           </span>
         </div>
-        
+
         {/* <div className="minimized-stats-grid">
           <div className="mini-stat-card">
             <div className="stat-icon employees">
@@ -553,7 +552,7 @@ case 'available-employees': {
               </div>
               <i className="fa-solid fa-chevron-right action-arrow"></i>
             </div>
-            
+
             <div className="action-card" onClick={onExpand}>
               <div className="action-icon">
                 <i className="fa-solid fa-building"></i>
@@ -564,7 +563,7 @@ case 'available-employees': {
               </div>
               <i className="fa-solid fa-chevron-right action-arrow"></i>
             </div>
-            
+
             <div className="action-card" onClick={onExpand}>
               <div className="action-icon">
                 <i className="fa-solid fa-address-book"></i>
@@ -595,15 +594,24 @@ case 'available-employees': {
         <div className="stats">
           <div className="stat">
             <h3>{employeeCount.employeeCount || 0}</h3>
-            <span><i className="fa-regular fa-user"></i> Total Employees</span>
+            <span>
+              {/* <i className="fa-regular fa-user"></i> */}
+              Total Employees
+            </span>
           </div>
           <div className="stat">
             <h3>{employeeCount.projectCount || 0}</h3>
-            <span><i className="fa-regular fa-eye"></i> Active</span>
+            <span>
+              {/* <i className="fa-regular fa-eye"></i>  */}
+              Active
+            </span>
           </div>
           <div className="stat">
             <h3>{employeeCount.freepoolCount || 0}</h3>
-            <span><i className="fa-regular fa-circle-check"></i> Freepool</span>
+            <span>
+              {/* <i className="fa-regular fa-circle-check"></i> */}
+              Freepool
+            </span>
           </div>
         </div>
       </div>
@@ -612,9 +620,9 @@ case 'available-employees': {
         <div className="filter-bar">
           <div className="filter-controls">
             <div className="search-input">
-              <input 
-                type="text" 
-                placeholder="Search widgets..." 
+              <input
+                type="text"
+                placeholder="Search widgets..."
                 value={widgetSearch}
                 onChange={(e) => setWidgetSearch(e.target.value)}
               />
@@ -631,9 +639,9 @@ case 'available-employees': {
                 <div className="dropdown-menu show">
                   {availableWidgets.map(widget => (
                     <div key={widget.id} className="option">
-                      <input 
-                        type="checkbox" 
-                        id={widget.id} 
+                      <input
+                        type="checkbox"
+                        id={widget.id}
                         checked={selectedWidgets.includes(widget.id)}
                         onChange={() => toggleWidget(widget.id)}
                       />
@@ -644,7 +652,7 @@ case 'available-employees': {
               )}
             </div>
           </div>
-              
+
           <div className="actions">
             <button className="primary-btn" onClick={() => setIsModalOpen(true)}>
               <span className='btn-content'>Create a Widget</span> <span className="plus">+</span>
@@ -679,16 +687,16 @@ case 'available-employees': {
         </DndContext>
       </div>
 
-<CreateWidgetModal 
-  isOpen={isModalOpen} 
-  onClose={() => setIsModalOpen(false)}
-  onGenerate={(widgetData) => {
-    const newWidget = { id: `dynamic-${Date.now()}`, ...widgetData };
-    setDynamicWidgets(prev => [...prev, newWidget]);
-    setSelectedWidgets(prev => [...prev, newWidget.id]);
-    setIsModalOpen(false);
-  }}
-/>
+      <CreateWidgetModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onGenerate={(widgetData) => {
+          const newWidget = { id: `dynamic-${Date.now()}`, ...widgetData };
+          setDynamicWidgets(prev => [...prev, newWidget]);
+          setSelectedWidgets(prev => [...prev, newWidget.id]);
+          setIsModalOpen(false);
+        }}
+      />
 
     </div>
   );
