@@ -98,7 +98,7 @@ const DynamicWidget = ({ widgetData }) => {
                 <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                   <tr>
                     {dataKeys.map(key => (
-                      <th key={key} style={{ padding: '12px', textAlign: 'left', fontWeight: 600, fontSize: '14px', color: '#424242', borderBottom: '2px solid #e0e0e0', whiteSpace: 'nowrap' }}>
+                      <th key={key} style={{ padding: '12px', textAlign: 'left', fontWeight: 600, fontSize: '14px', color: '#424242', borderBottom: '1px solid #e0e0e0', whiteSpace: 'nowrap' }}>
                         {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                       </th>
                     ))}
