@@ -30,6 +30,10 @@
   --color-bg-topbar: #FCFBFD;
   --color-bg-dashboard: #F5F6F7;
 
+  /* scrore */
+  --color-primary-medium:#e18889;
+  --color-primary-low:#e5af78;
+
   /* Text */
   --color-text-primary: #111;
   --color-text-secondary: #6B7280;

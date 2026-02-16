@@ -8,6 +8,8 @@ const themes = [
     soft: '#F04D4D',
     hover: '#B52226',
     light: 'rgba(240, 77, 77, 0.23)',
+    primary_medium: '#e18889',
+    primary_low: '#e5af78',
     assistant: {
       baseStart: '#FFF1E6',
       baseEnd: '#FDD6D6',
@@ -23,6 +25,8 @@ const themes = [
     soft: '#3B82F6',
     hover: '#1E3A8A',
     light: 'rgba(59, 130, 246, 0.23)',
+    primary_medium: '#6397f4',
+    primary_low: '#7dcefd',
     assistant: {
       baseStart: '#EEF3FF',
       baseEnd: '#DCE7FF',
@@ -38,6 +42,8 @@ const themes = [
     soft: '#10B981',
     hover: '#065F46',
     light: 'rgba(16, 185, 129, 0.23)',
+    primary_medium: '#6397f4',
+    primary_low: '#15bf87',
     assistant: {
       baseStart: '#ECFDF7',
       baseEnd: '#D1FAE5',
@@ -93,6 +99,9 @@ const ColorPalette = () => {
     root.style.setProperty('--color-primary-soft', theme.soft);
     root.style.setProperty('--color-primary-hover', theme.hover);
     root.style.setProperty('--color-primary-light', isDark ? theme.light.replace(/[\d.]+\)$/, '0.62)') : theme.light);
+    root.style.setProperty('--color-primary-medium', theme.primary_medium || theme.primary);
+    root.style.setProperty('--color-primary-low', theme.primary_low || theme.soft);
+
 
     // Assistant bar colors
     if (isDark) {

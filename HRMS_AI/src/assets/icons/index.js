@@ -19,8 +19,9 @@ import filter from './filter.svg';
 import barChart from './bar-chart.svg';
 import rightArrow from './right-arrow.svg';
 import address from './address.svg';
-import avatar from './circle-user-solid-full.svg'
-import uploadImg from './upload-solid-full.svg'
+import avatar from './circle-user-solid-full.svg';
+import uploadImg from './upload-solid-full.svg';
+import send from './send.svg'
 
 
 export const Icons = {
@@ -43,5 +44,6 @@ export const Icons = {
   fullscreen,
   close,
   upload,
+  send,
 };
 

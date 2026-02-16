@@ -1,4 +1,5 @@
 import axios from 'axios'
+import dummySearchData from '../data/dummySearchData';
 // const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const BASE_URL = 'http://172.25.247.7:8000'
 
@@ -22,7 +23,8 @@ export async function searchAPI(query) {
 
 
 export async function uploadAPI(formData) {
-  console.log(formData)
+  try{
+    console.log(formData)
   const response = await fetch(`${BASE_URL}/upload/hrms-data`,
         {
           method: "POST",
@@ -34,6 +36,17 @@ export async function uploadAPI(formData) {
         throw new Error(`Upload failed: ${response.statusText}`);
       }
       return response.json();
+  } catch (error) {
+    console.log(error);
+    console.log("Backend not available. Using dummy data.");
+    return dummySearchData; 
+  }
+  
+  // return new Promise((resolve) => {
+  //   setTimeout(() => {
+  //     resolve(dummySearchData);
+  //   }, 1000);
+  // });
 }
 
 export async function getProjectDistributions() {

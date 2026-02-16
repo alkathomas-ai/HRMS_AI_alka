@@ -43,15 +43,15 @@ const RequirementCard = ({ employee }) => {
               <span className="employee-designation-badge">{designation}</span>
             </div>
             <p className="employee-details-text">
-              <i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;
-              <i className="fa-solid fa-building"></i> {employee_department} &nbsp;
-              <i className="fa-solid fa-location-dot"></i> {emp_location} &nbsp;
-              <i className="fa-solid fa-laptop-code"></i> {tech_group} &nbsp;
-              <i className="fa-solid fa-business-time"></i> {total_exp}
+              <p><i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;</p>
+              <p><i className="fa-solid fa-building"></i> {employee_department} &nbsp;</p>
+              <p><i className="fa-solid fa-location-dot"></i> {emp_location} &nbsp;</p>
+              <p><i className="fa-solid fa-laptop-code"></i> {tech_group} &nbsp;</p>
+              <p><i className="fa-solid fa-business-time"></i> {total_exp}</p>
             </p>
           </div>
 
-          <div>
+          <div className='employee-skill-description'>
             {skill_set && (
               <div className="employee-skills-section">
                 <span className="skills-label">Skills:</span>
@@ -93,8 +93,6 @@ const RequirementCard = ({ employee }) => {
               </div>
             )}
           </div>
-        </div>
-        
         <div className="employee-score-section">
           <div className="score-circle-container">
             {/* <div className="score-circle-wrapper">
@@ -141,6 +139,8 @@ const RequirementCard = ({ employee }) => {
             </div>
           )}
         </div>
+        </div>
+        
       </div>
     </div>
   );
@@ -177,7 +177,7 @@ const D = () => {
       emp_location: "San Francisco",
       tech_group: "Backend",
       total_exp: "10 years",
-      ai_score: 42,
+      ai_score: 58,
       skill_set: "Java, Spring Boot, Microservices, PostgreSQL, Redis",
       ai_reason: "Excellent technical expertise and leadership experience",
       projects: [
@@ -185,7 +185,7 @@ const D = () => {
       ],
       ai_criteria: {
         "Technical Skills": 50,
-        "Experience": 48,
+        "Experience": 68,
         "Domain Knowledge": 54
       }
     },
@@ -197,7 +197,7 @@ const D = () => {
       emp_location: "Austin",
       tech_group: "Frontend",
       total_exp: "3 years",
-      ai_score: 65,
+      ai_score: 25,
       skill_set: "React, JavaScript, CSS, HTML, Git",
       ai_reason: "Good foundational skills with growth potential",
       projects: [
