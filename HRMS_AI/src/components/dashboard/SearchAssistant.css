@@ -356,7 +356,6 @@
   cursor: pointer;
   transition: background 0.2s;
   flex-shrink: 0;
-  filter: brightness(0), contrast(0);
 }
 
 .chat-submit-btn:hover {
@@ -780,6 +779,7 @@
 .search-card {
   background-color: white;
   border-radius: 10px;
+  position: relative;
 }
 .search-card-layout {
   position: relative;
@@ -829,20 +829,16 @@
 
   /* popup */
 .employee-hover-popup {
-  position: absolute;
-  left: 70%;
-  top: 30%;
-  transform: translateX(-50%);
+  position: fixed;
   width: 660px;
-  /* height: auto; */
   background: #fff;
   border-radius: 12px;
   padding: 14px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.18);
-  z-index: 999;
-
+  z-index: 9999;
   opacity: 0;
-  animation: popupFade 0.18s ease forwards;
+  animation: popupSlide 0.18s ease forwards;
+  pointer-events: auto;
 }
 
 
@@ -910,14 +906,14 @@
 }
 
 
-@keyframes popupFade {
+@keyframes popupSlide {
   from {
     opacity: 0;
-    transform: translate(-50%, -8px);
+    transform: translateX(10px);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, 0);
+    transform: translateX(0);
   }
 }
 /* ************ */
@@ -931,7 +927,7 @@
 
 .employee-row {
   display: grid;
-  grid-template-columns: 2fr 1.5fr 1fr 1.5fr 0.8fr;
+  grid-template-columns: 1.7fr 1fr 1.7fr 0.8fr 1.3fr 0.8fr 0.3fr;
   align-items: center;
   padding: 12px 16px;
   border-bottom: 1px solid #e5e7eb;
@@ -951,7 +947,7 @@
   /* background: #f3f4f6; */
   background: var(--assistant-base-end);
   display: grid;
-  grid-template-columns: 2fr 1.5fr 1fr 1.5fr 0.8fr;
+  grid-template-columns: 1.7fr 1fr 1.7fr 0.8fr 1.3fr 0.8fr 0.3fr;
 }
 
 .name-cell {
@@ -976,6 +972,28 @@
   font-size: 14px;
   /* font-weight: 500; */
 }
+
+.more-icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  transition: all 0.2s;
+}
+
+.more-icon-btn:hover {
+  background: var(--color-bg-muted);
+  color: var(--color-text-primary);
+}
+
+.more-icon-btn .material-symbols-outlined {
+  font-size: 20px;
+}
 .pagination {
   display: flex;
   justify-content: center;
@@ -995,4 +1013,28 @@
 .pagination button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+.chat-loader {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50%;
+  min-width: 50%;
+  padding: 10px;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #ddd;
+  border-top: 3px solid var(--color-primary);
+  border-radius: 50%;
+  animation: spin 5.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

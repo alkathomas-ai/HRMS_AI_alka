@@ -27,6 +27,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
   const [mouseHover, setMouseHover] =  useState(false)
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [showAllSkills, setShowAllSkills] = useState(false);
+  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
 
   const [chatHistory] = useState([
     { id: 1, title: 'Top Candidates Search' },
@@ -197,11 +198,11 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
   
   return (
     <>
-      {isLoading && (
+      {/* {isLoading && (
         <div className="chat-loader">
           <div className="spinner"></div>
         </div>
-      )}
+      )} */}
 
       {showUploadModal && (
         <div className="upload-modal-overlay" onClick={() => setShowUploadModal(false)}>
@@ -284,13 +285,12 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
                       />
                     )}
                   </div>
-                  {(uploadedFile || inputText.trim()) && (
                     <div className="assistant-microphone">
                       <button className="chat-submit-btn" onClick={handleSendMessage}>
                         <img src={Icons.send} alt="" />
                       </button>
                     </div>
-                  )}
+                  
 
                 </div>
               </div>
@@ -423,7 +423,11 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
               )}
           </div> */}
           <div className="search-card-header">
-  {(() => {
+  {isLoading ? (
+    <div className="chat-loader">
+      <div className="spinner"></div>
+    </div>
+  ) : (() => {
 
     const filteredMessages = messages.filter(
       item =>
@@ -449,15 +453,18 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
 
     return (
       <div className="search-card">
+        
         <div className="employee-table">
 
           {/* ✅ HEADER (Only Once) */}
           <div className="employee-row header">
             <div>Name</div>
+            <div>ID</div>
             <div>Designation</div>
             <div>Total Exp</div>
             <div>Tech Group</div>
             <div>Location</div>
+            <div></div>
           </div>
 
           {/* ✅ ROWS */}
@@ -465,8 +472,21 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
             <div
               key={index}
               className="employee-row"
-              onMouseEnter={() => setHoveredIndex(index)}
-              onMouseLeave={() => setHoveredIndex(null)}
+              onMouseEnter={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const popupHeight = 450; // approximate popup height
+                    const viewportHeight = window.innerHeight;
+                    
+                    // Check if popup would go below viewport
+                    let top = rect.top;
+                    if (top + popupHeight > viewportHeight) {
+                      top = viewportHeight - popupHeight - 40; // 40px margin from bottom
+                    }
+                    
+                    setPopupPosition({ top, left: rect.left });
+                    setHoveredIndex(index);
+                  }}
+                  onMouseLeave={() => setHoveredIndex(null)}
             >
               <div className="name-cell">
                 <div className="employee-avatar">
@@ -475,14 +495,19 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
                 <span>{employee.display_name}</span>
               </div>
 
+              <div>{employee.employee_id}</div>
               <div>{employee.designation}</div>
               <div>{employee.total_exp}</div>
               <div>{employee.tech_group}</div>
               <div>{employee.emp_location}</div>
 
-              {hoveredIndex === index &&
-                createPortal(
-                  <div className="employee-hover-popup">
+              {hoveredIndex === index && createPortal(
+                  <div 
+                    className="employee-hover-popup"
+                    style={{ top: `${popupPosition.top}px`, left: `${popupPosition.left}px` }}
+                    onMouseEnter={() => setHoveredIndex(index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                  >
                    <div className="popup-header">
                                 <div className="employee-avatar">
                   {employee.display_name?.charAt(0).toUpperCase()}
@@ -532,12 +557,8 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
                                 </div>
                               </div>
                 </div>,
-                  document.body
-                )
-              }
-
-
-              
+                document.body
+              )}
             </div>
           ))}
 

@@ -158,7 +158,7 @@
 }
 
 .action-card:hover .action-icon {
-  background: var(--color-primary-hover);
+  background: var(--color-primary);
   color: white;
 }
 .action-card:hover .action-icon img {
