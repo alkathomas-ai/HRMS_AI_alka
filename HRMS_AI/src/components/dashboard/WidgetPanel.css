@@ -319,6 +319,31 @@
   cursor: se-resize;
 }
 
+/* Pinned Widgets Row */
+/* .pinned-widgets-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 16px 0 0 0;
+}
+
+@media (max-width: 1200px) {
+  .pinned-widgets-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .pinned-widgets-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pinned-widgets-row .masonry-item {
+  margin-bottom: 0;
+} */
+
 /* Masonry Grid Layout */
 .masonry-grid {
   column-count: 3;

@@ -35,7 +35,10 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     const saved = localStorage.getItem('selectedWidgets');
     return saved ? JSON.parse(saved) : ['project-distribution', 'department-overview', 'employee-directory', 'available-employees'];
   });
-  const [pinnedWidgets, setPinnedWidgets] = useState([]);
+  const [pinnedWidgets, setPinnedWidgets] = useState(() => {
+    const saved = localStorage.getItem('pinnedWidgets');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [dynamicWidgets, setDynamicWidgets] = useState(() => {
     const saved = localStorage.getItem('dynamicWidgets');
     return saved ? JSON.parse(saved) : [];
@@ -73,6 +76,10 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   useEffect(() => {
     localStorage.setItem('dynamicWidgets', JSON.stringify(dynamicWidgets));
   }, [dynamicWidgets]);
+
+  useEffect(() => {
+    localStorage.setItem('pinnedWidgets', JSON.stringify(pinnedWidgets));
+  }, [pinnedWidgets]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -662,23 +669,35 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
 
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={selectedWidgets} strategy={rectSortingStrategy}>
+            {/* Pinned Widgets Row */}
+            {pinnedWidgets.length > 0 && (
+              <div className="masonry-grid">
+                {selectedWidgets
+                  .filter(widgetId => {
+                    const widget = availableWidgets.find(w => w.id === widgetId);
+                    const dynamicWidget = dynamicWidgets.find(w => w.id === widgetId);
+                    const label = widget?.label || dynamicWidget?.title || '';
+                    return pinnedWidgets.includes(widgetId) && label.toLowerCase().includes(widgetSearch.toLowerCase());
+                  })
+                  .map(widgetId => (
+                    <SortableWidget key={widgetId} id={widgetId} isPinned={true}>
+                      {renderWidget(widgetId)}
+                    </SortableWidget>
+                  ))}
+              </div>
+            )}
+
+            {/* Unpinned Widgets Masonry Grid */}
             <div className="masonry-grid">
               {selectedWidgets
                 .filter(widgetId => {
                   const widget = availableWidgets.find(w => w.id === widgetId);
                   const dynamicWidget = dynamicWidgets.find(w => w.id === widgetId);
                   const label = widget?.label || dynamicWidget?.title || '';
-                  return label.toLowerCase().includes(widgetSearch.toLowerCase());
-                })
-                .sort((a, b) => {
-                  const aIsPinned = pinnedWidgets.includes(a);
-                  const bIsPinned = pinnedWidgets.includes(b);
-                  if (aIsPinned && !bIsPinned) return -1;
-                  if (!aIsPinned && bIsPinned) return 1;
-                  return 0;
+                  return !pinnedWidgets.includes(widgetId) && label.toLowerCase().includes(widgetSearch.toLowerCase());
                 })
                 .map(widgetId => (
-                  <SortableWidget key={widgetId} id={widgetId} isPinned={pinnedWidgets.includes(widgetId)}>
+                  <SortableWidget key={widgetId} id={widgetId} isPinned={false}>
                     {renderWidget(widgetId)}
                   </SortableWidget>
                 ))}
