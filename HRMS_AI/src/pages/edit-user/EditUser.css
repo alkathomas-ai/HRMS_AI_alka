@@ -1,0 +1,26 @@
+.edit-user-header{
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.edit-user-btns{
+    display: flex;
+}
+
+.edit-user-btns button{
+    width: 8rem;
+}
+
+.edit-user-btns button img{
+    filter: brightness(0) invert(1);
+}
+
+.update-btn{
+    margin-right: 10px;
+}
+
+.update-btn img{
+    width: 22px;
+    height: 24px;
+}

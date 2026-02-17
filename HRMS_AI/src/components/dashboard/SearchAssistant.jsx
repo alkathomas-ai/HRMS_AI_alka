@@ -237,7 +237,7 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
               )}
             
 
-              <button className="choose-csv-btn" onClick={handleModalFileSelect}>
+              <button className="choose-csv-btn btn-primary" onClick={handleModalFileSelect}>
                 <span className="material-symbols-outlined">folder_open</span>
                 Choose CSV
               </button>
@@ -304,12 +304,12 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
               </button> */}
 
               <div className='assistant-btns'>
-                <button className="choose-csv-btn" onClick={()=> {}}>
+                <button className="choose-csv-btn primary-btn" onClick={()=> {}}>
                   <span className="material-symbols-outlined">filter</span>
                   Filter
                 </button>
   
-                <button className="choose-csv-btn" onClick={handlePlusClick}>
+                <button className="choose-csv-btn primary-btn" onClick={handlePlusClick}>
                   <span className="material-symbols-outlined">upload</span>
                   Upload CSV
                 </button>

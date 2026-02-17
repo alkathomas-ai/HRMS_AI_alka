@@ -22,6 +22,7 @@ import address from './address.svg';
 import avatar from './circle-user-solid-full.svg';
 import uploadImg from './upload-solid-full.svg';
 import send from './send.svg'
+import pencil from './pencil.svg';
 
 
 export const Icons = {
@@ -45,5 +46,10 @@ export const Icons = {
   close,
   upload,
   send,
+  pencil,
+  filter,
+  rightArrow,
+  avatar,
+  uploadImg,
 };
 

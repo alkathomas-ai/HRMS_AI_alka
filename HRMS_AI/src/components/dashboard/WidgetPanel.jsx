@@ -314,9 +314,6 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             <div className="grid-item-header">
               <h4>Available Employees</h4>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <button className="expand-btn-widget" onClick={(e) => { e.stopPropagation(); setFullscreenWidget(widgetId); }}>
-                 <img src={Icons.fullscreen} alt="" />
-                </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
                   className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
@@ -330,60 +327,25 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
               <div className="subtitle-number">{availableEmployees.length}</div>
               <div className="subtitle-text">Available for assignment</div>
             </div>
-          ))}
-
-          <div
-            className="timeline-slider"
-            style={{
-              top: activeIndex * 48 + 'px'
-            }}
-          />
-        </div>
-
-        {/* RIGHT SIDE — EMPLOYEES */}
-        <div className="timeline-content">
-          {filteredEmployees.map(emp => {
-            const releaseDate = emp.committed_relieving_date
-              ? new Date(emp.committed_relieving_date)
-              : null;
-
-            const today = new Date();
-            const daysLeft = releaseDate
-              ? Math.ceil((releaseDate - today) / (1000 * 60 * 60 * 24))
-              : null;
-
-            return (
-              <div key={emp.employee_id} className="timeline-employee-card">
-                <div className="timeline-employee-name">
-                  {emp.display_name}
+            <div className="employee-directory-container">
+              {availableEmployees.slice(0, 5).map((employee) => (
+                <div key={employee.employee_id} className="employee-item">
+                  <div className="employee-info">
+                    <div className="employee-name">{employee.display_name}</div>
+                    <div className="employee-details">
+                      <span className="employee-dept">{employee.employee_department}</span>
+                      <span className="employee-designation">{employee.designation}</span>
+                    </div>
+                    <div className="employee-location">
+                      <i className="fa-solid fa-location-dot"></i>
+                      {employee.emp_location}
+                    </div>
+                  </div>
                 </div>
-                <div className="timeline-employee-meta">
-                  {emp.tech_group} • {emp.emp_location}
-                </div>
-                <div
-                  className="timeline-employee-badge"
-                  style={
-                    activeReleaseDate === "FREE"
-                      ? { background: "#dcfce7", color: "#166534" }
-                      : {}
-                  }
-                >
-                  {activeReleaseDate === "FREE"
-                    ? "Available Now"
-                    : `${daysLeft} days remaining`}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </>
-  );
-}
-
-
-
-
+              ))}
+            </div>
+          </>
+        );
       
       default:
         return null;
