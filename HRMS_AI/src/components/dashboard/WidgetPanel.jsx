@@ -179,7 +179,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     setPinnedWidgets(prev => {
       if (prev.includes(id)) {
         return prev.filter(widgetId => widgetId !== id);
-      } else if (prev.length >= 3) {
+      } else if (prev.length >= 5) {
         setShowAlert(true);
         setTimeout(() => setShowAlert(false), 3000);
         return prev;
@@ -589,7 +589,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
 
   return (
     <div className={`grid-container`} data-expanded={isExpanded}>
-      <Alert message="Maximum 3 widgets can be pinned" show={showAlert} type="warning" />
+      <Alert message="Maximum 5 widgets can be pinned" show={showAlert} type="warning" />
       <div className="dashboard-header">
         <div className='welcome'>
           <div className='d-flex justify-btwn align-center'>
