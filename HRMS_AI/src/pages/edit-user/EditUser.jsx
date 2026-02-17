@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import './user.css'
+import './EditUser.css'
 
-const User= () => {
+const EditUser= () => {
 
   const [data, setData] = useState([]);
 
@@ -38,4 +38,4 @@ const User= () => {
   )
 }
 
-export default User
+export default EditUser

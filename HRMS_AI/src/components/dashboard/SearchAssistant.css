@@ -359,7 +359,7 @@
 }
 
 .chat-submit-btn:hover {
-  background: #ffefef;
+  background: var(--color-secondary-hover);
 }
 
 /* .chat-submit-btn svg {
@@ -511,6 +511,7 @@
   border-collapse: collapse;
   font-size: 12px;
   background: white;
+  /* box-shadow: 0px 2px 6px rgb(198 198 198); */
 }
 
 .employee-table thead {
@@ -935,10 +936,13 @@
   background: white;
   transition: background 0.2s ease;
   font-size: 14px;
+  box-shadow: 0 2px 8px rgb(209 209 209);
 }
 
 .employee-row:hover {
-  background: #f9fafb;
+  background: #f0f0f0;
+    /* background: var(--color-secondary-hover); */
+
 }
 
 .employee-row.header {
@@ -948,6 +952,7 @@
   background: var(--assistant-base-end);
   display: grid;
   grid-template-columns: 1.7fr 1fr 1.7fr 0.8fr 1.3fr 0.8fr 0.3fr;
+  height: 4rem;
 }
 
 .name-cell {

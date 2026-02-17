@@ -504,7 +504,7 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
               {hoveredIndex === index && createPortal(
                   <div 
                     className="employee-hover-popup"
-                    style={{ top: `${popupPosition.top}px`, left: `${popupPosition.left}px` }}
+                    style={{ top: `${popupPosition.top}px`, left: `${popupPosition.left + 680}px` }}
                     onMouseEnter={() => setHoveredIndex(index)}
                     onMouseLeave={() => setHoveredIndex(null)}
                   >
