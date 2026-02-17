@@ -236,6 +236,22 @@
   background: var(--color-primary-hover);
 }
 
+.edit-btn {
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+}
+
+.edit-btn:hover {
+  background: #f1f5f9;
+  color: var(--color-primary);
+}
+
 /* Drag and Resize Styles */
 .drag-handle {
   cursor: grab;
@@ -963,4 +979,8 @@
   color: var(--color-text-inverse);
   padding: 2px 3px;
   border-radius: 3px;
+}
+
+.ai_edit_icon {
+  font-size: 20px;
 }

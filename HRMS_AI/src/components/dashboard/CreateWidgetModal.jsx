@@ -3,7 +3,7 @@ import './CreateWidgetModal.css';
 import { generateWidgetFromPrompt } from '../../services/api';
 import bubbles from '../../assets/icons/bubbles.svg';
 
-const CreateWidgetModal = ({ isOpen, onClose, onGenerate }) => {
+const CreateWidgetModal = ({ isOpen, onClose, onGenerate, editingWidget }) => {
   const [title, setTitle] = useState('');
   const [prompt, setPrompt] = useState('');
   const [chartType, setChartType] = useState('auto');
@@ -11,6 +11,18 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [error, setError] = useState('');
   const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    if (editingWidget) {
+      setTitle(editingWidget.title || '');
+      setPrompt(editingWidget.prompt || '');
+      setChartType(editingWidget.userChartType || 'auto');
+    } else {
+      setTitle('');
+      setPrompt('');
+      setChartType('auto');
+    }
+  }, [editingWidget, isOpen]);
 
   const chartTypes = [
     { value: 'auto', label: 'Auto', icon: 'fa-wand-magic-sparkles' },
@@ -48,7 +60,7 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate }) => {
         chartType: chartType === 'auto' ? "None" : chartType
       });
 
-      onGenerate(response);
+      onGenerate(response, prompt, chartType);
       setTitle('');
       setPrompt('');
       setChartType('auto');
@@ -70,7 +82,7 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate }) => {
           </div>
         )} */}
         <div className="modal-header">
-          <h3>Create a Widget</h3>
+          <h3>{editingWidget ? 'Edit Widget' : 'Create a Widget'}</h3>
           <button className="modal-close" onClick={onClose}>×</button>
         </div>
         
@@ -114,7 +126,10 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate }) => {
           </div>
           
           <div className="form-group">
-            <label>User Prompt</label>
+            <label>
+              User Prompt
+              <i className="fa-solid fa-circle-info info-icon" title="Tell us what data you want to see."></i>
+            </label>
             <textarea
               placeholder="Describe what you want this widget to display..."
               value={prompt}
@@ -133,7 +148,7 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate }) => {
         
         <div className="modal-footer">
           <button className="btn-generate" onClick={handleGenerate} disabled={loading}>
-            {loading ? 'Generating...' : 'Generate Widget'}
+            {loading ? 'Generating...' : editingWidget ? 'Update Widget' : 'Generate Widget'}
           </button>
         </div>
       </div>

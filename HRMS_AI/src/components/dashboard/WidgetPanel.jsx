@@ -46,6 +46,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingWidget, setEditingWidget] = useState(null);
   const dropdownRef = useRef(null);
 
   const [projectDistribution, setProjectDistribution] = useState({ projects: [], total_employees: 0 });
@@ -199,6 +200,14 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           <div className="grid-item-header">
             <h4>{dynamicWidget.title}</h4>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <button
+                onClick={(e) => { e.stopPropagation(); setEditingWidget(dynamicWidget); setIsModalOpen(true); }}
+                className="edit-btn"
+                title="Edit widget"
+              >
+                {/* <i className="fa-solid fa-pen"></i> */}
+                <span class="material-symbols-outlined ai_edit_icon">wand_shine</span>
+              </button>
               <button
                 onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
                 className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
@@ -708,12 +717,18 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
 
       <CreateWidgetModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onGenerate={(widgetData) => {
-          const newWidget = { id: `dynamic-${Date.now()}`, ...widgetData };
-          setDynamicWidgets(prev => [newWidget, ...prev]);
-          setSelectedWidgets(prev => [newWidget.id, ...prev]);
+        onClose={() => { setIsModalOpen(false); setEditingWidget(null); }}
+        editingWidget={editingWidget}
+        onGenerate={(widgetData, prompt, userChartType) => {
+          if (editingWidget) {
+            setDynamicWidgets(prev => prev.map(w => w.id === editingWidget.id ? { ...w, ...widgetData, prompt, userChartType } : w));
+          } else {
+            const newWidget = { id: `dynamic-${Date.now()}`, ...widgetData, prompt, userChartType };
+            setDynamicWidgets(prev => [newWidget, ...prev]);
+            setSelectedWidgets(prev => [newWidget.id, ...prev]);
+          }
           setIsModalOpen(false);
+          setEditingWidget(null);
         }}
       />
 
