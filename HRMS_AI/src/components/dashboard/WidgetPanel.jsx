@@ -425,9 +425,9 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                           : new Date(item).toLocaleDateString()}
                       </span>
 
-                      <span className="timeline-freepool-count">
+                      {/* <span className="timeline-freepool-count">
                         {itemCount}
-                      </span>
+                      </span> */}
                     </div>
                   );
                 })}
