@@ -2,7 +2,7 @@
    1. ORIGINAL COMPACT STYLES
    ========================================= */
 .schedule-card.compact {
-    height: 390px;
+    height: 385px;
     background: var(--color-bg-card);
     border-radius: 14px;
     padding: 20px;

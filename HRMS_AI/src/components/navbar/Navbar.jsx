@@ -24,12 +24,44 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
 
 
   return (
-    <header className="topbar">
-      {/* Left section  */}
-      <div className="topbar-left">
-        <div className="logo">
-          <img src={Icons.logo} className="logo-icon" />
-          <span className="logo-text">HRMS.AI</span>
+      <header className="topbar">
+        {/* Left section  */}
+        <div className="topbar-left">
+          <div className="logo">
+            <img src={Icons.logo} className="logo-icon" />
+            <span className="logo-text">HRMS.AI</span>
+          </div>
+        </div>
+
+        {/* Center icons */}
+        <div className="topbar-center">
+          <button onClick={() => {
+            navigate("/")
+          }} className="icon-btn active" aria-label="Home">
+<span class="material-symbols-outlined">
+home
+</span>          </button>
+          <button onClick={() => {
+            navigate("/user")
+          }} className="icon-btn" aria-label="Users">
+<span class="material-symbols-outlined">
+group
+</span>          </button>
+          <button onClick={() => {
+            navigate("/d")
+          }}
+          className="icon-btn" aria-label="Documents">
+<span class="material-symbols-outlined">
+stacks
+</span>          </button>
+          <button className="icon-btn" aria-label="Reports">
+<span class="material-symbols-outlined">
+pie_chart
+</span>          </button>
+          <button className="icon-btn" aria-label="Notes">
+<span class="material-symbols-outlined">
+description
+</span>          </button>
         </div>
       </div>
 

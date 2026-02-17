@@ -32,6 +32,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const [pinnedWidgets, setPinnedWidgets] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [fullscreenWidget, setFullscreenWidget] = useState(null);
   const dropdownRef = useRef(null);
 
   const [projectDistribution, setProjectDistribution] = useState({ projects: [], total_employees: 0 });
@@ -171,6 +172,9 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             <div className="grid-item-header">
               <h4>Project Distribution</h4>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button className="expand-btn-widget" onClick={(e) => { e.stopPropagation(); setFullscreenWidget(widgetId); }}>
+                 <img src={Icons.fullscreen} alt="" />
+                </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
                   className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
@@ -214,6 +218,9 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             <div className="grid-item-header">
               <h4>Department Overview</h4>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button className="expand-btn-widget" onClick={(e) => { e.stopPropagation(); setFullscreenWidget(widgetId); }}>
+                 <img src={Icons.fullscreen} alt="" />
+                </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
                   className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
@@ -248,6 +255,9 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             <div className="grid-item-header">
               <h4>Employee Directory</h4>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button className="expand-btn-widget" onClick={(e) => { e.stopPropagation(); setFullscreenWidget(widgetId); }}>
+                 <img src={Icons.fullscreen} alt="" />
+                </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
                   className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
@@ -297,67 +307,28 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           </>
         );
       
-case 'available-employees': {
-
-  // 1️⃣ Split Employees
-  const freeEmployees = soonAvailableEmployees.filter(emp =>
-    !emp.committed_relieving_date &&
-    emp.projects?.some(p => p.project_name === "CLUD_FREE")
-  );
-
-  const releasingEmployees = soonAvailableEmployees
-    .filter(emp => emp.committed_relieving_date)
-    .sort((a, b) =>
-      new Date(a.committed_relieving_date) -
-      new Date(b.committed_relieving_date)
-    );
-
-  const dateGroups = [
-    ...new Set(releasingEmployees.map(emp => emp.committed_relieving_date))
-  ];
-
-  // 2️⃣ Build Timeline Items (FREE first)
-  const timelineItems = [
-    ...(freeEmployees.length ? ["FREE"] : []),
-    ...dateGroups
-  ];
-
-  // 3️⃣ Determine Employees for Selected Item
-  let filteredEmployees = [];
-
-  if (activeReleaseDate === "FREE") {
-    filteredEmployees = freeEmployees;
-  } else {
-    filteredEmployees = releasingEmployees.filter(
-      emp => emp.committed_relieving_date === activeReleaseDate
-    );
-  }
-
-  const activeIndex = Math.max(timelineItems.indexOf(activeReleaseDate), 0);
-
-  return (
-    <>
-      <div className="grid-item-header">
-        <h4>Available Timeline</h4>
-        <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
-      </div>
-
-      <div className="timeline-wrapper">
-
-        {/* LEFT SIDE — CHRONOLOGICAL BAR */}
-        <div className="timeline-bar" ref={timelineRef}>
-          {timelineItems.map(item => (
-            <div
-              key={item}
-              className={`timeline-date-item ${
-                activeReleaseDate === item ? 'active' : ''
-              }`}
-              onClick={() => setActiveReleaseDate(item)}
-            >
-              {item === "FREE"
-                ? `Free (${freeEmployees.length})`
-                : new Date(item).toLocaleDateString()
-              }
+      case 'available-employees':
+        const availableEmployees = employeeDirectory.employees.filter(emp => emp.is_free_pool);
+        return (
+          <>
+            <div className="grid-item-header">
+              <h4>Available Employees</h4>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button className="expand-btn-widget" onClick={(e) => { e.stopPropagation(); setFullscreenWidget(widgetId); }}>
+                 <img src={Icons.fullscreen} alt="" />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
+                  className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
+                >
+                  <img src={Icons.pin} alt="" />
+                </button>
+                <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+              </div>
+            </div>
+            <div className="widget-subtitle">
+              <div className="subtitle-number">{availableEmployees.length}</div>
+              <div className="subtitle-text">Available for assignment</div>
             </div>
           ))}
 
@@ -424,7 +395,7 @@ case 'available-employees': {
     return (
       <div className="widget-panel-minimized">
         <div className="minimized-header">
-          <h3>Dashboard</h3>
+          <h3>Widgets</h3>
           <span className="expand-icon" onClick={onExpand}>
             <img src={Icons.expand} alt="Expand" />
           </span>
@@ -467,35 +438,38 @@ case 'available-employees': {
           <div className="action-cards">
             <div className="action-card" onClick={onExpand}>
               <div className="action-icon">
-                <i className="fa-solid fa-chart-pie"></i>
+                <img className='pie-icon' src={Icons.pie} alt="" />
               </div>
               <div className="action-text">
                 <div className="action-title">Projects</div>
                 <div className="action-subtitle">View distribution</div>
               </div>
-              <i className="fa-solid fa-chevron-right action-arrow"></i>
+              <img src={Icons.rightArrow} alt="" />
             </div>
             
             <div className="action-card" onClick={onExpand}>
               <div className="action-icon">
-                <i className="fa-solid fa-building"></i>
+                <img src={Icons.barChart} alt="" />
+
               </div>
               <div className="action-text">
                 <div className="action-title">Departments</div>
                 <div className="action-subtitle">See overview</div>
               </div>
-              <i className="fa-solid fa-chevron-right action-arrow"></i>
+              <img src={Icons.rightArrow} alt="" />
+
             </div>
             
             <div className="action-card" onClick={onExpand}>
               <div className="action-icon">
-                <i className="fa-solid fa-address-book"></i>
+              <img src={Icons.address} alt="" />
               </div>
               <div className="action-text">
                 <div className="action-title">Directory</div>
                 <div className="action-subtitle">Browse employees</div>
               </div>
-              <i className="fa-solid fa-chevron-right action-arrow"></i>
+              <img src={Icons.rightArrow} alt="" />
+
             </div>
           </div>
         </div>
@@ -506,6 +480,23 @@ case 'available-employees': {
   return (
     <div className={`grid-container`} data-expanded={isExpanded}>
       <Alert message="Maximum 3 widgets can be pinned" show={showAlert} type="warning" />
+      
+      {fullscreenWidget && (
+        <div className="fullscreen-modal">
+          <div className="fullscreen-content">
+            <div className="fullscreen-header">
+              <h3>{availableWidgets.find(w => w.id === fullscreenWidget)?.label}</h3>
+              <button className="close-fullscreen-btn" onClick={() => setFullscreenWidget(null)}>
+                <img src={Icons.close} alt="Close" style={{ width: '16px', height: '16px' }} />
+              </button>
+            </div>
+            <div className="fullscreen-body">
+              {renderWidget(fullscreenWidget)}
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="dashboard-header">
         <div className='welcome'>
           <div className='d-flex justify-btwn align-center'>
