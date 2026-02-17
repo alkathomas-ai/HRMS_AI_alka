@@ -473,20 +473,28 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
               key={index}
               className="employee-row"
               onMouseEnter={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const popupHeight = 450; // approximate popup height
-                    const viewportHeight = window.innerHeight;
-                    
-                    // Check if popup would go below viewport
-                    let top = rect.top;
-                    if (top + popupHeight > viewportHeight) {
-                      top = viewportHeight - popupHeight - 40; // 40px margin from bottom
-                    }
-                    
-                    setPopupPosition({ top, left: rect.left });
-                    setHoveredIndex(index);
-                  }}
-                  onMouseLeave={() => setHoveredIndex(null)}
+                const rect = e.currentTarget.getBoundingClientRect();
+                const popupHeight = 450; // your popup approx height
+                const viewportHeight = window.innerHeight;
+
+                let calculatedTop = rect.top + window.scrollY;
+                let shiftAmount = 0;
+
+                // Check if popup will overflow bottom
+                if (rect.top + popupHeight > viewportHeight) {
+                  shiftAmount = (rect.top + popupHeight) - viewportHeight + 20;
+                  calculatedTop -= shiftAmount;
+                }
+
+                setPopupPosition({
+                  top: calculatedTop,
+                  left: rect.right + 10,
+                  arrowTop: rect.height / 2 + shiftAmount
+                });
+
+                setHoveredIndex(index);
+              }}
+              onMouseLeave={() => setHoveredIndex(null)}
             >
               <div className="name-cell">
                 <div className="employee-avatar">
@@ -504,7 +512,11 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
               {hoveredIndex === index && createPortal(
                   <div 
                     className="employee-hover-popup"
-                    style={{ top: `${popupPosition.top}px`, left: `${popupPosition.left + 680}px` }}
+                    style={{
+                      top: `${popupPosition.top}px`,
+                      left: `1050px`,
+                      '--arrow-top': `${popupPosition.arrowTop}px`
+                    }}
                     onMouseEnter={() => setHoveredIndex(index)}
                     onMouseLeave={() => setHoveredIndex(null)}
                   >
