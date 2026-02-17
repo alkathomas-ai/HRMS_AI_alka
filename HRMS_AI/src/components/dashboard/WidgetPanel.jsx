@@ -711,8 +711,8 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         onClose={() => setIsModalOpen(false)}
         onGenerate={(widgetData) => {
           const newWidget = { id: `dynamic-${Date.now()}`, ...widgetData };
-          setDynamicWidgets(prev => [...prev, newWidget]);
-          setSelectedWidgets(prev => [...prev, newWidget.id]);
+          setDynamicWidgets(prev => [newWidget, ...prev]);
+          setSelectedWidgets(prev => [newWidget.id, ...prev]);
           setIsModalOpen(false);
         }}
       />
