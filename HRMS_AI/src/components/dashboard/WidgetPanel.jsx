@@ -4,7 +4,7 @@ import { SortableContext, useSortable, rectSortingStrategy } from '@dnd-kit/sort
 import { CSS } from '@dnd-kit/utilities';
 import './WidgetPanel.css';
 import { Icons } from '../../assets/icons';
-import { getProjectDistributions, getEmployeeDirectory, getEmployeeCount, getDepartment } from '../../services/api';
+import { getProjectDistributions, getEmployeeDirectory, getEmployeeCount, getDepartment, getSoonAvailableEmployees } from '../../services/api';
 import Alert from '../common/Alert';
 import DoughnutChart from './charts/DoughnutChart';
 import BarChart from './charts/BarChart';
@@ -28,7 +28,7 @@ const SortableWidget = ({ id, children, isPinned }) => {
 };
 
 const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
-  const [selectedWidgets, setSelectedWidgets] = useState(['project-distribution', 'department-overview', 'employee-directory']);
+  const [selectedWidgets, setSelectedWidgets] = useState(['project-distribution', 'department-overview', 'employee-directory', 'available-employees']);
   const [pinnedWidgets, setPinnedWidgets] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
@@ -40,9 +40,12 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const [employeeDirectory, setEmployeeDirectory] = useState({ employees: [] });
   const [employeeCount, setEmployeeCount] = useState({ employeeCount: 0, freepoolCount: 0, projectCount: 0 });
   const [employeePage, setEmployeePage] = useState(0);
+  const [soonAvailableEmployees, setSoonAvailableEmployees] = useState([]);
   const [employeeSearch, setEmployeeSearch] = useState('');
   const [widgetSearch, setWidgetSearch] = useState('');
   const [containerWidth, setContainerWidth] = useState(1200);
+  const [activeReleaseDate, setActiveReleaseDate] = useState(null);
+  const timelineRef = useRef(null);
   const containerRef = useRef(null);
   const employeesPerPage = 5;
 
@@ -56,20 +59,34 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [projects, departments, employees, counts] = await Promise.all([
+        const [projects, departments, employees, counts, availableEmployees] = await Promise.all([
           getProjectDistributions(),
           getDepartment(),
           getEmployeeDirectory(),
-          getEmployeeCount()
+          getEmployeeCount(),
+          getSoonAvailableEmployees()
         ]);
         setProjectDistribution({ projects: projects.projects, total_employees: projects.total_employees });
         setDepartmentData({ departments: departments.departments });
         setEmployeeDirectory({ employees: employees.employees });
+        setSoonAvailableEmployees(availableEmployees?.data || []);
+
         setEmployeeCount({ 
           employeeCount: counts.employee_count || 0, 
           projectCount: counts.project_count || 0, 
           freepoolCount: counts.freepool_count || 0 
         });
+        if (availableEmployees?.data?.length) {
+          const sorted = [...availableEmployees.data]
+            .filter(emp => emp.committed_relieving_date)
+            .sort((a, b) =>
+              new Date(a.committed_relieving_date) -
+              new Date(b.committed_relieving_date)
+            );
+
+          setActiveReleaseDate(sorted[0]?.committed_relieving_date);
+        }
+
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -313,25 +330,60 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
               <div className="subtitle-number">{availableEmployees.length}</div>
               <div className="subtitle-text">Available for assignment</div>
             </div>
-            <div className="employee-directory-container">
-              {availableEmployees.slice(0, 5).map((employee) => (
-                <div key={employee.employee_id} className="employee-item">
-                  <div className="employee-info">
-                    <div className="employee-name">{employee.display_name}</div>
-                    <div className="employee-details">
-                      <span className="employee-dept">{employee.employee_department}</span>
-                      <span className="employee-designation">{employee.designation}</span>
-                    </div>
-                    <div className="employee-location">
-                      <i className="fa-solid fa-location-dot"></i>
-                      {employee.emp_location}
-                    </div>
-                  </div>
+          ))}
+
+          <div
+            className="timeline-slider"
+            style={{
+              top: activeIndex * 48 + 'px'
+            }}
+          />
+        </div>
+
+        {/* RIGHT SIDE — EMPLOYEES */}
+        <div className="timeline-content">
+          {filteredEmployees.map(emp => {
+            const releaseDate = emp.committed_relieving_date
+              ? new Date(emp.committed_relieving_date)
+              : null;
+
+            const today = new Date();
+            const daysLeft = releaseDate
+              ? Math.ceil((releaseDate - today) / (1000 * 60 * 60 * 24))
+              : null;
+
+            return (
+              <div key={emp.employee_id} className="timeline-employee-card">
+                <div className="timeline-employee-name">
+                  {emp.display_name}
                 </div>
-              ))}
-            </div>
-          </>
-        );
+                <div className="timeline-employee-meta">
+                  {emp.tech_group} • {emp.emp_location}
+                </div>
+                <div
+                  className="timeline-employee-badge"
+                  style={
+                    activeReleaseDate === "FREE"
+                      ? { background: "#dcfce7", color: "#166534" }
+                      : {}
+                  }
+                >
+                  {activeReleaseDate === "FREE"
+                    ? "Available Now"
+                    : `${daysLeft} days remaining`}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </>
+  );
+}
+
+
+
+
       
       default:
         return null;

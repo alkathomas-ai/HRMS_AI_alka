@@ -995,3 +995,80 @@
 .react-grid-item.resizing {
   opacity: 0.9;
 }
+
+.timeline-wrapper {
+  display: flex;
+  gap: 20px;
+  height: 320px;
+}
+
+.timeline-bar {
+  position: relative;
+  width: 140px;
+  overflow-y: auto;
+  border-right: 2px solid #e5e7eb;
+  padding-right: 12px;
+}
+
+.timeline-date-item {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 12px;
+  color: #6b7280;
+  position: relative;
+  padding-left: 10px;
+}
+
+.timeline-date-item.active {
+  font-weight: 600;
+  color: #111827;
+}
+
+.timeline-slider {
+  position: absolute;
+  right: 0px;
+  width: 4px;
+  height: 48px;
+  background: var(--color-primary-soft);
+  border-radius: 2px;
+  transition: top 0.3s ease;
+}
+
+.timeline-content {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.timeline-employee-card {
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: #f8f8f8;
+}
+
+.timeline-employee-name {
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.timeline-employee-meta {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.timeline-employee-badge {
+  margin-top: 6px;
+  font-size: 10px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  padding: 4px 8px;
+  border-radius: 12px;
+  display: inline-block;
+}
+

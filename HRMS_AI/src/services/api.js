@@ -85,3 +85,13 @@ export async function getEmployeeCount() {
   }
 }
 
+
+export async function getSoonAvailableEmployees() {
+  try {
+    const response = await axios.get(`${BASE_URL}/available_employees?month_threshold=9`);
+    console.log(response.data)
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+}

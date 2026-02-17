@@ -63,65 +63,94 @@ pie_chart
 description
 </span>          </button>
         </div>
+      </div>
 
-        {/* Right section */}
-        <div className="topbar-right">
-          <ThemeToggle />
-          <ColorPalette />
-          <div className="date">
-            <span className="day">{day}</span>
-            <div className="date-meta">
-              <span className="weekday">{weekday}</span>
-              <span className="month">{month}</span>
-            </div>
-          </div>
+      {/* Center icons */}
+      <div className="topbar-center">
+        <button onClick={() => {
+          navigate("/")
+        }} className="icon-btn active" aria-label="Home">
+          <span className="material-symbols-outlined">
+            home
+          </span>          </button>
+        <button onClick={() => {
+          navigate("/user")
+        }} className="icon-btn" aria-label="Users">
+          <span className="material-symbols-outlined">
+            group
+          </span>          </button>
+        <button className="icon-btn" aria-label="Documents">
+          <span className="material-symbols-outlined">
+            stacks
+          </span>          </button>
+        <button className="icon-btn" aria-label="Reports">
+          <span className="material-symbols-outlined">
+            pie_chart
+          </span>          </button>
+        <button className="icon-btn" aria-label="Notes">
+          <span className="material-symbols-outlined">
+            description
+          </span>          </button>
+      </div>
 
-
-          <div className="notif-wrapper">
-            <button className={`icon-btn ${showNotifDropdown ? 'active' : ''}`} aria-label="Notifications" onClick={() => setShowNotifDropdown(!showNotifDropdown)}>
-              <span class="material-symbols-outlined">
-notifications
-</span>
-              {hasUnread && <span className="notif-badge"></span>}
-            </button>
-            {showNotifDropdown && (
-              <div className="notif-dropdown">
-                <div className="notif-dropdown-header">
-                  <h4>Notifications</h4>
-                  {todayNotifications.length > 0 && (
-                    <button className="mark-all-read" onClick={() => onMarkAllRead?.()}>Mark all as read</button>
-                  )}
-                </div>
-                <div className="notif-dropdown-list">
-                  {todayNotifications.length > 0 ? (
-                    todayNotifications.map(notif => (
-                      <div key={notif.id} className="notif-dropdown-item">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
-                        </svg>
-                        <div>
-                          <h5>{notif.title}</h5>
-                          <p>{notif.text}</p>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="notif-empty">No new notifications</div>
-                  )}
-                </div>
-                <button className="notif-show-all" onClick={() => {
-                  setShowNotifDropdown(false);
-                  onNotificationClick?.();
-                }}>Show all notifications</button>
-              </div>
-            )}
-          </div>
-
-          <div className="avatar">
-            <img src="https://i.pravatar.cc/32" alt="User avatar" />
+      {/* Right section */}
+      <div className="topbar-right">
+        <ThemeToggle />
+        <ColorPalette />
+        <div className="date">
+          <span className="day">{day}</span>
+          <div className="date-meta">
+            <span className="weekday">{weekday}</span>
+            <span className="month">{month}</span>
           </div>
         </div>
-      </header>
+
+
+        <div className="notif-wrapper">
+          <button className={`icon-btn ${showNotifDropdown ? 'active' : ''}`} aria-label="Notifications" onClick={() => setShowNotifDropdown(!showNotifDropdown)}>
+            <span className="material-symbols-outlined">
+              notifications
+            </span>
+            {hasUnread && <span className="notif-badge"></span>}
+          </button>
+          {showNotifDropdown && (
+            <div className="notif-dropdown">
+              <div className="notif-dropdown-header">
+                <h4>Notifications</h4>
+                {todayNotifications.length > 0 && (
+                  <button className="mark-all-read" onClick={() => onMarkAllRead?.()}>Mark all as read</button>
+                )}
+              </div>
+              <div className="notif-dropdown-list">
+                {todayNotifications.length > 0 ? (
+                  todayNotifications.map(notif => (
+                    <div key={notif.id} className="notif-dropdown-item">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" />
+                      </svg>
+                      <div>
+                        <h5>{notif.title}</h5>
+                        <p>{notif.text}</p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="notif-empty">No new notifications</div>
+                )}
+              </div>
+              <button className="notif-show-all" onClick={() => {
+                setShowNotifDropdown(false);
+                onNotificationClick?.();
+              }}>Show all notifications</button>
+            </div>
+          )}
+        </div>
+
+        <div className="avatar">
+          <img src="https://i.pravatar.cc/32" alt="User avatar" />
+        </div>
+      </div>
+    </header>
   )
 }
 
