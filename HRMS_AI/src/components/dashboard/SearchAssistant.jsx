@@ -253,7 +253,7 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
               <img src="src/assets/icons/bubbles.svg" alt="" srcSet="" />
             </span>
             {/* <span className="expand-icon" onClick={onClose}>✕</span> */}
-            <h3>Ready To Find Top Candidates Or Revisit Your Pipeline?</h3>
+            {/* <h3>Ready To Find Top Candidates Or Revisit Your Pipeline?</h3> */}
           </div>
           <div>
 

@@ -1,36 +1,50 @@
 import React, { useEffect, useState } from 'react'
 import './EditUser.css'
 import { Icons } from '../../assets/icons'
-import { getEmployeeDirectory } from '../../services/api'
+import { getEmployeeDirectory, getEmployeesPaginated } from '../../services/api'
 
 const EditUser = () => {
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
+  const [showAllSkills, setShowAllSkills] = useState(false);
+  const [expandedEmployeeId, setExpandedEmployeeId] = useState(null);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [skillInput, setSkillInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 4;
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 6;
+
 
   useEffect(() => {
     fetchEmployees();
-  }, []);
+  }, [currentPage]);
+
+
 
   const fetchEmployees = async () => {
     setIsLoading(true);
     try {
-      const data = await getEmployeeDirectory();
+      const data = await getEmployeesPaginated(currentPage, itemsPerPage );
       console.log('API Response:', data);
       // Handle if data is an object with employees array inside
-      const employeeList = Array.isArray(data) ? data : (data?.employees || data?.data || []);
-      setEmployees(employeeList);
-      setFilteredEmployees(employeeList);
+      // const employeeList = Array.isArray(data) ? data : (data?.employees || data?.data || []);
+      setEmployees(data.employees);
+
+       // 👇 calculate total pages using total_employees
+    const totalPagesCalculated = Math.ceil(
+      data.total_employees / itemsPerPage
+    );
+    
+    setTotalPages(totalPagesCalculated);
+      // setFilteredEmployees(employeeList);
     } catch (error) {
       console.log(error);
       setEmployees([]);
-      setFilteredEmployees([]);
+      // setFilteredEmployees([]);
     } finally {
       setIsLoading(false);
     }
@@ -61,9 +75,7 @@ const EditUser = () => {
     setSkillInput('');
   };
 
-  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedEmployees = filteredEmployees.slice(startIndex, startIndex + itemsPerPage);
+  
 
   return (
     <>
@@ -87,11 +99,11 @@ const EditUser = () => {
           </div>
         ) : (
           <>
-            <div className='employee-list'>
-              {Array.isArray(paginatedEmployees) && paginatedEmployees.length > 0 ? (
-                paginatedEmployees.map((employee, index) => (
-              <div key={index} className='employee-card'>
-                <div className='employee-info'>
+            <div className='edit-employee-list'>
+              {Array.isArray(employees) && employees.length > 0 ? (
+                employees.map((employee, index) => (
+              <div key={index} className='edit-employee-card'>
+                <div className='edit-employee-info'>
                   <div className='employee-avatar'>
                     {employee.display_name?.charAt(0).toUpperCase()}
                   </div>
@@ -104,14 +116,61 @@ const EditUser = () => {
                 <div className='employee-skills'>
                   <strong>Skills:</strong>
                   <div className='skills-tags'>
-                    {employee.skill_set?.split(',').slice(0, 3).map((skill, i) => (
-                      <span key={i} className='skill-tag'>{skill.trim()}</span>
-                    ))}
+                    {employee.skill_set &&
+                      employee.skill_set
+                        .split(',')
+                        .slice(
+                          0,
+                          expandedEmployeeId === employee.employee_id
+                            ? undefined   // show all
+                            : 3           // show first 3
+                        )
+                        .map((skill, i) => (
+                          <span key={i} className='skill-tag'>
+                            {skill.trim()}
+                          </span>
+                        ))}
+
                     {employee.skill_set?.split(',').length > 3 && (
-                      <span className='skill-more'>+{employee.skill_set.split(',').length - 3} more</span>
+                      <button
+                        onClick={() =>
+                          setExpandedEmployeeId(
+                            expandedEmployeeId === employee.employee_id
+                              ? null
+                              : employee.employee_id
+                          )
+                        }
+                        className="skill-more-btn"
+                      >
+                        {expandedEmployeeId === employee.employee_id
+                          ? 'Show Less'
+                          : `+${employee.skill_set.split(',').length - 3} More`}
+                      </button>
                     )}
                   </div>
                 </div>
+
+                
+                {/* <div className='employee-skill-description'>
+                    {employees.skill_set && (
+                      <div className="employee-skills-section">
+                        <span className="skills-label">Skills:</span>
+                        <div className="skills-container">
+                          {employees.skill_set.split(',').slice(0, showAllSkills ? undefined : 5).map((skill, skillIndex) => (
+                            <span key={skillIndex} className="skill-badge">{skill.trim()}</span>
+                          ))}
+                          {employees.skill_set.split(',').length > 5 && (
+                            <button onClick={() => setShowAllSkills(!showAllSkills)} className="skill-more-btn">
+                              {showAllSkills ? 'Show Less' : `+${employees.skill_set.split(',').length - 5} More`}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+  
+                </div> */}
+
+
                 <button className='edit-btn btn-primary' onClick={() => handleEditSkills(employee)}>
                   <img src={Icons.pencil} alt="" />
                   Edit Skills
@@ -122,23 +181,28 @@ const EditUser = () => {
               <div className="no-data">No employees found</div>
             )}
             </div>
-            {totalPages > 1 && (
+            
               <div className='pagination'>
                 <button
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  // onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  // disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(currentPage - 1)}
                   disabled={currentPage === 1}
+
                 >
                   Prev
                 </button>
                 <span>Page {currentPage} of {totalPages}</span>
                 <button
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  // onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  // disabled={currentPage === totalPages}
+
+                  onClick={() => setCurrentPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
                 >
                   Next
                 </button>
               </div>
-            )}
           </>
         )}
       </div>
@@ -161,7 +225,7 @@ const EditUser = () => {
             </div>
             <div className='modal-footer'>
               <button className='btn-secondary' onClick={() => setIsModalOpen(false)}>Cancel</button>
-              <button className='btn-primary' onClick={handleUpdateSkills}>
+              <button className='edit-btn btn-primary' onClick={handleUpdateSkills}>
                 <img src={Icons.pencil} alt="" />
                 Update Skills
               </button>
