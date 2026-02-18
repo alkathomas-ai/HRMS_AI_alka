@@ -416,3 +416,10 @@
   border-radius: 10px;
   /* background-color: ; */
 }
+
+.chat-loader-new {
+    position: relative !important;
+    height: 70vh;
+    min-width: 100%;
+    padding: 0px;
+}

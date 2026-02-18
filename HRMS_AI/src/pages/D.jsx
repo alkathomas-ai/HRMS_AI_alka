@@ -212,12 +212,18 @@ const D = () => {
     // }
   ]);
   const [inputText, setInputText] = useState();
+  const [loading, setLoading] = useState(false )
 
   const handleSendMessage =async()=>{
+      setLoading(true)
+
      try {
         const response = await searchAPI(inputText);
-       setEmployees(response?.data || response?.employee || []);
+        setEmployees(response?.data || response?.employee || []);
+        setLoading(false)
+
       } catch (error) {
+        setLoading(false)
         console.error(error);
       }
   }
@@ -253,11 +259,18 @@ const D = () => {
 
                 </div>
               </div>
-        <div className="employee-cards-list">
-          {employees.map((employee) => (
-            <RequirementCard key={employee.employee_id} employee={employee} />
-          ))}
-        </div>
+              {
+                loading ? 
+                <div className="chat-loader chat-loader-new">
+                  <div className="spinner"></div>
+                </div> : 
+                <div className="employee-cards-list">
+                  {employees.map((employee) => (
+                    <RequirementCard key={employee.employee_id} employee={employee} />
+                  ))}
+                </div>
+              }
+        
       </div>
     </div>
   );
