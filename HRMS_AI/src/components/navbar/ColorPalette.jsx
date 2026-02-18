@@ -38,11 +38,11 @@ const themes = [
   },
   {
     name: 'Emerald',
-    primary: '#047857',
-    soft: '#10B981',
+    primary: '#065F46',
+    soft: '#16b480',
     hover: '#065F46',
     light: 'rgba(16, 185, 129, 0.23)',
-    primary_medium: '#065F46',
+    primary_medium: '#058a64',
     primary_low: '#15bf87',
     assistant: {
       baseStart: '#ECFDF7',
@@ -59,6 +59,8 @@ const themes = [
     soft: '#8B5CF6',
     hover: '#5B21B6',
     light: 'rgba(139, 92, 246, 0.23)',
+    primary_medium: '#b66dee',
+    primary_low: '#d380ca',
     assistant: {
       baseStart: '#F4F1FF',
       baseEnd: '#E4DCFF',

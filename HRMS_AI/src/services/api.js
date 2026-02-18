@@ -1,5 +1,5 @@
 import axios from 'axios'
-import dummySearchData from '../data/dummySearchData';
+import dummyUploadData from '../data/dummyUploadData';
 // const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const BASE_URL = 'http://172.25.247.7:8000'
 
@@ -39,12 +39,12 @@ export async function uploadAPI(formData) {
   } catch (error) {
     console.log(error);
     console.log("Backend not available. Using dummy data.");
-    return dummySearchData; 
+    return dummyUploadData; 
   }
   
   // return new Promise((resolve) => {
   //   setTimeout(() => {
-  //     resolve(dummySearchData);
+  //     resolve(dummyUploadData);
   //   }, 1000);
   // });
 }
