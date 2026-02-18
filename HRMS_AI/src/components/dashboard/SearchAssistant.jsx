@@ -212,36 +212,36 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
               <button className="modal-close-btn" onClick={() => setShowUploadModal(false)}>✕</button>
             </div>
             <div className="upload-modal-body">
-              <div className="upload-icon">
-                <span className="material-symbols-outlined">upload_file</span>
-              </div>
-              <p>Select a CSV file to upload and process</p>
-
-              <input type="file" ref={uploadModalFileInputRef} onChange={handleFileChange} accept=".csv" style={{ display: 'none' }} />
-              
-              {isfileSelect && uploadedFile && (
-                <div className="assistant-box">
-                  <div className="assistant-input">
-                        <div className="assistant-file" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span className="material-symbols-outlined">csv</span>
-                          <span>{uploadedFile.name}</span>
-                          <button className="remove-file-btn" onClick={handleRemoveUploadFile}>✕</button>
-                        </div>
+              {!uploadedFile ? (
+                <>
+                  <div className="upload-icon">
+                    <span className="material-symbols-outlined">upload_file</span>
                   </div>
-                  <div className="assistant-microphone" style={{ cursor: 'pointer' }}>
-                        <button className="chat-submit-btn" onClick={handleSendMessage}>
-                          <img src={Icons.send} alt="" />
-                        </button>
+                  <p>Select a CSV file to upload and process employee data</p>
+                  <input type="file" ref={uploadModalFileInputRef} onChange={handleFileChange} accept=".csv" style={{ display: 'none' }} />
+                  <button className="choose-csv-btn btn-primary" onClick={handleModalFileSelect}>
+                    <span className="material-symbols-outlined">folder_open</span>
+                    Choose CSV
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="upload-icon success">
+                    <span className="material-symbols-outlined">check_circle</span>
                   </div>
-                </div>
+                  <div className="selected-file-info">
+                    <span className="material-symbols-outlined">description</span>
+                    <span className="file-name">{uploadedFile.name}</span>
+                    <button className="remove-file-icon" onClick={handleRemoveUploadFile}>
+                      <span className="material-symbols-outlined">close</span>
+                    </button>
+                  </div>
+                  <button className="btn-primary upload-process-btn" onClick={handleSendMessage}>
+                    <span className="material-symbols-outlined">upload</span>
+                    Upload CSV
+                  </button>
+                </>
               )}
-            
-
-              <button className="choose-csv-btn btn-primary" onClick={handleModalFileSelect}>
-                <span className="material-symbols-outlined">folder_open</span>
-                Choose CSV
-              </button>
-              
             </div>
           </div>
         </div>
