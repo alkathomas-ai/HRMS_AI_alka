@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 // import "./Dashboard.css";
 import "./D.css";
 import { Icons } from '../assets/icons';
+import { searchAPI } from '../services/api';
 
 const RequirementCard = ({ employee }) => {
   const [showAllSkills, setShowAllSkills] = useState(false);
@@ -147,74 +148,111 @@ const RequirementCard = ({ employee }) => {
 };
 
 const D = () => {
-  const [employees] = useState([
-    {
-      display_name: "John Doe",
-      designation: "Senior Developer",
-      employee_id: "EMP001",
-      employee_department: "Engineering",
-      emp_location: "New York",
-      tech_group: "Full Stack",
-      total_exp: "8 years",
-      ai_score: 85,
-      skill_set: "React, Node.js, Python, AWS, Docker, Kubernetes",
-      ai_reason: "Strong match based on technical skills and experience level",
-      projects: [
-        { project_name: "E-Commerce Platform", customer: "ABC Corp" },
-        { project_name: "Mobile App", customer: "XYZ Inc" }
-      ],
-      ai_criteria: {
-        "Technical Skills": 90,
-        "Experience": 85,
-        "Domain Knowledge": 80
-      }
-    },
-    {
-      display_name: "Jane Smith",
-      designation: "Tech Lead",
-      employee_id: "EMP002",
-      employee_department: "Engineering",
-      emp_location: "San Francisco",
-      tech_group: "Backend",
-      total_exp: "10 years",
-      ai_score: 58,
-      skill_set: "Java, Spring Boot, Microservices, PostgreSQL, Redis",
-      ai_reason: "Excellent technical expertise and leadership experience",
-      projects: [
-        { project_name: "Banking System", customer: "Finance Co" }
-      ],
-      ai_criteria: {
-        "Technical Skills": 50,
-        "Experience": 68,
-        "Domain Knowledge": 54
-      }
-    },
-    {
-      display_name: "Mike Johnson",
-      designation: "Junior Developer",
-      employee_id: "EMP003",
-      employee_department: "Engineering",
-      emp_location: "Austin",
-      tech_group: "Frontend",
-      total_exp: "3 years",
-      ai_score: 25,
-      skill_set: "React, JavaScript, CSS, HTML, Git",
-      ai_reason: "Good foundational skills with growth potential",
-      projects: [
-        { project_name: "Dashboard UI", customer: "Tech Startup" }
-      ],
-      ai_criteria: {
-        "Technical Skills": 70,
-        "Experience": 60,
-        "Domain Knowledge": 65
-      }
-    }
+  const [employees, setEmployees] = useState([
+    // {
+    //   display_name: "John Doe",
+    //   designation: "Senior Developer",
+    //   employee_id: "EMP001",
+    //   employee_department: "Engineering",
+    //   emp_location: "New York",
+    //   tech_group: "Full Stack",
+    //   total_exp: "8 years",
+    //   ai_score: 85,
+    //   skill_set: "React, Node.js, Python, AWS, Docker, Kubernetes",
+    //   ai_reason: "Strong match based on technical skills and experience level",
+    //   projects: [
+    //     { project_name: "E-Commerce Platform", customer: "ABC Corp" },
+    //     { project_name: "Mobile App", customer: "XYZ Inc" }
+    //   ],
+    //   ai_criteria: {
+    //     "Technical Skills": 90,
+    //     "Experience": 85,
+    //     "Domain Knowledge": 80
+    //   }
+    // },
+    // {
+    //   display_name: "Jane Smith",
+    //   designation: "Tech Lead",
+    //   employee_id: "EMP002",
+    //   employee_department: "Engineering",
+    //   emp_location: "San Francisco",
+    //   tech_group: "Backend",
+    //   total_exp: "10 years",
+    //   ai_score: 58,
+    //   skill_set: "Java, Spring Boot, Microservices, PostgreSQL, Redis",
+    //   ai_reason: "Excellent technical expertise and leadership experience",
+    //   projects: [
+    //     { project_name: "Banking System", customer: "Finance Co" }
+    //   ],
+    //   ai_criteria: {
+    //     "Technical Skills": 50,
+    //     "Experience": 68,
+    //     "Domain Knowledge": 54
+    //   }
+    // },
+    // {
+    //   display_name: "Mike Johnson",
+    //   designation: "Junior Developer",
+    //   employee_id: "EMP003",
+    //   employee_department: "Engineering",
+    //   emp_location: "Austin",
+    //   tech_group: "Frontend",
+    //   total_exp: "3 years",
+    //   ai_score: 25,
+    //   skill_set: "React, JavaScript, CSS, HTML, Git",
+    //   ai_reason: "Good foundational skills with growth potential",
+    //   projects: [
+    //     { project_name: "Dashboard UI", customer: "Tech Startup" }
+    //   ],
+    //   ai_criteria: {
+    //     "Technical Skills": 70,
+    //     "Experience": 60,
+    //     "Domain Knowledge": 65
+    //   }
+    // }
   ]);
+  const [inputText, setInputText] = useState();
+
+  const handleSendMessage =async()=>{
+     try {
+        const response = await searchAPI(inputText);
+       setEmployees(response?.data || response?.employee || []);
+      } catch (error) {
+        console.error(error);
+      }
+  }
+
+  console.log(employees);
+  
 
   return (
     <div className="employee-matches-container">
       <div className="employee-matches-wrapper">
         <h1 className="employee-matches-title">Employee Matches</h1>
+        <div className="assistant-control assistant-control-width">
+                <div className="assistant-box">
+                  <div className="assistant-input">
+                    <span className='search-icon'><img src={Icons.search} alt="" /></span>
+                   
+                      <input 
+                        type="text" 
+                        placeholder="Ask me anything..." 
+                        value={inputText}
+                        onChange={(e) => setInputText(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                      />
+                  </div>
+                    <div className="assistant-microphone">
+                      <button className="chat-submit-btn"
+                       onClick={handleSendMessage}
+                       >
+                        <img src={Icons.send} alt="" />
+                      </button>
+                    </div>
+                  
+
+                </div>
+              </div>
         <div className="employee-cards-list">
           {employees.map((employee) => (
             <RequirementCard key={employee.employee_id} employee={employee} />
