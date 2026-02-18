@@ -5,6 +5,7 @@ import { getEmployeeDirectory, getEmployeesPaginated } from '../../services/api'
 
 const EditUser = () => {
   const [employees, setEmployees] = useState([]);
+  const [allEmployees, setAllEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [showAllSkills, setShowAllSkills] = useState(false);
   const [expandedEmployeeId, setExpandedEmployeeId] = useState(null);
@@ -16,12 +17,34 @@ const EditUser = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalEmployees, setTotalEmployees] = useState(0);
+  const [isSearching, setIsSearching] = useState(false);
   const itemsPerPage = 6;
 
 
   useEffect(() => {
-    fetchEmployees();
-  }, [currentPage]);
+    fetchAllEmployees();
+  }, []);
+
+  useEffect(() => {
+    if (!isSearching) {
+      fetchEmployees();
+    }
+  }, [currentPage, isSearching]);
+
+  const fetchAllEmployees = async () => {
+    try {
+      const firstPageData = await getEmployeesPaginated(1, itemsPerPage);
+      const total = firstPageData.total_employees || 0;
+      setTotalEmployees(total);
+      
+      const allData = await getEmployeesPaginated(1, total);
+      setAllEmployees(allData.employees || []);
+    } catch (error) {
+      console.log(error);
+      setAllEmployees([]);
+    }
+  };
 
 
 
@@ -53,7 +76,15 @@ const EditUser = () => {
   const handleSearch = (query) => {
     setSearchQuery(query);
     setCurrentPage(1);
-    const filtered = employees.filter(emp => 
+    
+    if (!query.trim()) {
+      setIsSearching(false);
+      setFilteredEmployees([]);
+      return;
+    }
+    
+    setIsSearching(true);
+    const filtered = allEmployees.filter(emp => 
       emp.display_name?.toLowerCase().includes(query.toLowerCase()) ||
       emp.employee_id?.toLowerCase().includes(query.toLowerCase()) ||
       emp.designation?.toLowerCase().includes(query.toLowerCase())
@@ -100,8 +131,8 @@ const EditUser = () => {
         ) : (
           <>
             <div className='edit-employee-list'>
-              {Array.isArray(employees) && employees.length > 0 ? (
-                employees.map((employee, index) => (
+              {Array.isArray(isSearching ? filteredEmployees : employees) && (isSearching ? filteredEmployees : employees).length > 0 ? (
+                (isSearching ? filteredEmployees : employees).map((employee, index) => (
               <div key={index} className='edit-employee-card'>
                 <div className='edit-employee-info'>
                   <div className='employee-avatar'>
@@ -181,7 +212,7 @@ const EditUser = () => {
               <div className="no-data">No employees found</div>
             )}
             </div>
-            
+            {!isSearching && (
               <div className='pagination'>
                 <button
                   // onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
@@ -203,6 +234,7 @@ const EditUser = () => {
                   Next
                 </button>
               </div>
+            )}
           </>
         )}
       </div>

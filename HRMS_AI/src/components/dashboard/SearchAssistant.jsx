@@ -248,12 +248,27 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
       )}
       {isExpanded ? (
         <div className="card assistant-card assistant-card-expanded">
+          {messages.length === 0 ? (
+            <div className="upload-prompt-container">
+              <div className="upload-prompt-content">
+                <span className="assistant-badge bubbles">
+                  <img src="src/assets/icons/bubbles.svg" alt="" srcSet="" />
+                </span>
+                <h3>Ready To Find the Right Resource for Your Project, Instantly?</h3>
+                <button className="choose-csv-btn btn-primary" onClick={handlePlusClick}>
+                  <span className="material-symbols-outlined">upload</span>
+                  Upload CSV
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
           <div className="assistant-header">
             <span className="assistant-badge bubbles">
               <img src="src/assets/icons/bubbles.svg" alt="" srcSet="" />
             </span>
             {/* <span className="expand-icon" onClick={onClose}>✕</span> */}
-            {/* <h3>Ready To Find Top Candidates Or Revisit Your Pipeline?</h3> */}
+            <h3>Ready To Find the Right Resource for Your Project, Instantly?</h3>
           </div>
           <div>
 
@@ -600,6 +615,8 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
   })()}
 </div>
 
+            </>
+          )}
         </div>
       ) : (
       <div className={`card assistant-card justify-btw ${!isExpanded ? 'compact' : ''}`}>
@@ -619,7 +636,7 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
 
         </div>
         <div>
-          <h3>Ready To Find Top Candidates Or Revisit Your Pipeline?</h3>
+          <h3>Ready To Find the Right Resource for Your Project, Instantly?</h3>
 
           <div className="assistant-links">
             <span><span className="material-symbols-outlined">search</span>Find Matches</span>
