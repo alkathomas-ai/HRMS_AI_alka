@@ -95,3 +95,13 @@ export async function getSoonAvailableEmployees() {
     console.log(error);
   }
 }
+
+export async function getEmployeesPaginated(page, pageSize) {
+  try {
+    const response = await axios.get(`${BASE_URL}/employees?page=${page}&page_size=${pageSize}`);
+    console.log(response.data)
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+}

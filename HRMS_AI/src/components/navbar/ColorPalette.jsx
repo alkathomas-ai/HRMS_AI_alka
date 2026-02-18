@@ -8,7 +8,7 @@ const themes = [
     soft: '#F04D4D',
     hover: '#B52226',
     light: 'rgba(240, 77, 77, 0.23)',
-    primary_medium: '#e18889',
+    primary_medium: '#ed6669',
     primary_low: '#e5af78',
     assistant: {
       baseStart: '#FFF1E6',
@@ -42,7 +42,7 @@ const themes = [
     soft: '#10B981',
     hover: '#065F46',
     light: 'rgba(16, 185, 129, 0.23)',
-    primary_medium: '#6397f4',
+    primary_medium: '#065F46',
     primary_low: '#15bf87',
     assistant: {
       baseStart: '#ECFDF7',

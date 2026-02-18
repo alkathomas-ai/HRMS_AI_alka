@@ -405,3 +405,21 @@
     width: 192px;
   } */
 }
+
+
+.assistant-control-width {
+  max-width: 100% !important;
+}
+.assistant-box {
+  width: 100%;
+  border: 1px solid var(--color-primary);
+  border-radius: 10px;
+  /* background-color: ; */
+}
+
+.chat-loader-new {
+    position: relative !important;
+    height: 70vh;
+    min-width: 100%;
+    padding: 0px;
+}

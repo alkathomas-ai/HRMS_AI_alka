@@ -212,48 +212,63 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
               <button className="modal-close-btn" onClick={() => setShowUploadModal(false)}>✕</button>
             </div>
             <div className="upload-modal-body">
-              <div className="upload-icon">
-                <span className="material-symbols-outlined">upload_file</span>
-              </div>
-              <p>Select a CSV file to upload and process</p>
-
-              <input type="file" ref={uploadModalFileInputRef} onChange={handleFileChange} accept=".csv" style={{ display: 'none' }} />
-              
-              {isfileSelect && uploadedFile && (
-                <div className="assistant-box">
-                  <div className="assistant-input">
-                        <div className="assistant-file" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span className="material-symbols-outlined">csv</span>
-                          <span>{uploadedFile.name}</span>
-                          <button className="remove-file-btn" onClick={handleRemoveUploadFile}>✕</button>
-                        </div>
+              {!uploadedFile ? (
+                <>
+                  <div className="upload-icon">
+                    <span className="material-symbols-outlined">upload_file</span>
                   </div>
-                  <div className="assistant-microphone" style={{ cursor: 'pointer' }}>
-                        <button className="chat-submit-btn" onClick={handleSendMessage}>
-                          <img src={Icons.send} alt="" />
-                        </button>
+                  <p>Select a CSV file to upload and process employee data</p>
+                  <input type="file" ref={uploadModalFileInputRef} onChange={handleFileChange} accept=".csv" style={{ display: 'none' }} />
+                  <button className="choose-csv-btn btn-primary" onClick={handleModalFileSelect}>
+                    <span className="material-symbols-outlined">folder_open</span>
+                    Choose CSV
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="upload-icon success">
+                    <span className="material-symbols-outlined">check_circle</span>
                   </div>
-                </div>
+                  <div className="selected-file-info">
+                    <span className="material-symbols-outlined">description</span>
+                    <span className="file-name">{uploadedFile.name}</span>
+                    <button className="remove-file-icon" onClick={handleRemoveUploadFile}>
+                      <span className="material-symbols-outlined">close</span>
+                    </button>
+                  </div>
+                  <button className="btn-primary upload-process-btn" onClick={handleSendMessage}>
+                    <span className="material-symbols-outlined">upload</span>
+                    Upload CSV
+                  </button>
+                </>
               )}
-            
-
-              <button className="choose-csv-btn" onClick={handleModalFileSelect}>
-                <span className="material-symbols-outlined">folder_open</span>
-                Choose CSV
-              </button>
-              
             </div>
           </div>
         </div>
       )}
       {isExpanded ? (
         <div className="card assistant-card assistant-card-expanded">
+          {messages.length === 0 ? (
+            <div className="upload-prompt-container">
+              <div className="upload-prompt-content">
+                <span className="assistant-badge bubbles">
+                  <img src="src/assets/icons/bubbles.svg" alt="" srcSet="" />
+                </span>
+                <h3>Ready To Find the Right Resource for Your Project, Instantly?</h3>
+                <button className="choose-csv-btn btn-primary" onClick={handlePlusClick}>
+                  <span className="material-symbols-outlined">upload</span>
+                  Upload CSV
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
           <div className="assistant-header">
             <span className="assistant-badge bubbles">
               <img src="src/assets/icons/bubbles.svg" alt="" srcSet="" />
             </span>
             {/* <span className="expand-icon" onClick={onClose}>✕</span> */}
-            <h3>Ready To Find Top Candidates Or Revisit Your Pipeline?</h3>
+            <h3>Ready To Find the Right Resource for Your Project, Instantly?</h3>
           </div>
           <div>
 
@@ -304,12 +319,12 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
               </button> */}
 
               <div className='assistant-btns'>
-                <button className="choose-csv-btn" onClick={()=> {}}>
+                <button className="choose-csv-btn primary-btn" onClick={()=> {}}>
                   <span className="material-symbols-outlined">filter</span>
                   Filter
                 </button>
   
-                <button className="choose-csv-btn" onClick={handlePlusClick}>
+                <button className="choose-csv-btn primary-btn" onClick={handlePlusClick}>
                   <span className="material-symbols-outlined">upload</span>
                   Upload CSV
                 </button>
@@ -600,6 +615,8 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
   })()}
 </div>
 
+            </>
+          )}
         </div>
       ) : (
       <div className={`card assistant-card justify-btw ${!isExpanded ? 'compact' : ''}`}>
@@ -619,7 +636,7 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
 
         </div>
         <div>
-          <h3>Ready To Find Top Candidates Or Revisit Your Pipeline?</h3>
+          <h3>Ready To Find the Right Resource for Your Project, Instantly?</h3>
 
           <div className="assistant-links">
             <span><span className="material-symbols-outlined">search</span>Find Matches</span>
