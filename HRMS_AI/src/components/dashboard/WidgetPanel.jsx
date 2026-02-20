@@ -719,11 +719,11 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); setEditingWidget(null); }}
         editingWidget={editingWidget}
-        onGenerate={(widgetData, prompt, userChartType) => {
+        onGenerate={(widgetData, prompt) => {
           if (editingWidget) {
-            setDynamicWidgets(prev => prev.map(w => w.id === editingWidget.id ? { ...w, ...widgetData, prompt, userChartType } : w));
+            setDynamicWidgets(prev => prev.map(w => w.id === editingWidget.id ? { ...w, ...widgetData, prompt } : w));
           } else {
-            const newWidget = { id: `dynamic-${Date.now()}`, ...widgetData, prompt, userChartType };
+            const newWidget = { id: `dynamic-${Date.now()}`, ...widgetData, prompt };
             setDynamicWidgets(prev => [newWidget, ...prev]);
             setSelectedWidgets(prev => [newWidget.id, ...prev]);
           }

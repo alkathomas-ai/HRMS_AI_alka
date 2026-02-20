@@ -16,7 +16,7 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate, editingWidget }) => {
     if (editingWidget) {
       setTitle(editingWidget.title || '');
       setPrompt(editingWidget.prompt || '');
-      setChartType(editingWidget.userChartType || 'auto');
+      setChartType(editingWidget.chartType || 'auto');
     } else {
       setTitle('');
       setPrompt('');
@@ -60,7 +60,7 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate, editingWidget }) => {
         chartType: chartType === 'auto' ? "None" : chartType
       });
 
-      onGenerate(response, prompt, chartType);
+      onGenerate(response, prompt);
       setTitle('');
       setPrompt('');
       setChartType('auto');
