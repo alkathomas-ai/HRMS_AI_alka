@@ -287,10 +287,10 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
           {messages.length === 0 ? (
             <div className="upload-prompt-container">
               <div className="upload-prompt-content">
-                {/* <span className="assistant-badge bubbles">
+                <span className="assistant-badge bubbles">
                   <img src="src/assets/icons/bubbles.svg" alt="" srcSet="" />
                 </span>
-                <h3>Ready To Find the Right Resource for Your Project, Instantly?</h3> */}
+                <h3>Ready To Find the Right Resource for Your Project, Instantly?</h3>
                 <div className="search-container">
                   <div className="search-header">
                     <div className="assistant-control">
@@ -628,7 +628,16 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                             <div
                               key={index}
                               className="employee-row"
-                              onMouseEnter={(e) => {
+                            >
+                              <div className="name-cell">
+                                <div className="employee-avatar"
+                                >
+                                  {employee.display_name
+                                    ?.charAt(0)
+                                    .toUpperCase()}
+                                </div>
+                                <span
+                                onMouseEnter={(e) => {
                                 const rect =
                                   e.currentTarget.getBoundingClientRect();
                                 const popupHeight = 450; // your popup approx height
@@ -656,14 +665,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                                 setHoveredIndex(index);
                               }}
                               onMouseLeave={() => setHoveredIndex(null)}
-                            >
-                              <div className="name-cell">
-                                <div className="employee-avatar">
-                                  {employee.display_name
-                                    ?.charAt(0)
-                                    .toUpperCase()}
-                                </div>
-                                <span>{employee.display_name}</span>
+                                >{employee.display_name}</span>
                               </div>
 
                               <div>{employee.employee_id}</div>

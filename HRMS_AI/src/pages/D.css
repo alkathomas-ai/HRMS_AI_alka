@@ -178,6 +178,11 @@
   font-size: 11px;
   border-radius: 20px;
   font-weight: 500;
+  cursor: pointer;
+}
+.active-skill-badge{
+  background: var(--background-light);
+
 }
 
 .skill-more-btn {

@@ -606,10 +606,10 @@
 }
 
 .upload-prompt-container {
-  display: flex;
+  /* display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 80vh;
+  min-height: 80vh; */
 }
 
 .upload-prompt-content {
