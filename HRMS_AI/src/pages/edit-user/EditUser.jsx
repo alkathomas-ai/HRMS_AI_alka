@@ -39,7 +39,8 @@ const EditUser = () => {
       setTotalEmployees(total);
       
       const allData = await getEmployeesPaginated(1, total);
-      setAllEmployees(allData.employees || []);
+      // setAllEmployees(allData.employees || []);
+      setAllEmployees(allData.total_employees)
     } catch (error) {
       console.log(error);
       setAllEmployees([]);

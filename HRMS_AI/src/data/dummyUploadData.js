@@ -1,4 +1,4 @@
-const dummySearchData = {
+const dummyUploadData = {
     "status": "success",
     // "message": "Successfully processed Updated_Data_with_Project_Joining_Date.csv",
     // "records_processed": 432,
@@ -528,4 +528,4 @@ const dummySearchData = {
     ]
 };
 
-export default dummySearchData;
+export default dummyUploadData;

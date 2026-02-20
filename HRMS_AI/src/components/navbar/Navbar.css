@@ -33,9 +33,9 @@
   transition: all 0.2s ease;
 }
 
-.logo:hover .logo-icon {
+/* .logo:hover .logo-icon {
   background: var(--color-primary-soft);
-}
+} */
 
 .logo-text {
   font-family: 'Rajdhani', sans-serif;
@@ -253,4 +253,68 @@
 
 .icon-btn span {
   font-size: 22px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .topbar {
+    padding: 0 16px;
+  }
+  
+  .topbar-center {
+    gap: 8px;
+  }
+  
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    height: 60px;
+    padding: 0 12px;
+  }
+  
+  .logo-text {
+    display: none;
+  }
+  
+  .topbar-center {
+    gap: 6px;
+  }
+  
+  .icon-btn {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .icon-btn span {
+    font-size: 18px;
+  }
+  
+  .date {
+    display: none;
+  }
+  
+  .topbar-right {
+    gap: 8px;
+  }
+  
+  .notif-dropdown {
+    width: 300px;
+    right: -50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar-center {
+    display: none;
+  }
+  
+  .logo-icon {
+    width: 32px;
+    height: 32px;
+  }
 }

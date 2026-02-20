@@ -15,7 +15,9 @@ import pin from './pin.svg';
 import fullscreen from './fullscreen.svg';
 import close from './close.svg';
 import upload from './upload.svg';
+import upload1 from './upload1.svg';
 import filter from './filter.svg';
+import filter1 from './filter1.svg';
 import barChart from './bar-chart.svg';
 import rightArrow from './right-arrow.svg';
 import address from './address.svg';
@@ -48,8 +50,10 @@ export const Icons = {
   send,
   pencil,
   filter,
+  filter1,
   rightArrow,
   avatar,
   uploadImg,
+  upload1
 };
 
