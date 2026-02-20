@@ -4,10 +4,9 @@ import "./D.css";
 import { Icons } from "../assets/icons";
 import { searchAPI } from "../services/api";
 
-const RequirementCard = ({ employee, filterFunction }) => {
+const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill }) => {
   const [showAllSkills, setShowAllSkills] = useState(false);
   const [showReason, setShowReason] = useState(false);
-  const [activeSkill, setActiveSkill] = useState(null);
 
   if (!employee) return null;
 
@@ -35,7 +34,7 @@ const RequirementCard = ({ employee, filterFunction }) => {
   return (
     <div className={`employee-card ${scoreClass}-score`}>
       <div className={`match-badge ${scoreClass}`}>
-        <div className="score-text">{ai_score || 0}%</div>
+        <div className="score-text"><span>{ai_score || 0}%</span> match</div>
       </div>
       <div className="employee-card-content">
         <div className="employee-info-section">
@@ -149,31 +148,7 @@ const RequirementCard = ({ employee, filterFunction }) => {
             )}
           </div>
           <div className="employee-score-section">
-            <div className="score-circle-container">
-              {/* <div className="score-circle-wrapper">
-              <svg className="score-circle-svg" viewBox="0 0 36 36">
-                <path
-                  className="score-bg-path"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  fill="transparent"
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                />
-                <path
-                  className={`score-progress-path ${scoreClass}`}
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeDasharray={`${ai_score || 0}, 100`}
-                  strokeLinecap="round"
-                  fill="transparent"
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                />
-              </svg>
-              <div className="score-value">
-                <div className={`score-text ${scoreClass}`}>{ai_score || 0}%</div>
-              </div>
-            </div> */}
-            </div>
+
 
             {employee.ai_criteria && (
               <div className="criteria-list">
@@ -213,6 +188,7 @@ const RequirementCard = ({ employee, filterFunction }) => {
 };
 
 const D = () => {
+  const [activeSkill, setActiveSkill] = useState(null);
   const [allEmployees, setAllEmployees] = useState([
     {
       display_name: "John Doe",
@@ -402,6 +378,8 @@ const D = () => {
                 key={employee.employee_id}
                 employee={employee}
                 filterFunction={filterOnSearch}
+                activeSkill={activeSkill}   
+                setActiveSkill={setActiveSkill}  
               />
             ))}
           </div>

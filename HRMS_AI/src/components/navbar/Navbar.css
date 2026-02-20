@@ -33,9 +33,9 @@
   transition: all 0.2s ease;
 }
 
-.logo:hover .logo-icon {
+/* .logo:hover .logo-icon {
   background: var(--color-primary-soft);
-}
+} */
 
 .logo-text {
   font-family: 'Rajdhani', sans-serif;
