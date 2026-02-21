@@ -3,6 +3,9 @@ import { Bar } from 'react-chartjs-2';
 import { Pie } from 'react-chartjs-2';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, ArcElement, Tooltip } from 'chart.js';
+import GroupedBarChart from '../charts/GroupedBarChart';
+import ScatterChart from '../charts/ScatterChart';
+import RadarChart from '../charts/RadarChart';
 import './DynamicWidget.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, ArcElement, Tooltip);
@@ -17,8 +20,8 @@ const DynamicWidget = ({ widgetData }) => {
   const dropdownRef = useRef(null);
 
   const dataKeys = data[0] ? Object.keys(data[0]) : [];
-  const xKey = dataKeys[0] || xAxis;
-  const yKey = dataKeys[1] || yAxis;
+  const xKey = xAxis || dataKeys.find(k => k.includes('name') || k.includes('project')) || dataKeys[0];
+  const yKey = yAxis || dataKeys.find(k => k.includes('count') || k.includes('number')) || dataKeys[1];
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -55,6 +58,46 @@ const DynamicWidget = ({ widgetData }) => {
           datasets: [{ data: data.map(item => item[yKey]), borderColor: '#667eea', backgroundColor: 'rgba(102, 126, 234, 0.1)', tension: 0.4 }]
         };
         return <Line data={chartData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }} />;
+      }
+      
+      case 'grouped_bar': {
+        // Check if yAxis contains multiple values (comma-separated)
+        if (yKey && yKey.includes(',')) {
+          const yKeys = yKey.split(',').map(k => k.trim());
+          const labels = data.map(item => item[xKey]);
+          const datasets = yKeys.map((key, index) => ({
+            label: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            data: data.map(item => item[key] || 0),
+            backgroundColor: colors[index % colors.length],
+            maxBarThickness: 40,
+          }));
+          const chartData = { labels, datasets };
+          const options = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { boxWidth: 12, padding: 8, font: { size: 10 } } },
+              tooltip: { backgroundColor: 'rgba(0, 0, 0, 0.8)', padding: 10 }
+            },
+            scales: {
+              x: { grid: { display: false }, ticks: { font: { size: 9 } } },
+              y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.05)' }, ticks: { font: { size: 10 } } }
+            }
+          };
+          return <Bar data={chartData} options={options} />;
+        }
+        // Regular grouped bar with groupBy field
+        const allKeys = Object.keys(data[0] || {});
+        const groupByKey = allKeys.find(key => key !== xKey && key !== yKey) || allKeys[2] || 'tech_group';
+        return <GroupedBarChart data={data} xAxis={xKey} yAxis={yKey} groupBy={groupByKey} />;
+      }
+      
+      case 'radar': {
+        return <RadarChart data={data} xAxis={xKey} yAxis={yKey} />;
+      }
+      
+      case 'scatter': {
+        return <ScatterChart data={data} xAxis={xKey} yAxis={yKey} />;
       }
       
       case 'table': {

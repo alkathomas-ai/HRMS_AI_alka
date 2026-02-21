@@ -28,6 +28,9 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate, editingWidget }) => {
   const chartTypes = [
     { value: 'auto', label: 'Auto', icon: 'fa-wand-magic-sparkles' },
     { value: 'bar', label: 'Bar', icon: 'fa-chart-column' },
+    { value: 'grouped_bar', label: 'Group Bar', icon: 'fa-signal' },
+    { value: 'scatter', label: 'Scatter', icon: 'fa-arrow-up-right-dots' },
+    { value: 'radar', label: 'Radar', icon: 'fa-hexagon-nodes' },
     { value: 'pie', label: 'Pie', icon: 'fa-chart-pie' },
     { value: 'line', label: 'Line', icon: 'fa-chart-line' },
     { value: 'table', label: 'Table', icon: 'fa-table' },
