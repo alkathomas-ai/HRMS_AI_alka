@@ -68,7 +68,7 @@ const DynamicWidget = ({ widgetData }) => {
 
         return (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <div style={{ paddingBottom: '5px', borderBottom: '1px solid #e0e0e0', display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <div style={{ paddingBottom: '5px', borderBottom: '1px solid var(--color-border)', display: 'flex', gap: '12px', alignItems: 'center' }}>
               <input
                 type="text"
                 className='dynamic-table-search'
@@ -98,7 +98,7 @@ const DynamicWidget = ({ widgetData }) => {
                 <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                   <tr>
                     {dataKeys.map(key => (
-                      <th key={key} style={{ padding: '12px', textAlign: 'left', fontWeight: 600, fontSize: '14px', color: '#424242', borderBottom: '1px solid #e0e0e0', whiteSpace: 'nowrap' }}>
+                      <th key={key} style={{ padding: '12px', textAlign: 'left', fontWeight: 600, fontSize: '14px', color: 'var(--color-text-primary)', borderBottom: '1px solid var(--color-border)', whiteSpace: 'nowrap', background: 'var(--color-bg-muted)' }}>
                         {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                       </th>
                     ))}
@@ -106,22 +106,22 @@ const DynamicWidget = ({ widgetData }) => {
                 </thead>
                 <tbody>
                   {paginatedData.map((row, idx) => (
-                    <tr key={idx} style={{ borderBottom: '1px solid #f0f0f0' }}>
+                    <tr key={idx} style={{ borderBottom: '1px solid var(--color-border)' }}>
                       {dataKeys.map(key => (
-                        <td key={key} style={{ padding: '12px', fontSize: '14px', color: '#616161' }}>{row[key] || '-'}</td>
+                        <td key={key} style={{ padding: '12px', fontSize: '14px', color: 'var(--color-text-primary)' }}>{row[key] != null ? row[key] : '-'}</td>
                       ))}
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <div style={{ padding: '12px', borderTop: '1px solid #e0e0e0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '14px', color: '#757575' }}>
+            <div style={{ padding: '12px', borderTop: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>
                 {filteredData.length} total | Page {page + 1} of {totalPages || 1}
               </span>
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} style={{ padding: '6px 12px', border: '1px solid #e0e0e0', borderRadius: '4px', background: page === 0 ? '#f5f5f5' : '#fff', cursor: page === 0 ? 'not-allowed' : 'pointer' }}>‹</button>
-                <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1} style={{ padding: '6px 12px', border: '1px solid #e0e0e0', borderRadius: '4px', background: page >= totalPages - 1 ? '#f5f5f5' : '#fff', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer' }}>›</button>
+                <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} style={{ padding: '6px 12px', border: '1px solid var(--color-border)', borderRadius: '4px', background: page === 0 ? 'var(--color-bg-muted)' : 'var(--color-bg-card)', color: 'var(--color-text-primary)', cursor: page === 0 ? 'not-allowed' : 'pointer' }}>‹</button>
+                <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1} style={{ padding: '6px 12px', border: '1px solid var(--color-border)', borderRadius: '4px', background: page >= totalPages - 1 ? 'var(--color-bg-muted)' : 'var(--color-bg-card)', color: 'var(--color-text-primary)', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer' }}>›</button>
               </div>
             </div>
           </div>

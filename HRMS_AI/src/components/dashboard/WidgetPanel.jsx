@@ -206,7 +206,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                 title="Edit widget"
               >
                 {/* <i className="fa-solid fa-pen"></i> */}
-                <span class="material-symbols-outlined ai_edit_icon">wand_shine</span>
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
@@ -619,7 +619,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             <h3>{employeeCount.projectCount || 0}</h3>
             <span>
               {/* <i className="fa-regular fa-eye"></i>  */}
-              Active
+              Projects
             </span>
           </div>
           <div className="stat">
@@ -671,7 +671,8 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
 
           <div className="actions">
             <button className="primary-btn" onClick={() => setIsModalOpen(true)}>
-              <span className='btn-content'>Create a Widget</span> <span className="plus">+</span>
+              <span className='btn-content'>Create a Widget</span>                 
+              <i class="fa-solid fa-wand-magic-sparkles"></i>            
             </button>
           </div>
         </div>

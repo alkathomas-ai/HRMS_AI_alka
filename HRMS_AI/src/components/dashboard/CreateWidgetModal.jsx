@@ -22,6 +22,7 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate, editingWidget }) => {
       setPrompt('');
       setChartType('auto');
     }
+    setError('');
   }, [editingWidget, isOpen]);
 
   const chartTypes = [

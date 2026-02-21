@@ -161,7 +161,8 @@
 }
 
 .assistant-control {
-  display: flex;
+  /* display: flex; */
+  display: none;
   flex-direction: column;
   /* gap:3px; */
   background-color: var(--color-bg-card);
@@ -786,6 +787,7 @@ padding: 10px 13px;
   /* transform: scale(0.95) !important;
   opacity: 0.8 !important; */
   transition: all 0.3s ease !important;
+  height: 100%;
 }
 
 .schedule-card.compact {

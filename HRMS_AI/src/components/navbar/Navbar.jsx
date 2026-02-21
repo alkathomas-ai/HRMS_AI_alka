@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import "./Navbar.css"
 import { useNavigate } from 'react-router-dom'
 import { Icons } from '../../assets/icons'
@@ -11,6 +11,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
 
   const navigate = useNavigate()
   const [showNotifDropdown, setShowNotifDropdown] = useState(false)
+  const notifRef = useRef(null);
 
   const today = new Date();
 
@@ -20,6 +21,16 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
 
   const todayNotifications = notifications.filter(n => !n.read && n.time.includes('h ago'));
   const hasUnread = todayNotifications.length > 0;
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notifRef.current && !notifRef.current.contains(event.target)) {
+        setShowNotifDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
 
 
@@ -74,7 +85,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
         </div>
 
 
-        <div className="notif-wrapper">
+        <div className="notif-wrapper" ref={notifRef}>
           <button className={`icon-btn ${showNotifDropdown ? 'active' : ''}`} aria-label="Notifications" onClick={() => setShowNotifDropdown(!showNotifDropdown)}>
             <span className="material-symbols-outlined">
               notifications

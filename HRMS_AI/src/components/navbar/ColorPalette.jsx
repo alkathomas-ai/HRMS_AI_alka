@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './ColorPalette.css';
 
 const themes = [
@@ -82,6 +82,7 @@ const themes = [
 const ColorPalette = () => {
   const [showPalette, setShowPalette] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState(themes[0].name);
+  const paletteRef = useRef(null);
 
   const applyTheme = (theme) => {
     setSelectedTheme(theme.name);
@@ -133,8 +134,18 @@ const ColorPalette = () => {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (paletteRef.current && !paletteRef.current.contains(event.target)) {
+        setShowPalette(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
-    <div className="palette-wrapper">
+    <div className="palette-wrapper" ref={paletteRef}>
       <span
         className={`material-symbols-outlined color-palette icon-btn ${showPalette ? 'active' : ''}`}
         onClick={() => setShowPalette(!showPalette)}
