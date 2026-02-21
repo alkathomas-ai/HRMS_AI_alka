@@ -60,7 +60,12 @@ const DynamicWidget = ({ widgetData }) => {
         return <Line data={chartData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }} />;
       }
       
-      case 'grouped_bar': {
+      case 'grouped_bar':
+      case 'multi_bar': {
+        // Check if yAxis is an array (multi_bar format)
+        if (Array.isArray(yAxis)) {
+          return <GroupedBarChart data={data} xAxis={xAxis} yAxis={yAxis} />;
+        }
         // Check if yAxis contains multiple values (comma-separated)
         if (yKey && yKey.includes(',')) {
           const yKeys = yKey.split(',').map(k => k.trim());
@@ -136,7 +141,7 @@ const DynamicWidget = ({ widgetData }) => {
                 )}
               </div>
             </div>
-            <div style={{ flex: 1, overflow: 'auto', maxHeight: '400px' }}>
+            <div style={{ flex: 1, overflow: 'auto' }}>
               <table className='dynmaic-table' style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                   <tr>
@@ -194,7 +199,7 @@ const DynamicWidget = ({ widgetData }) => {
 
   return (
     <div className="dynamic-widget">
-      <div className="chart-wrapper" style={{ height: chartType === 'table' ? '500px' : chartType === 'card' ? 'auto' : '250px', display: 'flex', flexDirection: 'column' }}>
+      <div className="chart-wrapper" style={{  display: 'flex', flexDirection: 'column' }}>
         {renderChart()}
       </div>
     </div>

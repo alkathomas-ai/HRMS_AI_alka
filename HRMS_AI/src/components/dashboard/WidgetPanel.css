@@ -361,13 +361,33 @@
 } */
 
 /* Masonry Grid Layout */
+.widgets-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 200px;
+  grid-auto-flow: dense;
+  gap: 16px;
+  padding: 16px 0;
+  width: 100%;
+}
+
+@media (max-width: 1500px) {
+  .widgets-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 1100px) {
+  .widgets-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .masonry-grid {
   column-count: 3;
   column-gap: 16px;
   padding: 16px 0;
   width: 100%;
-  /* overflow: hidden; */
-  /* background-color: var(--color-bg-page); */
 }
 
 @media (max-width: 1500px) {
@@ -375,12 +395,6 @@
     column-count: 2;
   }
 }
-
-/* @media (max-width: 1200px) {
-  .masonry-grid {
-    column-count: 2;
-  }
-} */
 
 @media (max-width: 1100px) {
   .masonry-grid {
@@ -397,8 +411,11 @@
   transition: all 0.2s ease;
   cursor: grab;
   break-inside: avoid;
-  margin-bottom: 16px;
   width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
 }
 
 .masonry-item.pinned {
@@ -410,9 +427,13 @@
   cursor: grabbing;
 }
 
-.masonry-item:hover {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+.masonry-item:focus-within {
+  /* box-shadow: 0 3px 4px rgba(0,0,0,0.12); */
+  border: 1px solid var(--assistant-glow-primary);
   transform: none;
+}
+.masonry-item:hover {
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
 }
 
 .grid-item-header {
@@ -430,6 +451,7 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--color-text-primary);
+  margin-top: 5px;
 }
 /* Pie Chart Styles */
 .widget-subtitle {
@@ -878,7 +900,7 @@
 .timeline-wrapper {
   display: flex;
   gap: 20px;
-  height: 320px;
+  height: calc(100% - 60px);
 }
 
 .timeline-bar {
@@ -985,4 +1007,124 @@
 
 .ai_edit_icon {
   font-size: 20px;
+}
+
+/* Grid Size Selector */
+.grid-size-selector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--color-bg-muted);
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+}
+
+.grid-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-right: 2px;
+}
+
+.grid-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-card);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.grid-btn:hover {
+  background: var(--color-bg-muted);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.grid-btn.active {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.grid-btn.active:hover {
+  background: var(--color-primary-hover);
+}
+
+/* Widget Size Selector */
+.widget-size-btn {
+  position: relative;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  padding: 2px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  margin-top: 3px;
+}
+
+.widget-size-btn:hover {
+  background: #f1f5f9;
+  color: var(--color-primary);
+}
+
+.widget-size-btn.active {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.size-grid-popup {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+
+.size-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.size-grid-cell {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--color-bg-muted);
+}
+
+.size-grid-cell:hover {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.size-grid-cell.selected {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+}
+
+.size-grid-cell.disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+.widget-size-btn span {
+  font-size: 18px;
 }

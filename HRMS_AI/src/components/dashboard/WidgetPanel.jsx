@@ -12,7 +12,7 @@ import CreateWidgetModal from './CreateWidgetModal';
 import DynamicWidget from './DynamicWidget';
 
 
-const SortableWidget = ({ id, children, isPinned }) => {
+const SortableWidget = ({ id, children, isPinned, widgetSize }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const itemRef = useRef(null);
 
@@ -21,6 +21,8 @@ const SortableWidget = ({ id, children, isPinned }) => {
     transition: isDragging ? 'none' : transition,
     opacity: isDragging ? 0.8 : 1,
     zIndex: isDragging ? 1000 : 'auto',
+    gridColumn: widgetSize?.cols ? `span ${widgetSize.cols}` : 'span 1',
+    gridRow: widgetSize?.rows ? `span ${widgetSize.rows}` : 'auto',
   };
 
   return (
@@ -59,6 +61,15 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const [widgetSearch, setWidgetSearch] = useState('');
   const [containerWidth, setContainerWidth] = useState(1200);
   const [activeReleaseDate, setActiveReleaseDate] = useState(null);
+  const [gridColumns, setGridColumns] = useState(() => {
+    const saved = localStorage.getItem('gridColumns');
+    return saved ? parseInt(saved) : 3;
+  });
+  const [widgetSizes, setWidgetSizes] = useState(() => {
+    const saved = localStorage.getItem('widgetSizes');
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [openSizePopup, setOpenSizePopup] = useState(null);
   const timelineRef = useRef(null);
   const containerRef = useRef(null);
   const employeesPerPage = 5;
@@ -81,6 +92,18 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   useEffect(() => {
     localStorage.setItem('pinnedWidgets', JSON.stringify(pinnedWidgets));
   }, [pinnedWidgets]);
+
+  useEffect(() => {
+    localStorage.setItem('gridColumns', gridColumns.toString());
+  }, [gridColumns]);
+
+  useEffect(() => {
+    localStorage.setItem('widgetSizes', JSON.stringify(widgetSizes));
+  }, [widgetSizes]);
+
+  const setWidgetSize = (widgetId, cols, rows) => {
+    setWidgetSizes(prev => ({ ...prev, [widgetId]: { cols, rows } }));
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -129,6 +152,9 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
+      }
+      if (!event.target.closest('.size-grid-popup') && !event.target.closest('.widget-size-btn')) {
+        setOpenSizePopup(null);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -194,12 +220,53 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
 
   const renderWidget = (widgetId) => {
     const dynamicWidget = dynamicWidgets.find(w => w.id === widgetId);
+    const defaultRows = dynamicWidget?.chartType === 'card' ? 1 : 2;
+    const widgetSize = widgetSizes[widgetId] || { cols: 1, rows: defaultRows };
+    
+    const SizeSelector = () => {
+      const isCardType = dynamicWidget?.chartType === 'card';
+      const minRows = isCardType ? 1 : 2;
+      
+      return (
+        <div style={{ position: 'relative' }}>
+          <button 
+            className={`widget-size-btn ${openSizePopup === widgetId ? 'active' : ''}`}
+            onClick={(e) => { e.stopPropagation(); setOpenSizePopup(openSizePopup === widgetId ? null : widgetId); }}
+            onPointerDown={(e) => e.stopPropagation()}
+            title="Adjust size"
+          >
+            <span class="material-symbols-outlined">auto_awesome_mosaic</span>
+          </button>
+          {openSizePopup === widgetId && (
+            <div className="size-grid-popup" onPointerDown={(e) => e.stopPropagation()}>
+              <div className="size-grid">
+                {[1, 2, 3].map(row => 
+                  [1, 2, 3].map(col => {
+                    const isDisabled = row < minRows;
+                    return (
+                      <div
+                        key={`${row}-${col}`}
+                        className={`size-grid-cell ${widgetSize.cols >= col && widgetSize.rows >= row ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+                        onClick={() => { if (!isDisabled) { setWidgetSize(widgetId, col, row); setOpenSizePopup(null); } }}
+                        style={{ cursor: isDisabled ? 'not-allowed' : 'pointer', opacity: isDisabled ? 0.3 : 1 }}
+                      />
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
     if (dynamicWidget) {
       return (
         <>
           <div className="grid-item-header">
             <h4>{dynamicWidget.title}</h4>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <SizeSelector />
               <button
                 onClick={(e) => { e.stopPropagation(); setEditingWidget(dynamicWidget); setIsModalOpen(true); }}
                 className="edit-btn"
@@ -229,6 +296,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             <div className="grid-item-header">
               <h4>Project Distribution</h4>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <SizeSelector />
                 <button
                   onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
                   className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
@@ -272,6 +340,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             <div className="grid-item-header">
               <h4>Department Overview</h4>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <SizeSelector />
                 <button
                   onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
                   className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
@@ -306,6 +375,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             <div className="grid-item-header">
               <h4>Employee Directory</h4>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <SizeSelector />
                 <button
                   onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
                   className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
@@ -398,6 +468,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             <div className="grid-item-header">
               <h4>Available Timeline</h4>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <SizeSelector />
                 <button
                   onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
                   className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
@@ -681,7 +752,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           <SortableContext items={selectedWidgets} strategy={rectSortingStrategy}>
             {/* Pinned Widgets Row */}
             {pinnedWidgets.length > 0 && (
-              <div className="masonry-grid">
+              <div className="widgets-grid">
                 {selectedWidgets
                   .filter(widgetId => {
                     const widget = availableWidgets.find(w => w.id === widgetId);
@@ -690,15 +761,15 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                     return pinnedWidgets.includes(widgetId) && label.toLowerCase().includes(widgetSearch.toLowerCase());
                   })
                   .map(widgetId => (
-                    <SortableWidget key={widgetId} id={widgetId} isPinned={true}>
+                    <SortableWidget key={widgetId} id={widgetId} isPinned={true} widgetSize={widgetSizes[widgetId]}>
                       {renderWidget(widgetId)}
                     </SortableWidget>
                   ))}
               </div>
             )}
 
-            {/* Unpinned Widgets Masonry Grid */}
-            <div className="masonry-grid">
+            {/* Unpinned Widgets Grid */}
+            <div className="widgets-grid">
               {selectedWidgets
                 .filter(widgetId => {
                   const widget = availableWidgets.find(w => w.id === widgetId);
@@ -707,7 +778,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                   return !pinnedWidgets.includes(widgetId) && label.toLowerCase().includes(widgetSearch.toLowerCase());
                 })
                 .map(widgetId => (
-                  <SortableWidget key={widgetId} id={widgetId} isPinned={false}>
+                  <SortableWidget key={widgetId} id={widgetId} isPinned={false} widgetSize={widgetSizes[widgetId]}>
                     {renderWidget(widgetId)}
                   </SortableWidget>
                 ))}
@@ -725,8 +796,10 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             setDynamicWidgets(prev => prev.map(w => w.id === editingWidget.id ? { ...w, ...widgetData, prompt } : w));
           } else {
             const newWidget = { id: `dynamic-${Date.now()}`, ...widgetData, prompt };
+            const defaultRows = widgetData.chartType === 'card' ? 1 : 2;
             setDynamicWidgets(prev => [newWidget, ...prev]);
             setSelectedWidgets(prev => [newWidget.id, ...prev]);
+            setWidgetSizes(prev => ({ ...prev, [newWidget.id]: { cols: 1, rows: defaultRows } }));
           }
           setIsModalOpen(false);
           setEditingWidget(null);

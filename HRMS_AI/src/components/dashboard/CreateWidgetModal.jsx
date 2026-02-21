@@ -16,7 +16,8 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate, editingWidget }) => {
     if (editingWidget) {
       setTitle(editingWidget.title || '');
       setPrompt(editingWidget.prompt || '');
-      setChartType(editingWidget.chartType || 'auto');
+      const type = editingWidget.chartType || 'auto';
+      setChartType(['grouped_bar', 'multi_bar'].includes(type) ? 'bar' : type);
     } else {
       setTitle('');
       setPrompt('');
@@ -28,7 +29,6 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate, editingWidget }) => {
   const chartTypes = [
     { value: 'auto', label: 'Auto', icon: 'fa-wand-magic-sparkles' },
     { value: 'bar', label: 'Bar', icon: 'fa-chart-column' },
-    { value: 'grouped_bar', label: 'Group Bar', icon: 'fa-signal' },
     { value: 'scatter', label: 'Scatter', icon: 'fa-arrow-up-right-dots' },
     { value: 'radar', label: 'Radar', icon: 'fa-hexagon-nodes' },
     { value: 'pie', label: 'Pie', icon: 'fa-chart-pie' },

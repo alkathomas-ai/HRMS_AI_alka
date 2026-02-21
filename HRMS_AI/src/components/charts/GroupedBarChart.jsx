@@ -25,26 +25,40 @@ const GroupedBarChart = ({ data, xAxis, yAxis, groupBy }) => {
     '#a8e6cf', '#ffd3b6', '#ffaaa5', '#ff8b94', '#c7ceea', '#b4f8c8'
   ];
   
-  // Extract unique x-axis values and groups
-  const xValues = [...new Set(data.map(item => item[xAxis]))];
-  const groups = [...new Set(data.map(item => item[groupBy]))];
-  
-  // Create datasets for each group
-  const datasets = groups.map((group, index) => {
-    const groupData = xValues.map(xValue => {
-      const item = data.find(d => d[xAxis] === xValue && d[groupBy] === group);
-      return item ? item[yAxis] : 0;
-    });
+  let chartData, xValues, datasets;
+
+  // Check if yAxis is an array (multi_bar format)
+  if (Array.isArray(yAxis)) {
+    // Multi-bar format: multiple y-axis values for each x-axis value
+    xValues = data.map(item => item[xAxis]);
     
-    return {
-      label: group,
-      data: groupData,
+    datasets = yAxis.map((yKey, index) => ({
+      label: yKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      data: data.map(item => item[yKey]),
       backgroundColor: colors[index % colors.length],
       maxBarThickness: 40,
-    };
-  });
+    }));
+  } else {
+    // Original grouped format: single y-axis, grouped by another field
+    xValues = [...new Set(data.map(item => item[xAxis]))];
+    const groups = [...new Set(data.map(item => item[groupBy]))];
+    
+    datasets = groups.map((group, index) => {
+      const groupData = xValues.map(xValue => {
+        const item = data.find(d => d[xAxis] === xValue && d[groupBy] === group);
+        return item ? item[yAxis] : 0;
+      });
+      
+      return {
+        label: group,
+        data: groupData,
+        backgroundColor: colors[index % colors.length],
+        maxBarThickness: 40,
+      };
+    });
+  }
 
-  const chartData = {
+  chartData = {
     labels: xValues,
     datasets
   };
