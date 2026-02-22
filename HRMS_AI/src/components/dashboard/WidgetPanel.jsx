@@ -330,60 +330,27 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
               <div className="subtitle-number">{availableEmployees.length}</div>
               <div className="subtitle-text">Available for assignment</div>
             </div>
-          ))}
-
-          <div
-            className="timeline-slider"
-            style={{
-              top: activeIndex * 48 + 'px'
-            }}
-          />
-        </div>
-
-        {/* RIGHT SIDE — EMPLOYEES */}
-        <div className="timeline-content">
-          {filteredEmployees.map(emp => {
-            const releaseDate = emp.committed_relieving_date
-              ? new Date(emp.committed_relieving_date)
-              : null;
-
-            const today = new Date();
-            const daysLeft = releaseDate
-              ? Math.ceil((releaseDate - today) / (1000 * 60 * 60 * 24))
-              : null;
-
-            return (
-              <div key={emp.employee_id} className="timeline-employee-card">
-                <div className="timeline-employee-name">
-                  {emp.display_name}
-                </div>
-                <div className="timeline-employee-meta">
-                  {emp.tech_group} • {emp.emp_location}
-                </div>
-                <div
-                  className="timeline-employee-badge"
-                  style={
-                    activeReleaseDate === "FREE"
-                      ? { background: "#dcfce7", color: "#166534" }
-                      : {}
-                  }
-                >
-                  {activeReleaseDate === "FREE"
-                    ? "Available Now"
-                    : `${daysLeft} days remaining`}
-                </div>
+            <div className="timeline-container">
+              <div className="timeline-dates">
+                {soonAvailableEmployees
+                  .filter(emp => emp.committed_relieving_date)
+                  .map((emp, idx) => {
+                    const releaseDate = new Date(emp.committed_relieving_date);
+                    const formattedDate = releaseDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    return (
+                      <div
+                        key={idx}
+                        className={`timeline-date ${activeReleaseDate === emp.committed_relieving_date ? 'active' : ''}`}
+                        onClick={() => setActiveReleaseDate(emp.committed_relieving_date)}
+                      >
+                        {formattedDate}
+                      </div>
+                    );
+                  })}
               </div>
-            );
-          })}
-        </div>
-      </div>
-    </>
-  );
-}
-
-
-
-
+            </div>
+          </>
+        );
       
       default:
         return null;
