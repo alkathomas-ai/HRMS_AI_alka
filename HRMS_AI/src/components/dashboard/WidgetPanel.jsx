@@ -464,8 +464,6 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           );
         }
 
-        const activeIndex = Math.max(timelineItems.indexOf(activeReleaseDate), 0);
-
         return (
           <>
             <div className="grid-item-header">
@@ -507,20 +505,9 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                           ? "Free"
                           : new Date(item).toLocaleDateString()}
                       </span>
-
-                      {/* <span className="timeline-freepool-count">
-                        {itemCount}
-                      </span> */}
                     </div>
                   );
                 })}
-
-                <div
-                  className="timeline-slider"
-                  style={{
-                    top: activeIndex * 48 + 'px'
-                  }}
-                />
               </div>
 
 

@@ -911,6 +911,32 @@
   overflow-y: auto;
   border-right: 2px solid var(--color-border);
   padding-right: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary-soft) transparent;
+}
+
+.timeline-bar::-webkit-scrollbar {
+  width: 4px;
+  height: 0;
+}
+
+.timeline-bar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.timeline-bar::-webkit-scrollbar-thumb {
+  background: var(--color-primary-soft);
+  border-radius: 2px;
+}
+
+.timeline-bar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-hover);
+}
+
+.timeline-bar::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 .timeline-date-item {
@@ -922,22 +948,11 @@
   color: var(--color-text-secondary);
   position: relative;
   padding-left: 10px;
-
 }
 
 .timeline-date-item.active {
   font-weight: 600;
   color: var(--color-text-primary);
-}
-
-.timeline-slider {
-  position: absolute;
-  right: 0px;
-  width: 4px;
-  height: 48px;
-  background: var(--color-primary-soft);
-  border-radius: 2px;
-  transition: top 0.3s ease;
 }
 
 .timeline-content {
