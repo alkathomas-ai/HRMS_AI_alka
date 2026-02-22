@@ -314,9 +314,6 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             <div className="grid-item-header">
               <h4>Available Employees</h4>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <button className="expand-btn-widget" onClick={(e) => { e.stopPropagation(); setFullscreenWidget(widgetId); }}>
-                 <img src={Icons.fullscreen} alt="" />
-                </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
                   className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
@@ -330,24 +327,22 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
               <div className="subtitle-number">{availableEmployees.length}</div>
               <div className="subtitle-text">Available for assignment</div>
             </div>
-            <div className="timeline-container">
-              <div className="timeline-dates">
-                {soonAvailableEmployees
-                  .filter(emp => emp.committed_relieving_date)
-                  .map((emp, idx) => {
-                    const releaseDate = new Date(emp.committed_relieving_date);
-                    const formattedDate = releaseDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    return (
-                      <div
-                        key={idx}
-                        className={`timeline-date ${activeReleaseDate === emp.committed_relieving_date ? 'active' : ''}`}
-                        onClick={() => setActiveReleaseDate(emp.committed_relieving_date)}
-                      >
-                        {formattedDate}
-                      </div>
-                    );
-                  })}
-              </div>
+            <div className="employee-directory-container">
+              {availableEmployees.slice(0, 5).map((employee) => (
+                <div key={employee.employee_id} className="employee-item">
+                  <div className="employee-info">
+                    <div className="employee-name">{employee.display_name}</div>
+                    <div className="employee-details">
+                      <span className="employee-dept">{employee.employee_department}</span>
+                      <span className="employee-designation">{employee.designation}</span>
+                    </div>
+                    <div className="employee-location">
+                      <i className="fa-solid fa-location-dot"></i>
+                      {employee.emp_location}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </>
         );

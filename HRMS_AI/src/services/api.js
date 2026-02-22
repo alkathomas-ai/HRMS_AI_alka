@@ -1,52 +1,61 @@
 import axios from 'axios'
-import dummySearchData from '../data/dummySearchData';
+import dummyUploadData from '../data/dummyUploadData';
+import { testData } from '../data/Upload_data_response';
 // const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const BASE_URL = 'http://172.25.247.7:8000'
 
 
 export async function searchAPI(query) {
-    const response = await fetch(`${BASE_URL}/search-rank-simplified-new`, 
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ query : query }),
-    });
+    // const response = await fetch(`${BASE_URL}/search-rank-simplified-new`, 
+    // {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({ query : query }),
+    // });
      
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    // if (!response.ok) {
+    //   throw new Error(`HTTP error! status: ${response.status}`);
+    // }
     
-     return response.json();
+    //  return response.json();
+    return new Promise((resolve) => {
+    const response ={
+      employee : testData.all_employees
+    }
+    setTimeout(() => {
+      resolve(response);
+    }, 1000);
+  });
   }
 
 
 export async function uploadAPI(formData) {
-  try{
-    console.log(formData)
-  const response = await fetch(`${BASE_URL}/upload/hrms-data`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+  // try{
+  //   console.log(formData)
+  // const response = await fetch(`${BASE_URL}/upload/hrms-data`,
+  //       {
+  //         method: "POST",
+  //         body: formData,
+  //       }
+  //     );
 
-      if (!response.ok) {
-        throw new Error(`Upload failed: ${response.statusText}`);
-      }
-      return response.json();
-  } catch (error) {
-    console.log(error);
-    console.log("Backend not available. Using dummy data.");
-    return dummySearchData; 
-  }
+  //     if (!response.ok) {
+  //       throw new Error(`Upload failed: ${response.statusText}`);
+  //     }
+  //     return response.json();
+  // } catch (error) {
+  //   console.log(error);
+  //   console.log("Backend not available. Using dummy data.");
+  //   return dummyUploadData; 
+  // }
   
-  // return new Promise((resolve) => {
-  //   setTimeout(() => {
-  //     resolve(dummySearchData);
-  //   }, 1000);
-  // });
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(dummyUploadData);
+    }, 1000);
+  });
 }
 
 export async function getProjectDistributions() {
@@ -94,4 +103,22 @@ export async function getSoonAvailableEmployees() {
   } catch (error) {
     console.log(error);
   }
+}
+
+export async function getEmployeesPaginated(page, pageSize) {
+  // try {
+  //   const response = await axios.get(`${BASE_URL}/employees?page=${page}&page_size=${pageSize}`);
+  //   console.log(response.data)
+  //   return response.data;
+  // } catch (error) {
+  //   console.log(error);
+  // }
+  return new Promise((resolve) => {
+    const response ={
+      total_employees : testData.all_employees
+    }
+    setTimeout(() => {
+      resolve(response);
+    }, 1000);
+  });
 }
