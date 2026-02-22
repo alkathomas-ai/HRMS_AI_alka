@@ -1,100 +1,76 @@
-import { Icons } from "../../assets/icons";
-import "./Dashboard.css";
-import "./SearchAssistant.css";
-import { useRef, useState } from "react";
-import { uploadAPI, searchAPI } from "../../services/api";
-import { createPortal } from "react-dom";
+import { Icons } from '../../assets/icons';
+import './Dashboard.css';
+import './SearchAssistant.css';
+import WidgetPanel from './WidgetPanel';
+import { useRef, useState } from 'react';
+import { uploadAPI,searchAPI } from '../../services/api';
+
 
 const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
   const fileInputRef = useRef(null);
-  const uploadModalFileInputRef = useRef(null);
-
-  // const mediaRecorderRef = useRef(null);
-  // const [isRecording, setIsRecording] = useState(false);
-  const [showUploadModal, setShowUploadModal] = useState(false);
+  const mediaRecorderRef = useRef(null);
+  const [isRecording, setIsRecording] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
-  // const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isfileSelect, setisfileSelect] = useState(false);
-  const [inputText, setInputText] = useState("");
-  // const [tablePage, setTablePage] = useState({});
-  // const [rowsPerPage, setRowsPerPage] = useState({});
-  // const [searchQuery, setSearchQuery] = useState({});
-  // const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [mouseHover, setMouseHover] = useState(false);
-  const [hoveredIndex, setHoveredIndex] = useState(null);
-  const [showAllSkills, setShowAllSkills] = useState(false);
-  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
-
+  const [inputText, setInputText] = useState('');
+  const [tablePage, setTablePage] = useState({});
+  const [rowsPerPage, setRowsPerPage] = useState({});
+  const [searchQuery, setSearchQuery] = useState({});
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [chatHistory] = useState([
-    { id: 1, title: "Top Candidates Search" },
-    { id: 2, title: "Pipeline Review" },
-    { id: 3, title: "Recruitment Insights" },
-    { id: 4, title: "Interview Scheduling" },
-    { id: 5, title: "Candidate Evaluation" },
+    { id: 1, title: 'Top Candidates Search' },
+    { id: 2, title: 'Pipeline Review' },
+    { id: 3, title: 'Recruitment Insights' },
+    { id: 4, title: 'Interview Scheduling' },
+    { id: 5, title: 'Candidate Evaluation' },
   ]);
 
   const handlePlusClick = () => {
-    setShowUploadModal(true);
-  };
-
-  const handleModalFileSelect = () => {
-    uploadModalFileInputRef.current?.click();
+    fileInputRef.current?.click();
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
-    if (file && file.type === "text/csv") {
-      console.log("CSV file selected:", file.name);
+    if (file && file.type === 'text/csv') {
+      console.log('CSV file selected:', file.name);
       setUploadedFile(file);
-      setisfileSelect(true);
     } else if (file) {
-      alert("Please select a CSV file");
+      alert('Please select a CSV file');
     }
   };
 
   const handleRemoveFile = () => {
     setUploadedFile(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+      fileInputRef.current.value = '';
     }
-  };
-  const handleRemoveUploadFile = () => {
-    setUploadedFile(null);
-    if (uploadModalFileInputRef.current) {
-      uploadModalFileInputRef.current.value = "";
-    }
-    setisfileSelect(false);
-    setInputText("");
   };
 
   const handleSendMessage = async () => {
-    setShowUploadModal(false);
     if (!inputText.trim() && !uploadedFile) return;
-
-    setIsLoading(true);
 
     const textToSend = inputText;
     const fileToUpload = uploadedFile;
 
     // Reset UI immediately
-    setInputText("");
+    setInputText('');
     setUploadedFile(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (fileInputRef.current) fileInputRef.current.value = '';
 
     // Add user message with loading state for file uploads
     const userMessage = {
       id: Date.now(),
-      type: fileToUpload ? "loading" : "user",
+      type: fileToUpload ? 'loading' : 'user',
       text: textToSend,
       file: fileToUpload
         ? { name: fileToUpload.name, type: fileToUpload.type }
         : null,
-      timestamp: new Date(),
+      timestamp: new Date()
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages(prev => [...prev, userMessage]);
 
     try {
       const startTime = Date.now();
@@ -103,22 +79,20 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
       if (fileToUpload) {
         // Use uploadAPI for file uploads
         const formData = new FormData();
-        formData.append("file", fileToUpload);
-        if (textToSend) formData.append("message", textToSend);
+        formData.append('file', fileToUpload);
+        if (textToSend) formData.append('message', textToSend);
         response = await uploadAPI(formData);
-
+        
         // Ensure minimum 2 seconds loader for file uploads
         const elapsed = Date.now() - startTime;
         if (elapsed < 2000) {
-          await new Promise((resolve) => setTimeout(resolve, 2000 - elapsed));
+          await new Promise(resolve => setTimeout(resolve, 2000 - elapsed));
         }
 
         // Update loading message to user message
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === userMessage.id ? { ...msg, type: "user" } : msg,
-          ),
-        );
+        setMessages(prev => prev.map(msg => 
+          msg.id === userMessage.id ? { ...msg, type: 'user' } : msg
+        ));
       } else {
         // Use searchAPI for text queries
         response = await searchAPI(textToSend);
@@ -127,715 +101,370 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
       // Assistant success message
       const assistantMessage = {
         id: Date.now() + 1,
-        type: "assistant",
-        text:
-          response?.message ||
-          response?.data ||
-          (fileToUpload
-            ? `File "${fileToUpload.name}" uploaded successfully.`
-            : "Request processed successfully."),
+        type: 'assistant',
+        text: response?.message || response?.data || 
+              (fileToUpload
+                ? `File "${fileToUpload.name}" uploaded successfully.`
+                : 'Request processed successfully.'),
         data: fileToUpload ? response : null,
-        timestamp: new Date(),
+        timestamp: new Date()
       };
-      console.log("ASSISTANT MESSAGE:", assistantMessage);
 
-      setMessages((prev) => [...prev, assistantMessage]);
+      setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error(error);
 
       // Update loading message to user message on error
       if (fileToUpload) {
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === userMessage.id ? { ...msg, type: "user" } : msg,
-          ),
-        );
+        setMessages(prev => prev.map(msg => 
+          msg.id === userMessage.id ? { ...msg, type: 'user' } : msg
+        ));
       }
 
       // Assistant error message
       const errorMessage = {
         id: Date.now() + 1,
-        type: "assistant",
-        text: fileToUpload
-          ? "❌ Upload failed. Please try again."
-          : "❌ Search failed. Please try again.",
-        timestamp: new Date(),
+        type: 'assistant',
+        text: fileToUpload ? '❌ Upload failed. Please try again.' : '❌ Search failed. Please try again.',
+        timestamp: new Date()
       };
 
-      setMessages((prev) => [...prev, errorMessage]);
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
-    setisfileSelect(false);
   };
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 8;
+  const handleMicClick = async () => {
+    if (isRecording) {
+      mediaRecorderRef.current?.stop();
+      setIsRecording(false);
+    } else {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const mediaRecorder = new MediaRecorder(stream);
+        const chunks = [];
 
-  // const handleMicClick = async () => {
-  //   if (isRecording) {
-  //     mediaRecorderRef.current?.stop();
-  //     setIsRecording(false);
-  //   } else {
-  //     try {
-  //       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  //       const mediaRecorder = new MediaRecorder(stream);
-  //       const chunks = [];
+        mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(chunks, { type: 'audio/webm' });
+          console.log('Audio recorded:', blob);
+          // Add your audio processing logic here
+          stream.getTracks().forEach(track => track.stop());
+        };
 
-  //       mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-  //       mediaRecorder.onstop = () => {
-  //         const blob = new Blob(chunks, { type: 'audio/webm' });
-  //         console.log('Audio recorded:', blob);
-  //         // Add your audio processing logic here
-  //         stream.getTracks().forEach(track => track.stop());
-  //       };
-
-  //       mediaRecorderRef.current = mediaRecorder;
-  //       mediaRecorder.start();
-  //       setIsRecording(true);
-  //     } catch (err) {
-  //       alert('Microphone access denied');
-  //     }
-  //   }
-  // };
-
-  // console.log(messages);
+        mediaRecorderRef.current = mediaRecorder;
+        mediaRecorder.start();
+        setIsRecording(true);
+      } catch (err) {
+        alert('Microphone access denied');
+      }
+    }
+  };
 
   return (
     <>
-      {/* {isLoading && (
-        <div className="chat-loader">
-          <div className="spinner"></div>
-        </div>
-      )} */}
-
-      {showUploadModal && (
-        <div
-          className="upload-modal-overlay"
-          onClick={() => setShowUploadModal(false)}
-        >
-          <div className="upload-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="upload-modal-header">
-              <h3>Upload CSV File</h3>
-              <button
-                className="modal-close-btn"
-                onClick={() => setShowUploadModal(false)}
-              >
-                ✕
+      {isExpanded ? (
+        <div className="chat-container">
+          {sidebarCollapsed && (
+            <button className="sidebar-expand-btn" onClick={() => setSidebarCollapsed(false)}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <line x1="9" y1="3" x2="9" y2="21"/>
+              </svg>
+            </button>
+          )}
+          
+          <div className={`chat-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
+            <div className="sidebar-content">
+              <button className="sidebar-toggle" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <line x1="9" y1="3" x2="9" y2="21"/>
+                </svg>
               </button>
-            </div>
-            <div className="upload-modal-body">
-              {!uploadedFile ? (
+              
+              {!sidebarCollapsed && (
                 <>
-                  <div className="upload-icon">
+                  <button className="new-chat-btn">
                     <span className="material-symbols-outlined">
-                      upload_file
+                      chat_add_on
                     </span>
-                  </div>
-                  <p>Select a CSV file to upload and process employee data</p>
-                  <input
-                    type="file"
-                    ref={uploadModalFileInputRef}
-                    onChange={handleFileChange}
-                    accept=".csv"
-                    style={{ display: "none" }}
-                  />
-                  <button
-                    className="choose-csv-btn btn-primary"
-                    onClick={handleModalFileSelect}
-                  >
-                    <span className="material-symbols-outlined">
-                      folder_open
-                    </span>
-                    Choose CSV
+                    <span>New chat</span>
                   </button>
-                </>
-              ) : (
-                <>
-                  <div className="upload-icon success">
-                    <span className="material-symbols-outlined">
-                      check_circle
-                    </span>
+                  
+                  <div className="sidebar-search">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="11" cy="11" r="8"/>
+                      <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input type="text" placeholder="Search" />
                   </div>
-                  <div className="selected-file-info">
-                    <span className="material-symbols-outlined">
-                      description
-                    </span>
-                    <span className="file-name">{uploadedFile.name}</span>
-                    <button
-                      className="remove-file-icon"
-                      onClick={handleRemoveUploadFile}
-                    >
-                      <span className="material-symbols-outlined">close</span>
-                    </button>
+                  
+                  <div className="chat-history">
+                    {chatHistory.map(chat => (
+                      <div key={chat.id} className={`chat-history-item ${chat.id === 1 ? 'active' : ''}`}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <span>{chat.title}</span>
+                      </div>
+                    ))}
                   </div>
-                  <button
-                    className="btn-primary upload-process-btn"
-                    onClick={handleSendMessage}
-                  >
-                    <span className="material-symbols-outlined">upload</span>
-                    Upload CSV
-                  </button>
                 </>
               )}
             </div>
           </div>
-        </div>
-      )}
-      {isExpanded ? (
-        <div className="card assistant-card assistant-card-expanded">
-          {messages.length === 0 ? (
-            <div className="upload-prompt-container">
-              <div className="upload-prompt-content">
-                {/* <span className="assistant-badge bubbles">
+          
+          <div className="chat-main">
+            {selectedEmployee && (
+              <div className="employee-detail-overlay" onClick={() => setSelectedEmployee(null)}>
+                <div className="employee-detail-card" onClick={(e) => e.stopPropagation()}>
+                  <button className="close-detail-btn" onClick={() => setSelectedEmployee(null)}>✕</button>
+                  <h3>Employee Details</h3>
+                  <div className="detail-grid">
+                    {Object.entries(selectedEmployee).map(([key, value]) => (
+                      <div key={key} className="detail-item">
+                        <strong>{key.replace(/_/g, ' ').toUpperCase()}:</strong>
+                        <span>{Array.isArray(value) ? value.join(', ') : value || '-'}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="chat-messages">
+            {messages.length === 0 ? (
+              <div className="chat-welcome">
+                <div className="chat-welcome-icon">
                   <img src="src/assets/icons/bubbles.svg" alt="" srcSet="" />
-                </span> */}
-                <h3>
-                  Ready To Find the Right Resource for Your Project, Instantly?
-                </h3>
-                <div className="search-container">
-                  <div className="search-header">
-                    <div className="assistant-control">
-                      <div className="assistant-box">
-                        <div className="assistant-input">
-                          <span className="search-icon">
-                            {/* <img src={Icons.search} alt="" /> */}
-                            <span className="assistant-badge bubbles">
-                              <img
-                                src="src/assets/icons/bubbles.svg"
-                                alt=""
-                                srcSet=""
-                              />
-                            </span>
-                          </span>
-                          <input
-                            type="file"
-                            ref={fileInputRef}
-                            onChange={handleFileChange}
-                            accept=".csv"
-                            style={{ display: "none" }}
-                          />
-                          {uploadedFile ? (
-                            <div
-                              className="assistant-file"
-                              style={{
-                                flex: 1,
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "8px",
-                              }}
-                            >
-                              <span className="material-symbols-outlined">
-                                csv
-                              </span>
-                              {/* <span>{uploadedFile.name}</span>
-                          <button className="remove-file-btn" onClick={handleRemoveFile}>✕</button> */}
-                            </div>
-                          ) : (
-                            <input
-                              type="text"
-                              placeholder="Ask me anything..."
-                              value={inputText}
-                              onChange={(e) => setInputText(e.target.value)}
-                              onKeyPress={(e) =>
-                                e.key === "Enter" && handleSendMessage()
-                              }
-                            />
-                          )}
+                </div>
+                <h2>How can I help you today?</h2>
+              </div>
+            ) : (
+              <div className="chat-messages-list">
+                {messages.map(msg => (
+                  <div key={msg.id} className={`chat-message ${msg.type === 'loading' ? 'user' : msg.type}`}>
+                    {msg.type === 'loading' && (
+                      <div className="message-content">
+                        <div className="loading-spinner-container">
+                          <div className="loading-spinner"></div>
                         </div>
-                        <div className="assistant-microphone">
-                          <button
-                            className="chat-submit-btn"
-                            onClick={handleSendMessage}
-                          >
-                            <img src={Icons.search} alt="" />
-                          </button>
+                        <div className="message-file">
+                          <span className="material-symbols-outlined">description</span>
+                          <span>{msg.file.name}</span>
                         </div>
                       </div>
-                    </div>
-                    <div className="assistant-btns">
-                      <button
-                        className="upload-btn-top btn-primary"
-                        onClick={handlePlusClick}
-                      >
-                        <img src={Icons.upload1} alt="" />
-                      </button>
-                    </div>
-                  </div>
-                  {/* AI Context / Search Hints  */}
-                  <div class="search-hints">
-                    <span class="hint-label">Try searching:</span>
-
-                    <button class="hint-btn">
-                      "Senior developers in Kochi"
-                    </button>
-
-                    <button class="hint-btn">"Design team lead"</button>
-
-                    <button class="hint-btn">
-                      "Experts in Machine Learning"
-                    </button>
-                  </div>
-
-                  {/* Quick Filters */}
-                  <div class="quick-filters">
-                    <span class="filter-label">Filter by:</span>
-
-                    <button class="filter-btn">
-                      Department <i class="fas fa-chevron-down"></i>
-                    </button>
-
-                    <button class="filter-btn">
-                      Location <i class="fas fa-chevron-down"></i>
-                    </button>
-
-                    <button class="filter-btn">
-                      Experience <i class="fas fa-chevron-down"></i>
-                    </button>
-                  </div>
-
-                  {/* Empty State  */}
-                  <div class="empty-state">
-                    <div class="empty-icon">
-                      <i class="fas fa-user-friends"></i>
-                    </div>
-
-                    <h3>Start typing to see results</h3>
-
-                    <p>
-                      {/* Enter name, department, or skill and let AI help you find the best-fit employee. */}
-                      Enter name, department, or skill to discover matching
-                      employees, with the most relevant profiles rising to the
-                      top.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <>
-              <div className="assistant-header">
-                <h3>
-                  Ready To Find the Right Resource for Your Project, Instantly?
-                </h3>
-              </div>
-
-                <div className="search-header">
-                  <div className="assistant-control">
-                    <div className="assistant-box">
-                      <div className="assistant-input">
-                        {/* <span className="search-icon">
-                          <img src={Icons.search} alt="" />
-                        </span> */}
-                        <span className="assistant-badge bubbles">
-                          <img
-                            src="src/assets/icons/bubbles.svg"
-                            alt=""
-                            srcSet=""
-                          />
-                        </span>
-                        <input
-                          type="file"
-                          ref={fileInputRef}
-                          onChange={handleFileChange}
-                          accept=".csv"
-                          style={{ display: "none" }}
-                        />
-                        {uploadedFile ? (
-                          <div
-                            className="assistant-file"
-                            style={{
-                              flex: 1,
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "8px",
-                            }}
-                          >
-                            <span className="material-symbols-outlined">
-                              csv
-                            </span>
-                            {/* <span>{uploadedFile.name}</span>
-                        <button className="remove-file-btn" onClick={handleRemoveFile}>✕</button> */}
+                    )}
+                    {msg.type !== 'loading' && (
+                      <>
+                        {msg.type === 'assistant' && (
+                          <div className="message-avatar">
+                            <img src="src/assets/icons/bubbles.svg" alt="" />
                           </div>
-                        ) : (
-                          <input
-                            type="text"
-                            placeholder="Ask me anything..."
-                            value={inputText}
-                            onChange={(e) => setInputText(e.target.value)}
-                            onKeyPress={(e) =>
-                              e.key === "Enter" && handleSendMessage()
-                            }
-                          />
                         )}
-                      </div>
-                      <div className="assistant-microphone">
-                        <button
-                          className="chat-submit-btn"
-                          onClick={handleSendMessage}
-                        >
-                          <img src={Icons.search} alt="" />
-                        </button>
+                        <div className="message-content">
+                          {msg.file && (
+                            <div className="message-file">
+                              <span className="material-symbols-outlined">description</span>
+                              <span>{msg.file.name}</span>
+                            </div>
+                          )}
+                          {msg.text && <p>{msg.text}</p>}
+                          {msg.data?.all_employees && (() => {
+                            const columns = msg.data.file_metadata?.columns_list || [];
+                            const query = (searchQuery[msg.id] || '').toLowerCase();
+                            const filteredData = query ? msg.data.all_employees.filter(emp => 
+                              columns.some(col => String(emp[col] || '').toLowerCase().includes(query))
+                            ) : msg.data.all_employees;
+                            const pageSize = rowsPerPage[msg.id] || 10;
+                            const currentPage = tablePage[msg.id] || 1;
+                            const totalPages = Math.ceil(filteredData.length / pageSize);
+                            const startIdx = (currentPage - 1) * pageSize;
+                            const endIdx = startIdx + pageSize;
+                            
+                            return (
+                              <div className="response-table-container">
+                                <div className="response-summary">
+                                  <p><strong>Records:</strong> {msg.data.records_processed}</p>
+                                  <p><strong>Database:</strong> {msg.data.database_records}</p>
+                                </div>
+                                <div className="table-wrapper">
+                                  <table className="employee-table">
+                                    <thead>
+                                      <tr>
+                                        {columns.map(col => (
+                                          <th key={col}>{col.replace(/_/g, ' ').toUpperCase()}</th>
+                                        ))}
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {filteredData.slice(startIdx, endIdx).map((emp, idx) => (
+                                        <tr key={idx} onClick={() => setSelectedEmployee(emp)} style={{cursor: 'pointer'}}>
+                                          {columns.map(col => (
+                                            <td key={col}>
+                                              {col === 'projects' && Array.isArray(emp[col]) 
+                                                ? emp[col].length 
+                                                : emp[col] || '-'}
+                                            </td>
+                                          ))}
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                                <div className="table-pagination">
+                                  <div>
+                                    <label>Rows per page: </label>
+                                    <select 
+                                      value={pageSize} 
+                                      onChange={(e) => {
+                                        setRowsPerPage(prev => ({...prev, [msg.id]: Number(e.target.value)}));
+                                        setTablePage(prev => ({...prev, [msg.id]: 1}));
+                                      }}
+                                    >
+                                      <option value={10}>10</option>
+                                      <option value={15}>15</option>
+                                      <option value={20}>20</option>
+                                      <option value={25}>25</option>
+                                    </select>
+                                  </div>
+                                  <div>
+                                    <button 
+                                      onClick={() => setTablePage(prev => ({...prev, [msg.id]: Math.max(1, currentPage - 1)}))}
+                                      disabled={currentPage === 1}
+                                    >
+                                      Previous
+                                    </button>
+                                    <span>Page {currentPage} of {totalPages}</span>
+                                    <button 
+                                      onClick={() => setTablePage(prev => ({...prev, [msg.id]: Math.min(totalPages, currentPage + 1)}))}
+                                      disabled={currentPage === totalPages}
+                                    >
+                                      Next
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ))}
+                {isLoading && (
+                  <div className="chat-message assistant">
+                    <div className="message-avatar">
+                      <img src="src/assets/icons/bubbles.svg" alt="" />
+                    </div>
+                    <div className="message-content loading">
+                      <div className="loading-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
                       </div>
                     </div>
                   </div>
-
-                  <div className="assistant-btns">
-                    <button
-                      className="filter1-btn btn-primary"
-                      onClick={() => {}}
-                    >
-                      <img src={Icons.filter1} alt="" />
-                    </button>
-
-                    <button
-                      className="upload-btn-top btn-primary"
-                      onClick={handlePlusClick}
-                    >
-                      <img src={Icons.upload1} alt="" />
-                    </button>
-                  </div>
-                </div>
-
-              <div className="search-card-header">
-                {isLoading ? (
-                  <div className="chat-loader">
-                    <div className="spinner"></div>
-                  </div>
-                ) : (
-                  (() => {
-                    const filteredMessages = messages.filter(
-                      (item) =>
-                        item.type === "assistant" &&
-                        item.data?.status === "success" &&
-                        item.data?.all_employees?.length > 0,
-                    );
-
-                    const allEmployees = filteredMessages.flatMap(
-                      (item) => item.data.all_employees,
-                    );
-
-                    if (allEmployees.length === 0) {
-                      return <>Please upload CSV File to generate datas...</>;
-                    }
-                    const totalPages = Math.ceil(
-                      allEmployees.length / rowsPerPage,
-                    );
-
-                    const startIndex = (currentPage - 1) * rowsPerPage;
-                    const endIndex = startIndex + rowsPerPage;
-
-                    const paginatedEmployees = allEmployees.slice(
-                      startIndex,
-                      endIndex,
-                    );
-
-                    return (
-                      <div className="search-card">
-                        <div className="employee-table">
-                          {/* ✅ HEADER (Only Once) */}
-                          <div className="employee-row header">
-                            <div>Name</div>
-                            <div>ID</div>
-                            <div>Designation</div>
-                            <div>Total Exp</div>
-                            <div>Tech Group</div>
-                            <div>Location</div>
-                            <div></div>
-                          </div>
-
-                          {/* ✅ ROWS */}
-                          {paginatedEmployees.map((employee, index) => (
-                            <div key={index} className="employee-row">
-                              <div className="name-cell">
-                                <div className="employee-avatar">
-                                  {employee.display_name
-                                    ?.charAt(0)
-                                    .toUpperCase()}
-                                </div>
-                                <span
-                                  onMouseEnter={(e) => {
-                                    const rect =
-                                      e.currentTarget.getBoundingClientRect();
-                                    const popupHeight = 450; // your popup approx height
-                                    const viewportHeight = window.innerHeight;
-
-                                    let calculatedTop =
-                                      rect.top + window.scrollY;
-                                    let shiftAmount = 0;
-
-                                    // Check if popup will overflow bottom
-                                    if (
-                                      rect.top + popupHeight >
-                                      viewportHeight
-                                    ) {
-                                      shiftAmount =
-                                        rect.top +
-                                        popupHeight -
-                                        viewportHeight +
-                                        20;
-                                      calculatedTop -= shiftAmount;
-                                    }
-
-                                    setPopupPosition({
-                                      top: calculatedTop,
-                                      left: rect.right + 10,
-                                      arrowTop: rect.height / 2 + shiftAmount,
-                                    });
-
-                                    setHoveredIndex(index);
-                                  }}
-                                  onMouseLeave={() => setHoveredIndex(null)}
-                                >
-                                  {employee.display_name}
-                                </span>
-                              </div>
-
-                              <div>{employee.employee_id}</div>
-                              <div>{employee.designation}</div>
-                              <div>{employee.total_exp}</div>
-                              <div>{employee.tech_group}</div>
-                              <div>{employee.emp_location}</div>
-
-                              {hoveredIndex === index &&
-                                createPortal(
-                                  <div
-                                    className="employee-hover-popup"
-                                    style={{
-                                      top: `${popupPosition.top}px`,
-                                      left: `1050px`,
-                                      "--arrow-top": `${popupPosition.arrowTop}px`,
-                                    }}
-                                    onMouseEnter={() => setHoveredIndex(index)}
-                                    onMouseLeave={() => setHoveredIndex(null)}
-                                  >
-                                    <div className="popup-header">
-                                      <div className="employee-avatar">
-                                        {employee.display_name
-                                          ?.charAt(0)
-                                          .toUpperCase()}
-                                      </div>
-                                      <div>
-                                        <h4>{employee.display_name}</h4>
-                                        <span>{employee.designation}</span>
-                                      </div>
-                                    </div>
-                                    <div className="popup-body">
-                                      <div className="popup-fist-container">
-                                        <div className="popup-container-left">
-                                          <p>
-                                            <b>VVDN ID:</b> <br />{" "}
-                                            {employee.employee_id}
-                                          </p>
-                                          <p>
-                                            <b>Tech:</b> <br />{" "}
-                                            {employee.tech_group}
-                                          </p>
-                                          <p>
-                                            <b>Location:</b> <br />{" "}
-                                            {employee.emp_location}
-                                          </p>
-                                        </div>
-                                        <div className="popup-container-right">
-                                          <p>
-                                            <b>
-                                              Department: <br />{" "}
-                                            </b>{" "}
-                                            {employee.employee_department}
-                                          </p>
-                                          <p>
-                                            <b>
-                                              Total Experience: <br />{" "}
-                                            </b>{" "}
-                                            {employee.total_exp}
-                                          </p>
-                                          <p>
-                                            <b>VVDN Experience:</b> <br />{" "}
-                                            {employee.vvdn_exp}
-                                          </p>
-                                        </div>
-                                      </div>
-                                      <div className="">
-                                        <p>
-                                          <b>
-                                            Reporting Manger: <br />{" "}
-                                          </b>{" "}
-                                          {employee.rm_name}
-                                        </p>
-                                      </div>
-                                      <div className="">
-                                        <p>
-                                          <b>Skills:</b>
-                                        </p>
-                                        <div className="skills-container">
-                                          {/* {employee.skill_set
-                                      ?.split(',')
-                                      .map((skill, index) => (
-                                        <span key={index} className="skill-chip">
-                                          {skill.trim()}
-                                        </span>
-                                      ))} */}
-                                          <div className="skills-container">
-                                            {employee.skill_set
-                                              .split(",")
-                                              .slice(
-                                                0,
-                                                showAllSkills ? undefined : 5,
-                                              )
-                                              .map((skill, skillIndex) => (
-                                                <span
-                                                  key={skillIndex}
-                                                  className="skill-badge"
-                                                >
-                                                  {skill.trim()}
-                                                </span>
-                                              ))}
-                                            {employee.skill_set.split(",")
-                                              .length > 5 && (
-                                              <button
-                                                onClick={() =>
-                                                  setShowAllSkills(
-                                                    !showAllSkills,
-                                                  )
-                                                }
-                                                className="skill-more-btn"
-                                              >
-                                                {showAllSkills
-                                                  ? "Show Less"
-                                                  : `+${employee.skill_set.split(",").length - 5} More`}
-                                              </button>
-                                            )}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>,
-                                  document.body,
-                                )}
-                            </div>
-                          ))}
-                        </div>
-                        <div className="pagination">
-                          <button
-                            onClick={() =>
-                              setCurrentPage((prev) => Math.max(prev - 1, 1))
-                            }
-                            disabled={currentPage === 1}
-                          >
-                            Prev
-                          </button>
-
-                          <span>
-                            Page {currentPage} of {totalPages}
-                          </span>
-
-                          <button
-                            onClick={() =>
-                              setCurrentPage((prev) =>
-                                Math.min(prev + 1, totalPages),
-                              )
-                            }
-                            disabled={currentPage === totalPages}
-                          >
-                            Next
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })()
                 )}
               </div>
-            </>
-          )}
-        </div>
-      ) : (
-        <div
-          className={`card assistant-card justify-btw ${!isExpanded ? "compact" : ""}`}
-        >
-          <div className="assistant-header">
-            <span className="assistant-badge bubbles">
-              {/* <span className="material-symbols-outlined">smart_toy</span> */}
-              <img src="src/assets/icons/bubbles.svg" alt="" srcSet="" />
-            </span>
-
-            {!isExpanded ? (
-              <span className="expand-icon" onClick={onExpand}>
-                <span className="material-symbols-outlined">open_in_full</span>
-              </span>
-            ) : (
-              <span className="expand-icon" onClick={onClose}>
-                ✕
-              </span>
             )}
           </div>
-          <div>
-            <h3>
-              Ready To Find the Right Resource for Your Project, Instantly?
-            </h3>
-
-            <div className="assistant-links">
-              <span>
-                <span className="material-symbols-outlined">search</span>Find
-                Matches
+          
+          <div className="chat-input-container">
+            <div className="chat-input-wrapper">
+              <span alt="Attach" onClick={handlePlusClick} className="material-symbols-outlined">
+                upload_file
               </span>
-              <span>
-                <span className="material-symbols-outlined">work</span>My
-                Pipeline
-              </span>
-              <span>
-                <span className="material-symbols-outlined">pie_chart</span>
-                Insights
-              </span>
-            </div>
-
-            <div className="assistant-control">
-              <div className="assistant-box">
-                <div className="assistant-input dflex">
-                  <span
-                    alt="Attach"
-                    onClick={handlePlusClick}
-                    className="material-symbols-outlined"
-                  >
-                    upload_file
-                  </span>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    accept=".csv"
-                    style={{ display: "none" }}
-                  />
-                  {uploadedFile ? (
-                    <div
-                      className="assistant-file"
-                      style={{
-                        flex: 1,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                      }}
-                    >
-                      <span class="material-symbols-outlined">csv</span>
-                      <span>{uploadedFile.name}</span>
-                      <button
-                        className="remove-file-btn"
-                        onClick={handleRemoveFile}
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ) : (
-                    <input type="text" placeholder="Ask me anything..." />
-                  )}
+              <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".csv" style={{ display: 'none' }} />
+              {uploadedFile ? (
+                <div className="chat-file" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
+<span class="material-symbols-outlined">
+csv
+</span>                  <span>{uploadedFile.name}</span>
+                  <button className="remove-file-btn" onClick={handleRemoveFile}>✕</button>
                 </div>
-                <div
-                  className="assistant-microphone"
-                  // onClick={!uploadedFile ? handleMicClick : undefined}
-                  style={{
-                    cursor: uploadedFile ? "not-allowed" : "pointer",
-                  }}
-                >
-                  {/* <span 
+              ) : (
+                <input 
+                  type="text" 
+                  placeholder="Message Assistant..." 
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                />
+              )}
+              <span 
+                className="material-symbols-outlined" 
+                onClick={!uploadedFile ? handleMicClick : undefined} 
+                style={{ 
+                  cursor: uploadedFile ? 'not-allowed' : 'pointer', 
+                  opacity: uploadedFile ? 0.3 : (isRecording ? 0.5 : 1) 
+                }}
+              >
+                mic
+              </span>
+              <button className="chat-submit-btn" onClick={handleSendMessage}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="22" y1="2" x2="11" y2="13"/>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          </div>
+        </div>
+      ) : (
+      <div className={`card assistant-card justify-btw ${!isExpanded ? 'compact' : ''}`}>
+        <div className="assistant-header">
+          <span className="assistant-badge bubbles">
+            {/* <span className="material-symbols-outlined">smart_toy</span> */}
+            <img src="src/assets/icons/bubbles.svg" alt="" srcSet="" />
+          </span>
+
+          {!isExpanded ? (
+            <span className="expand-icon" onClick={onExpand}>
+              <span className="material-symbols-outlined">open_in_full</span>
+            </span>
+          ) : (
+            <span className="expand-icon" onClick={onClose}>✕</span>
+          )}
+
+        </div>
+        <div>
+          <h3>Ready To Find Top Candidates Or Revisit Your Pipeline?</h3>
+
+          <div className="assistant-links">
+            <span><span className="material-symbols-outlined">search</span>Find Matches</span>
+            <span><span className="material-symbols-outlined">work</span>My Pipeline</span>
+            <span><span className="material-symbols-outlined">pie_chart</span>Insights</span>
+          </div>
+
+          <div className="assistant-control">
+            <div className="assistant-box">
+              <div className="assistant-input dflex">
+                <span alt="Attach" onClick={handlePlusClick} className="material-symbols-outlined">
+                  upload_file
+                </span>
+                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".csv" style={{ display: 'none' }} />
+                {uploadedFile ? (
+                  <div className="assistant-file" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
+<span class="material-symbols-outlined">
+csv
+</span>                    <span>{uploadedFile.name}</span>
+                    <button className="remove-file-btn" onClick={handleRemoveFile}>✕</button>
+                  </div>
+                ) : (
+                  <input type="text" placeholder="Ask me anything..." />
+                )}
+              </div>
+              <div 
+                className="assistant-microphone" 
+                // onClick={!uploadedFile ? handleMicClick : undefined} 
+                style={{ 
+                  cursor: uploadedFile ? 'not-allowed' : 'pointer' 
+                }}
+              >
+                {/* <span 
                   className="material-symbols-outlined" 
                   style={{ 
                     opacity: uploadedFile ? 0.3 : (isRecording ? 0.5 : 1) 
@@ -843,27 +472,18 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                 >
                   mic
                 </span> */}
-                  <button
-                    className="chat-submit-btn"
-                    onClick={handleSendMessage}
-                  >
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <line x1="22" y1="2" x2="11" y2="13" />
-                      <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                    </svg>
-                  </button>
-                </div>
+                              <button className="chat-submit-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="22" y1="2" x2="11" y2="13"/>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+              </button>
               </div>
             </div>
           </div>
         </div>
+
+      </div>
       )}
     </>
   );

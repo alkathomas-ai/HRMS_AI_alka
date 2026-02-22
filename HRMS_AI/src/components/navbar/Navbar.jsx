@@ -1,14 +1,17 @@
-import React, { useState } from "react";
-import "./Navbar.css";
-import { useNavigate, useLocation } from "react-router-dom";
-import { Icons } from "../../assets/icons";
-import ColorPalette from "./ColorPalette";
-import ThemeToggle from "./ThemeToggle";
+import React, { useState, useRef, useEffect } from 'react'
+import "./Navbar.css"
+import { useNavigate } from 'react-router-dom'
+import { Icons } from '../../assets/icons'
+import ColorPalette from './ColorPalette'
+import ThemeToggle from './ThemeToggle'
+
+
 
 const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [showNotifDropdown, setShowNotifDropdown] = useState(false);
+
+  const navigate = useNavigate()
+  const [showNotifDropdown, setShowNotifDropdown] = useState(false)
+  const notifRef = useRef(null);
 
   const today = new Date();
 
@@ -16,10 +19,20 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
   const weekday = today.toLocaleDateString("en-US", { weekday: "short" });
   const month = today.toLocaleDateString("en-US", { month: "long" });
 
-  const todayNotifications = notifications.filter(
-    (n) => !n.read && n.time.includes("h ago"),
-  );
+  const todayNotifications = notifications.filter(n => !n.read && n.time.includes('h ago'));
   const hasUnread = todayNotifications.length > 0;
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notifRef.current && !notifRef.current.contains(event.target)) {
+        setShowNotifDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+
 
   return (
     <header className="topbar">
@@ -33,39 +46,30 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
 
       {/* Center icons */}
       <div className="topbar-center">
-        <button
-          onClick={() => {
-            navigate("/");
-          }}
-          className={`icon-btn ${location.pathname === "/" ? "active" : ""}`}
-          aria-label="Home"
-        >
-          <span class="material-symbols-outlined">home</span>{" "}
-        </button>
-        <button
-          onClick={() => {
-            navigate("/user");
-          }}
-          className={`icon-btn ${location.pathname === "/user" ? "active" : ""}`}
-          aria-label="Users"
-        >
-          <span class="material-symbols-outlined">group</span>{" "}
-        </button>
-        <button
-          onClick={() => {
-            navigate("/d");
-          }}
-          className={`icon-btn ${location.pathname === "/d" ? "active" : ""}`}
-          aria-label="Documents"
-        >
-          <span class="material-symbols-outlined">stacks</span>{" "}
-        </button>
+        <button onClick={() => {
+          navigate("/")
+        }} className="icon-btn active" aria-label="Home">
+          <span className="material-symbols-outlined">
+            home
+          </span>          </button>
+        <button onClick={() => {
+          navigate("/user")
+        }} className="icon-btn" aria-label="Users">
+          <span className="material-symbols-outlined">
+            group
+          </span>          </button>
+        <button className="icon-btn" aria-label="Documents">
+          <span className="material-symbols-outlined">
+            stacks
+          </span>          </button>
         <button className="icon-btn" aria-label="Reports">
-          <span class="material-symbols-outlined">pie_chart</span>{" "}
-        </button>
+          <span className="material-symbols-outlined">
+            pie_chart
+          </span>          </button>
         <button className="icon-btn" aria-label="Notes">
-          <span class="material-symbols-outlined">description</span>{" "}
-        </button>
+          <span className="material-symbols-outlined">
+            description
+          </span>          </button>
       </div>
 
       {/* Right section */}
@@ -80,13 +84,12 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
           </div>
         </div>
 
-        <div className="notif-wrapper">
-          <button
-            className={`icon-btn ${showNotifDropdown ? "active" : ""}`}
-            aria-label="Notifications"
-            onClick={() => setShowNotifDropdown(!showNotifDropdown)}
-          >
-            <span className="material-symbols-outlined">notifications</span>
+
+        <div className="notif-wrapper" ref={notifRef}>
+          <button className={`icon-btn ${showNotifDropdown ? 'active' : ''}`} aria-label="Notifications" onClick={() => setShowNotifDropdown(!showNotifDropdown)}>
+            <span className="material-symbols-outlined">
+              notifications
+            </span>
             {hasUnread && <span className="notif-badge"></span>}
           </button>
           {showNotifDropdown && (
@@ -94,26 +97,14 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
               <div className="notif-dropdown-header">
                 <h4>Notifications</h4>
                 {todayNotifications.length > 0 && (
-                  <button
-                    className="mark-all-read"
-                    onClick={() => onMarkAllRead?.()}
-                  >
-                    Mark all as read
-                  </button>
+                  <button className="mark-all-read" onClick={() => onMarkAllRead?.()}>Mark all as read</button>
                 )}
               </div>
               <div className="notif-dropdown-list">
                 {todayNotifications.length > 0 ? (
-                  todayNotifications.map((notif) => (
+                  todayNotifications.map(notif => (
                     <div key={notif.id} className="notif-dropdown-item">
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" />
                       </svg>
                       <div>
@@ -126,15 +117,10 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
                   <div className="notif-empty">No new notifications</div>
                 )}
               </div>
-              <button
-                className="notif-show-all"
-                onClick={() => {
-                  setShowNotifDropdown(false);
-                  onNotificationClick?.();
-                }}
-              >
-                Show all notifications
-              </button>
+              <button className="notif-show-all" onClick={() => {
+                setShowNotifDropdown(false);
+                onNotificationClick?.();
+              }}>Show all notifications</button>
             </div>
           )}
         </div>
@@ -144,7 +130,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
         </div>
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar

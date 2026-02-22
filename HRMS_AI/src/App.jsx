@@ -1,10 +1,9 @@
 import {  Route, Routes } from 'react-router-dom'
 import React from 'react' 
 import './App.css'
-import EditUser from './pages/edit-user/EditUser'
-import D from './pages/D'
+import User from './user/User'
 import Dashboard from './components/dashboard/Dashboard'
-import MainLayout from './layout/MainLayout'
+import MainLayout from './components/layout/MainLayout'
 
 const App = () => { 
   return (
@@ -13,8 +12,7 @@ const App = () => {
          <Route path='/' element={<MainLayout />}>
             <Route index element={<Dashboard/>} />
             <Route path="dashboard" element={<Dashboard />} />
-            <Route path="user" element={<EditUser />} />
-            <Route path="d" element={<D />} />
+            <Route path="user" element={<User />} />
           </Route>
 
       </Routes>

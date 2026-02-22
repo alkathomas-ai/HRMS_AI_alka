@@ -35,7 +35,7 @@ const Dashboard = () => {
 
   return (
     <>
-      {/* <Navbar notifications={notifications} onNotificationClick={handleNotificationClick} onMarkAllRead={handleMarkAllRead} /> */}
+      <Navbar notifications={notifications} onNotificationClick={handleNotificationClick} onMarkAllRead={handleMarkAllRead} />
       <div className="dashboard">
       <div className="dashboard-grid">
 

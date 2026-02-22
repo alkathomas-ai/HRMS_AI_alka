@@ -12,9 +12,7 @@
   --color-primary: #E22D30;
   --color-primary-soft: #F04D4D;
   --color-primary-hover: #B52226;
-  --color-secondary-hover: #ffefef;
   --color-primary-light: rgba(240, 77, 77, 0.23);
-  --background-light:#FDD6D6;
 
   --assistant-base-start: #FFF1E6;
   --assistant-base-end:   #FDD6D6;
@@ -26,16 +24,11 @@
   --assistant-text-secondary: #6B4A4A;
   
   /* Backgrounds */
-  --color-bg-page: #FAF7F5;
+  --color-bg-page: #ffffffa6;
   --color-bg-card: #FFFFFF;
   --color-bg-muted: #F4F4F5;
   --color-bg-topbar: #FCFBFD;
   --color-bg-dashboard: #F5F6F7;
-  --color-bg-dashboard-primary: #f04d4d3b;
-
-  /* scrore */
-  --color-primary-medium:#e18889;
-  --color-primary-low:#e5af78;
 
   /* Text */
   --color-text-primary: #111;
@@ -50,7 +43,7 @@
 }
 
 [data-theme="dark"] {
-  --color-bg-page: #0F1419;
+  --color-bg-page: #0f1419a6;
   --color-bg-card: #1A1F26;
   --color-bg-muted: #252A31;
   --color-bg-topbar: #1A1F26;
@@ -78,24 +71,23 @@ body {
     150deg,
     var(--color-bg-dashboard) 0%,
     var(--color-bg-dashboard) 50%,
-    var(--color-bg-dashboard-primary) 100%
+    #f04d4d3b 100%
   );
-  /* background: linear-gradient(150deg, var(--assistant-glow-primary), transparent 45%), radial-gradient(circle at var(--x2) var(--y2), var(--assistant-glow-secondary), transparent 50%), linear-gradient(135deg, var(--assistant-base-start), var(--assistant-base-end)); */
 }
 /* Hide scrollbar but allow scrolling */
-/* ::-webkit-scrollbar {
+::-webkit-scrollbar {
   display: none;
-} */
+}
 
 /* Firefox */
-/* html {
+html {
   scrollbar-width: none;
-} */
+}
 
 /* IE / Edge (legacy) */
-/* body {
+body {
   -ms-overflow-style: none;
-} */
+}
 
 
 .d-flex{
@@ -125,45 +117,8 @@ body {
 .d-block{
     display: block;
 }
-.btn-primary{
-  background: none;
-  border: none;
-  outline: none;
-  background-color: var(--color-primary);
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  gap: 8px;
-  padding: 8px 2px;
-  border-radius: 8px;
-  transition: all 0.2s;
-}
 
-.btn-primary:hover{
-  background: var(--color-primary-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
 
-.btn-secondary {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.2s;
-  background: #f0f0f0;
-  color: var(--color-text-primary);
-}
 
-.btn-secondary:hover {
-    background: #e0e0e0;
-}
+
+
