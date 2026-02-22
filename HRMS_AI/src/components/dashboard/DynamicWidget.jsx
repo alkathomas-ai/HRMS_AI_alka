@@ -116,15 +116,18 @@ const DynamicWidget = ({ widgetData }) => {
 
         return (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <div style={{ paddingBottom: '5px', borderBottom: '1px solid var(--color-border)', display: 'flex', gap: '12px', alignItems: 'center' }}>
-              <input
-                type="text"
-                className='dynamic-table-search'
-                placeholder="Search..."
-                value={search}
-                onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-                // style={{ flex: 1, padding: '8px 12px', border: '1px solid #e0e0e0', borderRadius: '4px', fontSize: '14px' }}
-              />
+            <div className="table-filter" style={{ paddingBottom: '5px', borderBottom: '1px solid var(--color-border)', display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <div className="search-input">
+                <input
+                  type="text"
+                  className='dynamic-table-search'
+                  placeholder="Search..."
+                  value={search}
+                  onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+                  // style={{ flex: 1, padding: '8px 12px', border: '1px solid #e0e0e0', borderRadius: '4px', fontSize: '14px' }}
+                />
+                <i className="fa-solid fa-search"></i>
+              </div>
               <div className="custom-select-wrapper" ref={dropdownRef}>
                 <div className="select-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
                   <span>{rowsPerPage} rows</span>

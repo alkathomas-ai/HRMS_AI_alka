@@ -386,14 +386,17 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
               </div>
             </div>
             <div style={{ marginBottom: '12px' }}>
-              <input
-                type="text"
-                placeholder="Search employees..."
-                value={employeeSearch}
-                onChange={(e) => { setEmployeeSearch(e.target.value); setEmployeePage(0); }}
-                className="employee-search-input"
-                onClick={(e) => e.stopPropagation()}
-              />
+              <div className="search-input">
+                <input
+                  type="text"
+                  placeholder="Search employees..."
+                  value={employeeSearch}
+                  onChange={(e) => { setEmployeeSearch(e.target.value); setEmployeePage(0); }}
+                  className="employee-search-input"
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <i className="fa-solid fa-search"></i>
+              </div>
             </div>
             <span className="widget-subtitle">{filteredEmployees.length} Employees</span>
             <div className="employee-directory-container">

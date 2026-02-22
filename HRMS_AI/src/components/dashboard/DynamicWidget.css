@@ -119,3 +119,10 @@
     box-shadow: 0 0 2px 1px var(--color-primary-soft);
     /* border-color: var(--color-primary-soft); */
 }
+.table-filter {
+    display: flex;
+    justify-content: space-between;
+}
+.table-filter .search-input {
+    width: calc(100% - 140px);
+}
