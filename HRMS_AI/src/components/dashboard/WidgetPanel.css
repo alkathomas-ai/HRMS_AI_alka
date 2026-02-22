@@ -877,7 +877,7 @@
 
 .dashboard-content {
   min-height: calc(100% - 90px);
-  background-color: #ffffffa6;
+  background-color: var(--color-bg-page);
 }
 
 /* Drag and Drop Placeholder */

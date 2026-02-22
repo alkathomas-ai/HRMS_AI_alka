@@ -24,7 +24,7 @@
   --assistant-text-secondary: #6B4A4A;
   
   /* Backgrounds */
-  --color-bg-page: #FAF7F5;
+  --color-bg-page: #ffffffa6;
   --color-bg-card: #FFFFFF;
   --color-bg-muted: #F4F4F5;
   --color-bg-topbar: #FCFBFD;
@@ -43,7 +43,7 @@
 }
 
 [data-theme="dark"] {
-  --color-bg-page: #0F1419;
+  --color-bg-page: #0f1419a6;
   --color-bg-card: #1A1F26;
   --color-bg-muted: #252A31;
   --color-bg-topbar: #1A1F26;
