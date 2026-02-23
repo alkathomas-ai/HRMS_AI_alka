@@ -610,7 +610,8 @@
 .assistant-card.assistant-card-expanded {
   min-height: 85vh;
   display: flex;
-  justify-content: center;
+  justify-content: start;
+  /* justify-content: center; */
   align-items: center;
   flex-direction: column;
 }
@@ -863,6 +864,7 @@
   flex-direction: column;
   gap: 20px;
   color: black;
+  width: 100%;
 }
 
 .search-card {
@@ -1095,7 +1097,7 @@
   cursor: not-allowed;
 }
 .chat-loader {
-  position: absolute;
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;

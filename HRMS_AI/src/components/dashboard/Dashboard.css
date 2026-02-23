@@ -54,14 +54,14 @@
 .dashboard-left {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  /* gap: 24px; */
   height: 100%;
   overflow-y: auto;
 }
 
 .dashboard-right {
   height: 100%;
-  overflow-y: hidden;
+  /* overflow-y: hidden; */
   padding-right: 20px;
 }
 
