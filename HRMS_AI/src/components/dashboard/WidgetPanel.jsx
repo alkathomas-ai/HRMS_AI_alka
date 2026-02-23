@@ -235,7 +235,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             onPointerDown={(e) => e.stopPropagation()}
             title="Adjust size"
           >
-            <span class="material-symbols-outlined">auto_awesome_mosaic</span>
+            <span className="material-symbols-outlined">auto_awesome_mosaic</span>
           </button>
           {openSizePopup === widgetId && (
             <div className="size-grid-popup" onPointerDown={(e) => e.stopPropagation()}>
@@ -273,7 +273,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                 title="Edit widget"
               >
                 {/* <i className="fa-solid fa-pen"></i> */}
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <i className="fa-solid fa-wand-magic-sparkles"></i>
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
@@ -733,7 +733,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           <div className="actions">
             <button className="primary-btn" onClick={() => setIsModalOpen(true)}>
               <span className='btn-content'>Create a Widget</span>                 
-              <i class="fa-solid fa-wand-magic-sparkles"></i>            
+              <i className="fa-solid fa-wand-magic-sparkles"></i>            
             </button>
           </div>
         </div>

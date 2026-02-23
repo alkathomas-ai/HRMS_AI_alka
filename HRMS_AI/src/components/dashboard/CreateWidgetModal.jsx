@@ -143,7 +143,7 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate, editingWidget }) => {
             />
             {error && (
               <div className="error-message">
-                <i class="fa-solid fa-triangle-exclamation"></i>
+                <i className="fa-solid fa-triangle-exclamation"></i>
                 <span>{error}</span>
               </div>
             )}
