@@ -1,41 +1,225 @@
-import { Icons } from '../../assets/icons';
-import './Dashboard.css';
-import './SearchAssistant.css';
-import { useRef, useState } from 'react';
-import { uploadAPI,searchAPI } from '../../services/api';
+import { Icons } from "../../assets/icons";
+import "./Dashboard.css";
+import "./SearchAssistant.css";
+import { useRef, useState } from "react";
+import { uploadAPI, searchAPI } from "../../services/api";
 import { createPortal } from "react-dom";
 
+const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill }) => {
+  const [showAllSkills, setShowAllSkills] = useState(false);
+  const [showReason, setShowReason] = useState(false);
+
+  if (!employee) return null;
+
+  const {
+    display_name,
+    designation,
+    employee_id,
+    employee_department,
+    emp_location,
+    tech_group,
+    total_exp,
+    ai_score,
+    skill_set,
+    ai_reason,
+  } = employee;
+
+  const getScoreClass = () => {
+    if (ai_score >= 70) return "high";
+    if (ai_score >= 50) return "medium";
+    return "low";
+  };
+
+  const scoreClass = getScoreClass();
+
+ 
+
+  return (
+    <div className={`employee-card ${scoreClass}-score`}>
+      {ai_score && <div className={`match-badge ${scoreClass}`}>
+        <div className="score-text"><span>{ai_score || 0}%</span> match</div>
+      </div>}
+      <div className="employee-card-content">
+        <div className="employee-info-section">
+          <div className="employee-header">
+            <div className="employee-name-row">
+              <h2 className="employee-name-search">{display_name}</h2>
+              <span className="employee-designation-badge">{designation}</span>
+            </div>
+            <p className="employee-details-text">
+              <p>
+                <i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;
+              </p>
+              <p>
+                <i className="fa-solid fa-building"></i> {employee_department}{" "}
+                &nbsp;
+              </p>
+              <p>
+                <i className="fa-solid fa-location-dot"></i> {emp_location}{" "}
+                &nbsp;
+              </p>
+              <p>
+                <i className="fa-solid fa-laptop-code"></i> {tech_group} &nbsp;
+              </p>
+              <p>
+                <i className="fa-solid fa-business-time"></i> {total_exp}
+              </p>
+            </p>
+          </div>
+
+          <div className="employee-skill-description">
+            {skill_set && (
+              <div className="employee-skills-section">
+                <span className="skills-label">Skills:</span>
+                <div className="skills-container">
+                  {skill_set
+                    .split(",")
+                    .slice(0, showAllSkills ? undefined : 5)
+                    .map((skill, skillIndex) => {
+                      const trimmedSkill = skill.trim();
+
+                      return (
+                        <span
+                          key={skillIndex}
+                          onClick={() => {
+                            const newSkill =
+                              activeSkill === trimmedSkill
+                                ? null
+                                : trimmedSkill;
+                            setActiveSkill(newSkill);
+                            filterFunction(newSkill);
+                          }}
+                          className={
+                            activeSkill === trimmedSkill
+                              ? "skill-badge active-skill-badge"
+                              : "skill-badge"
+                          }
+                        >
+                          {trimmedSkill}
+                        </span>
+                      );
+                    })}
+                  {skill_set.split(",").length > 5 && (
+                    <button
+                      onClick={() => setShowAllSkills(!showAllSkills)}
+                      className="skill-more-btn"
+                    >
+                      {showAllSkills
+                        ? "Show Less"
+                        : `+${skill_set.split(",").length - 5} More`}
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {employee.projects && employee.projects.length > 0 && (
+              <div className="employee-projects-section">
+                <span className="projects-label">Projects: </span>
+                <span className="projects-text">
+                  {employee.projects.map((project, projectIndex) => (
+                    <span key={projectIndex}>
+                      <span className="project-name">
+                        {project.project_name}
+                      </span>
+                      <span className="project-customer">
+                        {" "}
+                        ({project.customer})
+                      </span>
+                      {projectIndex < employee.projects.length - 1 && (
+                        <span>, </span>
+                      )}
+                    </span>
+                  ))}
+                </span>
+              </div>
+            )}
+
+            {ai_reason && (
+              <div className="ai-reason-section">
+                <button
+                  onClick={() => setShowReason(!showReason)}
+                  className="reason-toggle-btn"
+                >
+                  <span className="reason-label">Why this match?</span>
+                  <i
+                    className={`fa-solid fa-chevron-${showReason ? "up" : "down"}`}
+                  ></i>
+                </button>
+                {!showReason && <p className="reason-text">{ai_reason}</p>}
+              </div>
+            )}
+          </div>
+          <div className="employee-score-section">
+
+
+            {employee.ai_criteria && (
+              <div className="criteria-list">
+                {Object.entries(employee.ai_criteria).map(
+                  ([criteria, criteriaScore]) => {
+                    const criteriaClass =
+                      criteriaScore >= 80
+                        ? "high"
+                        : criteriaScore >= 60
+                          ? "medium"
+                          : "low";
+                    return (
+                      <div key={criteria} className="criteria-item">
+                        <div className="criteria-header">
+                          <span className="criteria-name">{criteria}</span>
+                          <span className="criteria-score">
+                            {criteriaScore}%
+                          </span>
+                        </div>
+                        <div className="criteria-bar-bg">
+                          <div
+                            className={`criteria-bar-fill ${criteriaClass}`}
+                            style={{ width: `${criteriaScore}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  },
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
-  
   const fileInputRef = useRef(null);
   const uploadModalFileInputRef = useRef(null);
-  
+
   // const mediaRecorderRef = useRef(null);
   // const [isRecording, setIsRecording] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
   // const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isfileSelect, setisfileSelect] = useState(false);
-  const [inputText, setInputText] = useState('');
+  const [inputText, setInputText] = useState("");
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [popupPosition, setPopupPosition] = useState({
+    top: 0,
+    left: 0,
+    arrowTop: 0,
+  });
   // const [tablePage, setTablePage] = useState({});
   // const [rowsPerPage, setRowsPerPage] = useState({});
   // const [searchQuery, setSearchQuery] = useState({});
   // const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [mouseHover, setMouseHover] =  useState(false)
-  const [hoveredIndex, setHoveredIndex] = useState(null);
-  const [showAllSkills, setShowAllSkills] = useState(false);
-  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
+  const [cardEmployees, setCardEmployees] = useState();
+  const [allCardEmployees, setAllCardEmployees] = useState();
+  const [viewMode, setViewMode] = useState(null); // "table" | "card"
+  const [activeSkill, setActiveSkill] = useState(null);
+  const [tableEmployees, setTableEmployees] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 6;
 
-  const [chatHistory] = useState([
-    { id: 1, title: 'Top Candidates Search' },
-    { id: 2, title: 'Pipeline Review' },
-    { id: 3, title: 'Recruitment Insights' },
-    { id: 4, title: 'Interview Scheduling' },
-    { id: 5, title: 'Candidate Evaluation' },
-  ]);
+
 
   const handlePlusClick = () => {
     setShowUploadModal(true);
@@ -47,126 +231,112 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
-    if (file && file.type === 'text/csv') {
-      console.log('CSV file selected:', file.name);
+    if (file && file.type === "text/csv") {
+      console.log("CSV file selected:", file.name);
       setUploadedFile(file);
-      setisfileSelect(true);
     } else if (file) {
-      alert('Please select a CSV file');
+      alert("Please select a CSV file");
     }
   };
 
   const handleRemoveFile = () => {
     setUploadedFile(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
   const handleRemoveUploadFile = () => {
     setUploadedFile(null);
     if (uploadModalFileInputRef.current) {
-      uploadModalFileInputRef.current.value = '';
+      uploadModalFileInputRef.current.value = "";
     }
-    setisfileSelect(false);
-    setInputText('');
+    setInputText("");
   };
+
+  function filterOnSearch(skill) {
+  let filtered;
+
+  if (skill) {
+    filtered = allCardEmployees.filter((item) =>
+      item.skill_set
+        ?.split(",")
+        .map((s) => s.trim())
+        .includes(skill.trim())
+    );
+  } else {
+    filtered = allCardEmployees;
+  }
+
+  setCardEmployees(filtered);
+}
+
 
   const handleSendMessage = async () => {
-    setShowUploadModal(false);
-    if (!inputText.trim() && !uploadedFile) return;
+  setShowUploadModal(false);
+  if (!inputText.trim() && !uploadedFile) return;
 
-    setIsLoading(true);
+  setIsLoading(true);
 
-    const textToSend = inputText;
-    const fileToUpload = uploadedFile;
+  const textToSend = inputText;
+  const fileToUpload = uploadedFile;
 
-    // Reset UI immediately
-    setInputText('');
-    setUploadedFile(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+  // Reset UI immediately
+  setInputText("");
+  setUploadedFile(null);
+  if (fileInputRef.current) fileInputRef.current.value = "";
 
-    // Add user message with loading state for file uploads
-    const userMessage = {
-      id: Date.now(),
-      type: fileToUpload ? 'loading' : 'user',
-      text: textToSend,
-      file: fileToUpload
-        ? { name: fileToUpload.name, type: fileToUpload.type }
-        : null,
-      timestamp: new Date()
-    };
 
-    setMessages(prev => [...prev, userMessage]);
 
-    try {
-      const startTime = Date.now();
-      let response;
+  try {
+    const startTime = Date.now();
+    let response;
 
-      if (fileToUpload) {
-        // Use uploadAPI for file uploads
-        const formData = new FormData();
-        formData.append('file', fileToUpload);
-        if (textToSend) formData.append('message', textToSend);
-        response = await uploadAPI(formData);
-        
-        // Ensure minimum 2 seconds loader for file uploads
-        const elapsed = Date.now() - startTime;
-        if (elapsed < 2000) {
-          await new Promise(resolve => setTimeout(resolve, 2000 - elapsed));
-        }
+    if (fileToUpload) {
+      const formData = new FormData();
+      formData.append("file", fileToUpload);
+      if (textToSend) formData.append("message", textToSend);
 
-        // Update loading message to user message
-        setMessages(prev => prev.map(msg => 
-          msg.id === userMessage.id ? { ...msg, type: 'user' } : msg
-        ));
-      } else {
-        // Use searchAPI for text queries
-        response = await searchAPI(textToSend);
+      response = await uploadAPI(formData);
+
+      const employees =
+        response?.all_employees ||
+        response?.data?.all_employees ||
+        [];
+
+      setTableEmployees(employees);
+      setViewMode("table");
+
+      const elapsed = Date.now() - startTime;
+      if (elapsed < 2000) {
+        await new Promise((resolve) => setTimeout(resolve, 2000 - elapsed));
       }
+    } else {
+      // Use searchAPI for text queries
+      response = await searchAPI(textToSend);
 
-      // Assistant success message
-      const assistantMessage = {
-        id: Date.now() + 1,
-        type: 'assistant',
-        text: response?.message || response?.data || 
-              (fileToUpload
-                ? `File "${fileToUpload.name}" uploaded successfully.`
-                : 'Request processed successfully.'),
-        data: fileToUpload ? response : null,
-        timestamp: new Date()
-      };
-console.log("ASSISTANT MESSAGE:", assistantMessage);
+      const employees = response?.data || response?.employee || [];
 
-      setMessages(prev => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error(error);
-
-      // Update loading message to user message on error
-      if (fileToUpload) {
-        setMessages(prev => prev.map(msg => 
-          msg.id === userMessage.id ? { ...msg, type: 'user' } : msg
-        ));
-      }
-
-      // Assistant error message
-      const errorMessage = {
-        id: Date.now() + 1,
-        type: 'assistant',
-        text: fileToUpload ? '❌ Upload failed. Please try again.' : '❌ Search failed. Please try again.',
-        timestamp: new Date()
-      };
-
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
+      setCardEmployees(employees);
+      setAllCardEmployees(employees);
+      setViewMode("card");
     }
-    setisfileSelect(false);
-  };
 
-  const [currentPage, setCurrentPage] = useState(1);
-    const rowsPerPage = 8;
 
-    
+    // Assistant success messa
+  } catch (error) {
+    console.error(error);
+
+
+  } finally {
+    setIsLoading(false);
+  }
+
+};
+
+
+
+  
+
   // const handleMicClick = async () => {
   //   if (isRecording) {
   //     mediaRecorderRef.current?.stop();
@@ -195,6 +365,8 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
   // };
 
   // console.log(messages);
+
+  console.log("Card", cardEmployees);
   
   return (
     <>
@@ -205,443 +377,567 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
       )} */}
 
       {showUploadModal && (
-        <div className="upload-modal-overlay" onClick={() => setShowUploadModal(false)}>
+        <div
+          className="upload-modal-overlay"
+          onClick={() => setShowUploadModal(false)}
+        >
           <div className="upload-modal" onClick={(e) => e.stopPropagation()}>
             <div className="upload-modal-header">
               <h3>Upload CSV File</h3>
-              <button className="modal-close-btn" onClick={() => setShowUploadModal(false)}>✕</button>
+              <button
+                className="modal-close-btn"
+                onClick={() => setShowUploadModal(false)}
+              >
+                ✕
+              </button>
             </div>
             <div className="upload-modal-body">
-              <div className="upload-icon">
-                <span className="material-symbols-outlined">upload_file</span>
-              </div>
-              <p>Select a CSV file to upload and process</p>
-
-              <input type="file" ref={uploadModalFileInputRef} onChange={handleFileChange} accept=".csv" style={{ display: 'none' }} />
-              
-              {isfileSelect && uploadedFile && (
-                <div className="assistant-box">
-                  <div className="assistant-input">
-                        <div className="assistant-file" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span className="material-symbols-outlined">csv</span>
-                          <span>{uploadedFile.name}</span>
-                          <button className="remove-file-btn" onClick={handleRemoveUploadFile}>✕</button>
-                        </div>
+              {!uploadedFile ? (
+                <>
+                  <div className="upload-icon">
+                    <span className="material-symbols-outlined">
+                      upload_file
+                    </span>
                   </div>
-                  <div className="assistant-microphone" style={{ cursor: 'pointer' }}>
-                        <button className="chat-submit-btn" onClick={handleSendMessage}>
-                          <img src={Icons.send} alt="" />
-                        </button>
+                  <p>Select a CSV file to upload and process employee data</p>
+                  <input
+                    type="file"
+                    ref={uploadModalFileInputRef}
+                    onChange={handleFileChange}
+                    accept=".csv"
+                    style={{ display: "none" }}
+                  />
+                  <button
+                    className="choose-csv-btn btn-primary"
+                    onClick={handleModalFileSelect}
+                  >
+                    <span className="material-symbols-outlined">
+                      folder_open
+                    </span>
+                    Choose CSV
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="upload-icon success">
+                    <span className="material-symbols-outlined">
+                      check_circle
+                    </span>
                   </div>
-                </div>
+                  <div className="selected-file-info">
+                    <span className="material-symbols-outlined">
+                      description
+                    </span>
+                    <span className="file-name">{uploadedFile.name}</span>
+                    <button
+                      className="remove-file-icon"
+                      onClick={handleRemoveUploadFile}
+                    >
+                      <span className="material-symbols-outlined">close</span>
+                    </button>
+                  </div>
+                  <button
+                    className="btn-primary upload-process-btn"
+                    onClick={handleSendMessage}
+                  >
+                    <span className="material-symbols-outlined">upload</span>
+                    Upload CSV
+                  </button>
+                </>
               )}
-            
-
-              <button className="choose-csv-btn" onClick={handleModalFileSelect}>
-                <span className="material-symbols-outlined">folder_open</span>
-                Choose CSV
-              </button>
-              
             </div>
           </div>
         </div>
       )}
       {isExpanded ? (
         <div className="card assistant-card assistant-card-expanded">
-          <div className="assistant-header">
-            <span className="assistant-badge bubbles">
-              <img src="src/assets/icons/bubbles.svg" alt="" srcSet="" />
-            </span>
-            {/* <span className="expand-icon" onClick={onClose}>✕</span> */}
-            <h3>Ready To Find Top Candidates Or Revisit Your Pipeline?</h3>
-          </div>
-          <div>
-
-            {/* <div className="assistant-links">
-              <span><span className="material-symbols-outlined">search</span>Find Matches</span>
-              <span><span className="material-symbols-outlined">work</span>My Pipeline</span>
-              <span><span className="material-symbols-outlined">pie_chart</span>Insights</span>
-            </div> */}
-
-            <div className='search-header'>
-              <div className="assistant-control">
-                <div className="assistant-box">
-                  <div className="assistant-input">
-                    <span className='search-icon'><img src={Icons.search} alt="" /></span>
-                    <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".csv" style={{ display: 'none' }} />
-                    {uploadedFile ? (
-                      <div className="assistant-file" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span className="material-symbols-outlined">csv</span>
-                        {/* <span>{uploadedFile.name}</span>
-                        <button className="remove-file-btn" onClick={handleRemoveFile}>✕</button> */}
+          {viewMode === null ?  (
+            <div className="upload-prompt-container">
+              <div className="upload-prompt-content">
+                {/* <span className="assistant-badge bubbles">
+                  <img src="src/assets/icons/bubbles.svg" alt="" srcSet="" />
+                </span> */}
+                <h3>
+                  Ready To Find the Right Resource for Your Project, Instantly?
+                </h3>
+                <div className="search-container">
+                  <div className="search-header">
+                    <div className="assistant-control">
+                      <div className="assistant-box">
+                        <div className="assistant-input">
+                          <span className="search-icon">
+                            {/* <img src={Icons.search} alt="" /> */}
+                            <span className="assistant-badge bubbles">
+                              <img
+                                src="src/assets/icons/bubbles.svg"
+                                alt=""
+                                srcSet=""
+                              />
+                            </span>
+                          </span>
+                          <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            accept=".csv"
+                            style={{ display: "none" }}
+                          />
+                          {uploadedFile ? (
+                            <div
+                              className="assistant-file"
+                              style={{
+                                flex: 1,
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px",
+                              }}
+                            >
+                              <span className="material-symbols-outlined">
+                                csv
+                              </span>
+                              {/* <span>{uploadedFile.name}</span>
+                          <button className="remove-file-btn" onClick={handleRemoveFile}>✕</button> */}
+                            </div>
+                          ) : (
+                            <input
+                              type="text"
+                              placeholder="Ask me anything..."
+                              value={inputText}
+                              onChange={(e) => setInputText(e.target.value)}
+                              onKeyPress={(e) =>
+                                e.key === "Enter" && handleSendMessage()
+                              }
+                            />
+                          )}
+                        </div>
+                        <div className="assistant-microphone">
+                          <button
+                            className="chat-submit-btn"
+                            onClick={handleSendMessage}
+                          >
+                            <img src={Icons.search} alt="" />
+                          </button>
+                        </div>
                       </div>
-                    ) : (
-                      <input 
-                        type="text" 
-                        placeholder="Ask me anything..." 
-                        value={inputText}
-                        onChange={(e) => setInputText(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                      />
-                    )}
-                  </div>
-                    <div className="assistant-microphone">
-                      <button className="chat-submit-btn" onClick={handleSendMessage}>
-                        <img src={Icons.send} alt="" />
+                    </div>
+                    <div className="assistant-btns">
+                      <button
+                        className="upload-btn-top btn-primary"
+                        onClick={handlePlusClick}
+                      >
+                        <img src={Icons.upload1} alt="" />
                       </button>
                     </div>
-                  
+                  </div>
+                  {/* AI Context / Search Hints  */}
+                  <div class="search-hints">
+                    <span class="hint-label">Try searching:</span>
 
+                    <button class="hint-btn">
+                      "Senior developers in Kochi"
+                    </button>
+
+                    <button class="hint-btn">"Design team lead"</button>
+
+                    <button class="hint-btn">
+                      "Experts in Machine Learning"
+                    </button>
+                  </div>
+
+                  {/* Quick Filters */}
+                  <div class="quick-filters">
+                    <span class="filter-label">Filter by:</span>
+
+                    <button class="filter-btn">
+                      Department <i class="fas fa-chevron-down"></i>
+                    </button>
+
+                    <button class="filter-btn">
+                      Location <i class="fas fa-chevron-down"></i>
+                    </button>
+
+                    <button class="filter-btn">
+                      Experience <i class="fas fa-chevron-down"></i>
+                    </button>
+                  </div>
+
+                  {/* Empty State  */}
+                  <div class="empty-state">
+                    <div class="empty-icon">
+                      <i class="fas fa-user-friends"></i>
+                    </div>
+
+                    <h3>Start typing to see results</h3>
+
+                    <p>
+                      {/* Enter name, department, or skill and let AI help you find the best-fit employee. */}
+                      Enter name, department, or skill to discover matching
+                      employees, with the most relevant profiles rising to the
+                      top.
+                    </p>
+                  </div>
                 </div>
               </div>
-              {/* <button alt="Attach" onClick={handlePlusClick} className="choose-csv-btn upload-btn">
-                  <img src={Icons.upload} alt="" />
-                  Filter
-              </button>
-              <button alt="Attach" onClick={handlePlusClick} className="choose-csv-btn upload-btn">
-                  <img src={Icons.uploadImg} alt="" />
-                  Upload
-              </button> */}
-
-              <div className='assistant-btns'>
-                <button className="choose-csv-btn" onClick={()=> {}}>
-                  <span className="material-symbols-outlined">filter</span>
-                  Filter
-                </button>
-  
-                <button className="choose-csv-btn" onClick={handlePlusClick}>
-                  <span className="material-symbols-outlined">upload</span>
-                  Upload CSV
-                </button>
-              </div>
             </div>
-          </div>
-          {/* <div className="search-card-header">
-            {messages.filter(
-                item =>
-                  item.type === "assistant" &&
-                  item.data?.status === "success" &&
-                  item.data?.all_employees?.length > 0
-              ).length > 0 ? (
-                <div className='search-card'>
-                  {messages.filter(
-                      item =>
-                        item.type === "assistant" &&
-                        item.data?.status === "success" &&
-                        item.data?.all_employees?.length > 0
-                    ).flatMap(item => item.data.all_employees).map((employee, index) => (
-                      
-                      <div className='search-card-layout' key={index} 
+          ) : (
+            <>
+              <div className="assistant-header">
+                <h3>
+                  Ready To Find the Right Resource for Your Project, Instantly?
+                </h3>
+              </div>
+
+                <div className="search-header">
+                  <div className="assistant-control">
+                    <div className="assistant-box">
+                      <div className="assistant-input">
+                        {/* <span className="search-icon">
+                          <img src={Icons.search} alt="" />
+                        </span> */}
+                        <span className="assistant-badge bubbles">
+                          <img
+                            src="src/assets/icons/bubbles.svg"
+                            alt=""
+                            srcSet=""
+                          />
+                        </span>
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          onChange={handleFileChange}
+                          accept=".csv"
+                          style={{ display: "none" }}
+                        />
+                        {uploadedFile ? (
+                          <div
+                            className="assistant-file"
+                            style={{
+                              flex: 1,
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "8px",
+                            }}
+                          >
+                            <span className="material-symbols-outlined">
+                              csv
+                            </span>
+                            {/* <span>{uploadedFile.name}</span>
+                        <button className="remove-file-btn" onClick={handleRemoveFile}>✕</button> */}
+                          </div>
+                        ) : (
+                          <input
+                            type="text"
+                            placeholder="Ask me anything..."
+                            value={inputText}
+                            onChange={(e) => setInputText(e.target.value)}
+                            onKeyPress={(e) =>
+                              e.key === "Enter" && handleSendMessage()
+                            }
+                          />
+                        )}
+                      </div>
+                      <div className="assistant-microphone">
+                        <button
+                          className="chat-submit-btn"
+                          onClick={handleSendMessage}
+                        >
+                          <img src={Icons.search} alt="" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="assistant-btns">
+                    <button
+                      className="filter1-btn btn-primary"
+                      onClick={() => {}}
+                    >
+                      <img src={Icons.filter1} alt="" />
+                    </button>
+
+                    <button
+                      className="upload-btn-top btn-primary"
+                      onClick={handlePlusClick}
+                    >
+                      <img src={Icons.upload1} alt="" />
+                    </button>
+                  </div>
+                </div>
+
+              <div className="search-card-header">
+                {/* TABLE VIEW (CSV Upload) */}
+                {viewMode === "table" && (
+                  <>
+    {isLoading ? (
+      <div className="chat-loader">
+        <div className="spinner"></div>
+      </div>
+    ) : tableEmployees.length === 0 ? (
+      <>Please upload CSV File to generate data...</>
+    ) : (
+      (() => {
+        const totalPages = Math.ceil(
+          tableEmployees.length / rowsPerPage
+        );
+
+        const startIndex = (currentPage - 1) * rowsPerPage;
+        const endIndex = startIndex + rowsPerPage;
+
+        const paginatedEmployees =
+          tableEmployees.slice(startIndex, endIndex);
+
+        return (
+          <div className="search-card">
+            <div className="employee-table">
+
+              <div className="employee-row header">
+                <div>Name</div>
+                <div>ID</div>
+                <div>Designation</div>
+                <div>Total Exp</div>
+                <div>Tech Group</div>
+                <div>Location</div>
+                <div></div>
+              </div>
+
+              {paginatedEmployees.map((employee, index) => (
+                <div key={index} className="employee-row">
+                  <div className="name-cell">
+                    <div className="employee-avatar">
+                      {employee.display_name
+                        ?.charAt(0)
+                        .toUpperCase()}
+                    </div>
+                    <span
+                    onMouseEnter={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const popupHeight = 450;
+                      const viewportHeight = window.innerHeight;
+
+                      let calculatedTop = rect.top + window.scrollY;
+                      let shiftAmount = 0;
+
+                      if (rect.top + popupHeight > viewportHeight) {
+                        shiftAmount =
+                          rect.top + popupHeight - viewportHeight + 20;
+                        calculatedTop -= shiftAmount;
+                      }
+
+                      setPopupPosition({
+                        top: calculatedTop,
+                        left: rect.right + 10,
+                        arrowTop: rect.height / 2 + shiftAmount,
+                      });
+
+                      setHoveredIndex(index);
+                    }}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                  >
+                    {employee.display_name}
+                  </span>
+                  </div>
+
+                  <div>{employee.employee_id}</div>
+                  <div>{employee.designation}</div>
+                  <div>{employee.total_exp}</div>
+                  <div>{employee.tech_group}</div>
+                  <div>{employee.emp_location}</div>
+                  {hoveredIndex === index &&
+                    createPortal(
+                      <div
+                        className="employee-hover-popup"
+                        style={{
+                          top: `${popupPosition.top}px`,
+                          left: `1050px`,
+                          "--arrow-top": `${popupPosition.arrowTop}px`,
+                        }}
                         onMouseEnter={() => setHoveredIndex(index)}
                         onMouseLeave={() => setHoveredIndex(null)}
                       >
-                        <div className="search-card-layout-container">
-                          <div className="search-card-avatar">
-                            <div className="employee-avatar">{employee.display_name.charAt(0).toUpperCase()}</div>
-
-                            <div className="name-header">
-                              <span style={{fontSize: 16, fontWeight: 500}}>{employee.display_name}</span>
-                            </div>
+                        <div className="popup-header">
+                          <div className="employee-avatar">
+                            {employee.display_name?.charAt(0).toUpperCase()}
                           </div>
-
-                          <div className="search-card-avatar">
-                            <div className="name-header">
-                              <span>{employee.designation}</span>
-                            </div>
+                          <div>
+                            <h4>{employee.display_name}</h4>
+                            <span>{employee.designation}</span>
                           </div>
-
-                          <div className="search-card-avatar">
-                            <div className="name-header">
-                              <span>{employee.total_exp}</span>
-                            </div>
-                          </div>
-
-
-                          <div className="search-card-avatar">
-                            <div className="name-header">
-                              <span>{employee.tech_group}</span>
-                            </div>
-                          </div>
-
-                          <div className="search-card-avatar">
-                            <div className="name-header">
-                              <span>{employee.emp_location}</span>
-                            </div>
-                          </div>
-                          {hoveredIndex === index && (
-                            <div className="employee-hover-popup">
-                              <div className="popup-header">
-                                <img className="popup-avatar" src={Icons.avatar} alt="" />
-                                <div>
-                                  <h4>{employee.display_name}</h4>
-                                  <span>{employee.designation}</span>
-                                </div>
-                              </div>
-
-                              <div className="popup-body">
-                                <div className="popup-fist-container">
-                                  <div className="popup-container-left">
-                                    <p><b>VVDN ID:</b> <br/>  {employee.employee_id}</p>
-                                    <p><b>Tech:</b> <br/>  {employee.tech_group}</p>
-                                    <p><b>Location:</b> <br/>  {employee.emp_location}</p>
-                                  </div>
-                                  <div className="popup-container-right">
-                                    <p><b>Department: <br/> </b> {employee.employee_department}</p>
-                                    <p><b>Total Experience: <br/> </b> {employee.total_exp}</p>
-                                    <p><b>VVDN Experience:</b> <br/>  {employee.vvdn_exp}</p>
-                                  </div>
-                                </div>
-                                <div className="">
-                                    <p><b>Reporting Manger: <br/> </b> {employee.rm_name}</p>
-                                </div>
-                                <div className="">
-                                    <p><b>Skills:</b></p>
-                                    <div className="skills-container">
-                                    {employee.skill_set
-                                      ?.split(',')
-                                      .map((skill, index) => (
-                                        <span key={index} className="skill-chip">
-                                          {skill.trim()}
-                                        </span>
-                                      ))}
-                                    </div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                          
-
                         </div>
 
-                        
-                        
-                      </div>
-                    ))}
+                        <div className="popup-body">
+                          <p><b>ID:</b> {employee.employee_id}</p>
+                          <p><b>Department:</b> {employee.employee_department}</p>
+                          <p><b>Tech:</b> {employee.tech_group}</p>
+                          <p><b>Location:</b> {employee.emp_location}</p>
+                          <p><b>Total Exp:</b> {employee.total_exp}</p>
+
+                          <div className="skills-container">
+                            {employee.skill_set?.split(",").map((skill, i) => (
+                              <span key={i} className="skill-badge">
+                                {skill.trim()}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>,
+                      document.body
+                    )}
                 </div>
-              ) : (
-                <>Please upload CSV File to generate datas...</>
-              )}
-          </div> */}
-          <div className="search-card-header">
-  {isLoading ? (
-    <div className="chat-loader">
-      <div className="spinner"></div>
-    </div>
-  ) : (() => {
+              ))}
 
-    const filteredMessages = messages.filter(
-      item =>
-        item.type === "assistant" &&
-        item.data?.status === "success" &&
-        item.data?.all_employees?.length > 0
-    );
-
-    const allEmployees = filteredMessages.flatMap(
-      item => item.data.all_employees
-    );
-
-    if (allEmployees.length === 0) {
-      return <>Please upload CSV File to generate datas...</>;
-    }
-    const totalPages = Math.ceil(allEmployees.length / rowsPerPage);
-
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-
-    const paginatedEmployees = allEmployees.slice(startIndex, endIndex);
-
-
-    return (
-      <div className="search-card">
-        
-        <div className="employee-table">
-
-          {/* ✅ HEADER (Only Once) */}
-          <div className="employee-row header">
-            <div>Name</div>
-            <div>ID</div>
-            <div>Designation</div>
-            <div>Total Exp</div>
-            <div>Tech Group</div>
-            <div>Location</div>
-            <div></div>
-          </div>
-
-          {/* ✅ ROWS */}
-          {paginatedEmployees.map((employee, index) => (
-            <div
-              key={index}
-              className="employee-row"
-              onMouseEnter={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const popupHeight = 450; // approximate popup height
-                    const viewportHeight = window.innerHeight;
-                    
-                    // Check if popup would go below viewport
-                    let top = rect.top;
-                    if (top + popupHeight > viewportHeight) {
-                      top = viewportHeight - popupHeight - 40; // 40px margin from bottom
-                    }
-                    
-                    setPopupPosition({ top, left: rect.left });
-                    setHoveredIndex(index);
-                  }}
-                  onMouseLeave={() => setHoveredIndex(null)}
-            >
-              <div className="name-cell">
-                <div className="employee-avatar">
-                  {employee.display_name?.charAt(0).toUpperCase()}
-                </div>
-                <span>{employee.display_name}</span>
-              </div>
-
-              <div>{employee.employee_id}</div>
-              <div>{employee.designation}</div>
-              <div>{employee.total_exp}</div>
-              <div>{employee.tech_group}</div>
-              <div>{employee.emp_location}</div>
-
-              {hoveredIndex === index && createPortal(
-                  <div 
-                    className="employee-hover-popup"
-                    style={{ top: `${popupPosition.top}px`, left: `${popupPosition.left + 680}px` }}
-                    onMouseEnter={() => setHoveredIndex(index)}
-                    onMouseLeave={() => setHoveredIndex(null)}
-                  >
-                   <div className="popup-header">
-                                <div className="employee-avatar">
-                  {employee.display_name?.charAt(0).toUpperCase()}
-                </div>
-                                <div>
-                                  <h4>{employee.display_name}</h4>
-                                  <span>{employee.designation}</span>
-                                </div>
-                              </div>
-                  <div className="popup-body">
-                                <div className="popup-fist-container">
-                                  <div className="popup-container-left">
-                                    <p><b>VVDN ID:</b> <br/>  {employee.employee_id}</p>
-                                    <p><b>Tech:</b> <br/>  {employee.tech_group}</p>
-                                    <p><b>Location:</b> <br/>  {employee.emp_location}</p>
-                                  </div>
-                                  <div className="popup-container-right">
-                                    <p><b>Department: <br/> </b> {employee.employee_department}</p>
-                                    <p><b>Total Experience: <br/> </b> {employee.total_exp}</p>
-                                    <p><b>VVDN Experience:</b> <br/>  {employee.vvdn_exp}</p>
-                                  </div>
-                                </div>
-                                <div className="">
-                                    <p><b>Reporting Manger: <br/> </b> {employee.rm_name}</p>
-                                </div>
-                                <div className="">
-                                    <p><b>Skills:</b></p>
-                                    <div className="skills-container">
-                                    {/* {employee.skill_set
-                                      ?.split(',')
-                                      .map((skill, index) => (
-                                        <span key={index} className="skill-chip">
-                                          {skill.trim()}
-                                        </span>
-                                      ))} */}
-                                      <div className="skills-container">
-                                          {employee.skill_set.split(',').slice(0, showAllSkills ? undefined : 5).map((skill, skillIndex) => (
-                                            <span key={skillIndex} className="skill-badge">{skill.trim()}</span>
-                                          ))}
-                                          {employee.skill_set.split(',').length > 5 && (
-                                            <button onClick={() => setShowAllSkills(!showAllSkills)} className="skill-more-btn">
-                                              {showAllSkills ? 'Show Less' : `+${employee.skill_set.split(',').length - 5} More`}
-                                            </button>
-                                          )}
-                                    </div>
-                                    </div>
-                                </div>
-                              </div>
-                </div>,
-                document.body
-              )}
             </div>
-          ))}
 
-        </div>
-        <div className="pagination">
-          <button
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Prev
-          </button>
+            <div className="pagination">
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) =>
+                    Math.max(prev - 1, 1)
+                  )
+                }
+                disabled={currentPage === 1}
+              >
+                Prev
+              </button>
 
-          <span>
-            Page {currentPage} of {totalPages}
-          </span>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
 
-          <button
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
-        </div>
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) =>
+                    Math.min(prev + 1, totalPages)
+                  )
+                }
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        );
+      })()
+    )}
+  </>
+  )}
+
+  {/* CARD VIEW (Text Search) */}
+  {viewMode === "card" && (
+    <div className="employee-matches-container">
+      <div className="employee-matches-wrapper">
+
+        {cardEmployees?.length === 0 ? (
+          <p>No employees found.</p>
+        ) : (
+          <div className="employee-cards-list">
+            {cardEmployees?.map((employee) => (
+              <RequirementCard
+                key={employee.employee_id}
+                employee={employee}
+                filterFunction={filterOnSearch}
+                activeSkill={activeSkill}
+                setActiveSkill={setActiveSkill}
+              />
+            ))}
+          </div>
+        )}
+
       </div>
-      
-    );
-  })()}
-</div>
-
+    </div>
+  )}
+            
+              </div>
+            </>
+          )}
         </div>
       ) : (
-      <div className={`card assistant-card justify-btw ${!isExpanded ? 'compact' : ''}`}>
-        <div className="assistant-header">
-          <span className="assistant-badge bubbles">
-            {/* <span className="material-symbols-outlined">smart_toy</span> */}
-            <img src="src/assets/icons/bubbles.svg" alt="" srcSet="" />
-          </span>
-
-          {!isExpanded ? (
-            <span className="expand-icon" onClick={onExpand}>
-              <span className="material-symbols-outlined">open_in_full</span>
+        <div
+          className={`card assistant-card justify-btw ${!isExpanded ? "compact" : ""}`}
+        >
+          <div className="assistant-header">
+            <span className="assistant-badge bubbles">
+              {/* <span className="material-symbols-outlined">smart_toy</span> */}
+              <img src="src/assets/icons/bubbles.svg" alt="" srcSet="" />
             </span>
-          ) : (
-            <span className="expand-icon" onClick={onClose}>✕</span>
-          )}
 
-        </div>
-        <div>
-          <h3>Ready To Find Top Candidates Or Revisit Your Pipeline?</h3>
-
-          <div className="assistant-links">
-            <span><span className="material-symbols-outlined">search</span>Find Matches</span>
-            <span><span className="material-symbols-outlined">work</span>My Pipeline</span>
-            <span><span className="material-symbols-outlined">pie_chart</span>Insights</span>
+            {!isExpanded ? (
+              <span className="expand-icon" onClick={onExpand}>
+                <span className="material-symbols-outlined">open_in_full</span>
+              </span>
+            ) : (
+              <span className="expand-icon" onClick={onClose}>
+                ✕
+              </span>
+            )}
           </div>
+          <div>
+            <h3>
+              Ready To Find the Right Resource for Your Project, Instantly?
+            </h3>
 
-          <div className="assistant-control">
-            <div className="assistant-box">
-              <div className="assistant-input dflex">
-                <span alt="Attach" onClick={handlePlusClick} className="material-symbols-outlined">
-                  upload_file
-                </span>
-                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".csv" style={{ display: 'none' }} />
-                {uploadedFile ? (
-                  <div className="assistant-file" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span class="material-symbols-outlined">
-                    csv
-                  </span>                    
-                  <span>{uploadedFile.name}</span>
-                    <button className="remove-file-btn" onClick={handleRemoveFile}>✕</button>
-                  </div>
-                ) : (
-                  <input type="text" placeholder="Ask me anything..." />
-                )}
-              </div>
-              <div 
-                className="assistant-microphone" 
-                // onClick={!uploadedFile ? handleMicClick : undefined} 
-                style={{ 
-                  cursor: uploadedFile ? 'not-allowed' : 'pointer' 
-                }}
-              >
-                {/* <span 
+            <div className="assistant-links">
+              <span>
+                <span className="material-symbols-outlined">search</span>Find
+                Matches
+              </span>
+              <span>
+                <span className="material-symbols-outlined">work</span>My
+                Pipeline
+              </span>
+              <span>
+                <span className="material-symbols-outlined">pie_chart</span>
+                Insights
+              </span>
+            </div>
+
+            <div className="assistant-control">
+              <div className="assistant-box">
+                <div className="assistant-input dflex">
+                  <span
+                    alt="Attach"
+                    onClick={handlePlusClick}
+                    className="material-symbols-outlined"
+                  >
+                    upload_file
+                  </span>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept=".csv"
+                    style={{ display: "none" }}
+                  />
+                  {uploadedFile ? (
+                    <div
+                      className="assistant-file"
+                      style={{
+                        flex: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}
+                    >
+                      <span class="material-symbols-outlined">csv</span>
+                      <span>{uploadedFile.name}</span>
+                      <button
+                        className="remove-file-btn"
+                        onClick={handleRemoveFile}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ) : (
+                    <input type="text" placeholder="Ask me anything..." />
+                  )}
+                </div>
+                <div
+                  className="assistant-microphone"
+                  // onClick={!uploadedFile ? handleMicClick : undefined}
+                  style={{
+                    cursor: uploadedFile ? "not-allowed" : "pointer",
+                  }}
+                >
+                  {/* <span 
                   className="material-symbols-outlined" 
                   style={{ 
                     opacity: uploadedFile ? 0.3 : (isRecording ? 0.5 : 1) 
@@ -649,18 +945,27 @@ console.log("ASSISTANT MESSAGE:", assistantMessage);
                 >
                   mic
                 </span> */}
-                <button className="chat-submit-btn" onClick={handleSendMessage}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="22" y1="2" x2="11" y2="13"/>
-                  <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                </svg>
-              </button>
+                  <button
+                    className="chat-submit-btn"
+                    onClick={handleSendMessage}
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <line x1="22" y1="2" x2="11" y2="13" />
+                      <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-      </div>
       )}
     </>
   );
