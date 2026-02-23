@@ -130,7 +130,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
                 className="notif-show-all"
                 onClick={() => {
                   setShowNotifDropdown(false);
-                  onNotificationClick?.();
+                  navigate('/', { state: { expandSchedule: true, scheduleTab: 'notification', timestamp: Date.now() } });
                 }}
               >
                 Show all notifications
