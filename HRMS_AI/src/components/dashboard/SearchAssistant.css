@@ -687,7 +687,7 @@
 
 .upload-modal {
   background: var(--color-bg-card);
-  border-radius: 16px;
+  border-radius: 10px;
   width: 90%;
   max-width: 450px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
