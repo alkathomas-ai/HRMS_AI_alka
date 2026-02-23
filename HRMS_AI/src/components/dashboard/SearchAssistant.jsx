@@ -589,11 +589,11 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
 
                 <div className="search-header">
                   <div className="assistant-control">
-                    <div className="assistant-box">
+                    {/* <div className="assistant-box">
                       <div className="assistant-input">
-                        {/* <span className="search-icon">
+                        <span className="search-icon">
                           <img src={Icons.search} alt="" />
-                        </span> */}
+                        </span>
                         <span className="assistant-badge bubbles">
                           <img
                             src="src/assets/icons/bubbles.svg"
@@ -621,8 +621,6 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                             <span className="material-symbols-outlined">
                               csv
                             </span>
-                            {/* <span>{uploadedFile.name}</span>
-                        <button className="remove-file-btn" onClick={handleRemoveFile}>✕</button> */}
                           </div>
                         ) : (
                           <input
@@ -644,7 +642,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                           <img src={Icons.search} alt="" />
                         </button>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="assistant-btns">
@@ -891,7 +889,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
             </div>
 
             <div className="assistant-control">
-              <div className="assistant-box">
+              {/* <div className="assistant-box">
                 <div className="assistant-input dflex">
                   <span
                     alt="Attach"
@@ -932,19 +930,11 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                 </div>
                 <div
                   className="assistant-microphone"
-                  // onClick={!uploadedFile ? handleMicClick : undefined}
                   style={{
                     cursor: uploadedFile ? "not-allowed" : "pointer",
                   }}
                 >
-                  {/* <span 
-                  className="material-symbols-outlined" 
-                  style={{ 
-                    opacity: uploadedFile ? 0.3 : (isRecording ? 0.5 : 1) 
-                  }}
-                >
-                  mic
-                </span> */}
+
                   <button
                     className="chat-submit-btn"
                     onClick={handleSendMessage}
@@ -962,7 +952,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                     </svg>
                   </button>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

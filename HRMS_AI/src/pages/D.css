@@ -125,14 +125,14 @@
 }
 
 .employee-name-search {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   color: #111827;
   margin: 0;
 }
 
 .employee-designation-badge {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 400;
   /* color: #1e40af; */
   /* background: #dbeafe; */
@@ -404,7 +404,7 @@
 }
 .assistant-box {
   width: 100%;
-  border: 1px solid var(--color-primary);
+  /* border: 1px solid var(--color-primary); */
   border-radius: 10px;
   /* background-color: ; */
 }
