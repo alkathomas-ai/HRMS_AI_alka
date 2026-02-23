@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./Navbar.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Icons } from "../../assets/icons";
@@ -9,6 +9,17 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
+  const notifRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (notifRef.current && !notifRef.current.contains(e.target)) {
+        setShowNotifDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const today = new Date();
 
@@ -80,7 +91,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
           </div>
         </div>
 
-        <div className="notif-wrapper">
+        <div className="notif-wrapper" ref={notifRef}>
           <button
             className={`icon-btn ${showNotifDropdown ? "active" : ""}`}
             aria-label="Notifications"
