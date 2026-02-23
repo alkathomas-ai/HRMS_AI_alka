@@ -2,60 +2,60 @@ import axios from 'axios'
 import dummyUploadData from '../data/dummyUploadData';
 import { testData } from '../data/Upload_data_response';
 // const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const BASE_URL = 'http://172.25.247.7:8000'
+const BASE_URL = 'http://172.25.247.15:8000'
 
 
 export async function searchAPI(query) {
-    // const response = await fetch(`${BASE_URL}/search-rank-simplified-new`, 
-    // {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({ query : query }),
-    // });
+    const response = await fetch(`${BASE_URL}/search-rank-simplified-new`, 
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query : query }),
+    });
      
-    // if (!response.ok) {
-    //   throw new Error(`HTTP error! status: ${response.status}`);
-    // }
-    
-    //  return response.json();
-    return new Promise((resolve) => {
-    const response ={
-      employee : testData.all_employees
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-    setTimeout(() => {
-      resolve(response);
-    }, 1000);
-  });
+    
+     return response.json();
+  //   return new Promise((resolve) => {
+  //   const response ={
+  //     employee : testData.all_employees
+  //   }
+  //   setTimeout(() => {
+  //     resolve(response);
+  //   }, 1000);
+  // });
   }
 
 
 export async function uploadAPI(formData) {
-  // try{
-  //   console.log(formData)
-  // const response = await fetch(`${BASE_URL}/upload/hrms-data`,
-  //       {
-  //         method: "POST",
-  //         body: formData,
-  //       }
-  //     );
+  try{
+    console.log(formData)
+  const response = await fetch(`${BASE_URL}/upload/hrms-data`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
-  //     if (!response.ok) {
-  //       throw new Error(`Upload failed: ${response.statusText}`);
-  //     }
-  //     return response.json();
-  // } catch (error) {
-  //   console.log(error);
-  //   console.log("Backend not available. Using dummy data.");
-  //   return dummyUploadData; 
-  // }
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.statusText}`);
+      }
+      return response.json();
+  } catch (error) {
+    console.log(error);
+    console.log("Backend not available. Using dummy data.");
+    return dummyUploadData; 
+  }
   
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(dummyUploadData);
-    }, 1000);
-  });
+  // return new Promise((resolve) => {
+  //   setTimeout(() => {
+  //     resolve(dummyUploadData);
+  //   }, 1000);
+  // });
 }
 
 export async function getProjectDistributions() {
