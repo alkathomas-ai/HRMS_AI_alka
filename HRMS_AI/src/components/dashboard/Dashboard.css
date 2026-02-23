@@ -54,7 +54,7 @@
 .dashboard-left {
   display: flex;
   flex-direction: column;
-  /* gap: 24px; */
+  gap: 24px;
   height: 100%;
   overflow-y: auto;
 }
