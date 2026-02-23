@@ -122,3 +122,18 @@ export async function getEmployeesPaginated(page, pageSize) {
     }, 1000);
   });
 }
+
+export async function generateWidgetFromPrompt(payload) {
+  try {
+    console.log(payload)
+    const response = await axios.post(`${BASE_URL}/ai-analytics`, {
+      "prompt": payload.prompt,
+      "chartType": payload.chartType
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}

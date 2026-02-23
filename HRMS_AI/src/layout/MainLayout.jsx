@@ -7,6 +7,8 @@ const MainLayout = () => {
   return (
     <>
         <Navbar />
+      {/* <Navbar notifications={notifications} onNotificationClick={handleNotificationClick} onMarkAllRead={handleMarkAllRead} /> */}
+
         <div className="page-content">
             <Outlet />
         </div>

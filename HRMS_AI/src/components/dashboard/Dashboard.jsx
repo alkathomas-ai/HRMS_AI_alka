@@ -4,7 +4,7 @@ import Panel from './Panel';
 import WidgetPanel from './WidgetPanel';
 import SearchAssistant from './SearchAssistant';
 import Schedule from './Schedule';
-import Navbar from '../navbar/Navbar';
+// import Navbar from '../navbar/Navbar';
 
 const Dashboard = () => {
   const [expandedPanel, setExpandedPanel] = useState(null);
