@@ -116,8 +116,8 @@ const ColorPalette = () => {
     root.style.setProperty('--color-primary-medium', theme.primary_medium || theme.primary);
     root.style.setProperty('--color-primary-low', theme.primary_low || theme.soft);
     root.style.setProperty('--background-light', theme.background_light);
-    root.style.setProperty('--color-bg-dashboard', theme.color_bg_dashboard);
-    root.style.setProperty('--color-bg-dashboard-primary', theme.color_bg_dashboard_primary);
+    // root.style.setProperty('--color-bg-dashboard', theme.color_bg_dashboard);
+    // root.style.setProperty('--color-bg-dashboard-primary', theme.color_bg_dashboard_primary);
 
 
     // Assistant bar colors
