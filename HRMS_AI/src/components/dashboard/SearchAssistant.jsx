@@ -213,7 +213,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
   // const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [cardEmployees, setCardEmployees] = useState();
   const [allCardEmployees, setAllCardEmployees] = useState();
-  const [viewMode, setViewMode] = useState("card"); // "table" | "card"
+  const [viewMode, setViewMode] = useState(null); // "table" | "card"
   const [activeSkill, setActiveSkill] = useState(null);
   const [tableEmployees, setTableEmployees] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
