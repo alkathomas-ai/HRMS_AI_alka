@@ -110,7 +110,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                         : `+${skill_set.split(",").length - 5} More`}
                     </button>
                   )}
-                </div>
+                  </div>
               </div>
             )}
 
@@ -208,7 +208,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
     left: 0,
     arrowTop: 0,
   });
-  const {searchResult, setSearchResult} = useContext(EmployeeContext)
+  const {searchResult, setSearchResult} = useContext(EmployeeContext);
   // const [tablePage, setTablePage] = useState({});
   // const [rowsPerPage, setRowsPerPage] = useState({});
   // const [searchQuery, setSearchQuery] = useState({});
@@ -537,24 +537,41 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                     </div>
                   </div>
                   {/* AI Context / Search Hints  */}
-                  <div class="search-hints">
-                    <span class="hint-label">Try searching:</span>
+                  <div className="search-hints">
+                    <span className="hint-label">Try searching:</span>
 
-                    <button class="hint-btn">
+                    <button className="hint-btn">
                       "Senior developers in Kochi"
                     </button>
 
-                    <button class="hint-btn">"Design team lead"</button>
+                    <button className="hint-btn">"Design team lead"</button>
 
-                    <button class="hint-btn">
+                    <button className="hint-btn">
                       "Experts in Machine Learning"
                     </button>
                   </div>
 
+                  {/* Quick Filters */}
+                  <div class="quick-filters">
+                    <span class="filter-label">Filter by:</span>
+
+                    <button class="filter-btn">
+                      Department <i class="fas fa-chevron-down"></i>
+                    </button>
+
+                    <button class="filter-btn">
+                      Location <i class="fas fa-chevron-down"></i>
+                    </button>
+
+                    <button class="filter-btn">
+                      Experience <i class="fas fa-chevron-down"></i>
+                    </button>
+                  </div>
+
                   {/* Empty State  */}
-                  <div class="empty-state">
-                    <div class="empty-icon">
-                      <i class="fas fa-user-friends"></i>
+                  <div className="empty-state">
+                    <div className="empty-icon">
+                      <i className="fas fa-user-friends"></i>
                     </div>
 
                     <h3>Start typing to see results</h3>
@@ -920,7 +937,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                         gap: "8px",
                       }}
                     >
-                      <span class="material-symbols-outlined">csv</span>
+                      <span className="material-symbols-outlined">csv</span>
                       <span>{uploadedFile.name}</span>
                       <button
                         className="remove-file-btn"
