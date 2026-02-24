@@ -1,8 +1,7 @@
 import axios from 'axios'
 import dummyUploadData from '../data/dummyUploadData';
 import { testData } from '../data/Upload_data_response';
-// const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const BASE_URL = 'http://172.25.247.15:8000'
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 export async function searchAPI(query) {
