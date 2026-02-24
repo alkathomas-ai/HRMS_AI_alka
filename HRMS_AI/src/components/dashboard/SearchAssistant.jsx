@@ -159,9 +159,9 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                 {Object.entries(employee.ai_criteria).map(
                   ([criteria, criteriaScore]) => {
                     const criteriaClass =
-                      criteriaScore >= 80
+                      criteriaScore >= 70
                         ? "high"
-                        : criteriaScore >= 60
+                        : criteriaScore >= 50
                           ? "medium"
                           : "low";
                     return (
@@ -284,7 +284,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
   const fileToUpload = uploadedFile;
 
   // Reset UI immediately
-  setInputText("");
+  // setInputText("");
   setUploadedFile(null);
   if (fileInputRef.current) fileInputRef.current.value = "";
 
@@ -829,7 +829,11 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
           </button>
         </div>
 
-        {searchResult?.result?.length === 0 ? (
+        {isLoading ? (
+          <div className="chat-loader-new">
+            <div className="spinner"></div>
+          </div>
+        ) : searchResult?.result?.length === 0 ? (
           <p>No employees found.</p>
         ) : (
           <div className="employee-cards-list">

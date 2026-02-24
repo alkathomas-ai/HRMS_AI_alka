@@ -226,7 +226,6 @@
 
 .close-btn:hover {
     background: var(--color-bg-muted);
-    color: var(--color-text-primary);
 }
 
 .modal-body {
