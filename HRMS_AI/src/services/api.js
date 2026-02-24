@@ -130,9 +130,15 @@ export async function generateWidgetFromPrompt(payload) {
       "chartType": payload.chartType
     });
 
+    if (response.data.status === 'error') {
+      throw new Error(response.data.message);
+    }
+
     return response.data;
   } catch (error) {
-    console.error(error);
-    throw error;
+    if (error.response?.data?.message) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error(error.message || 'Failed to generate widget');
   }
 }
