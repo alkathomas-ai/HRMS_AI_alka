@@ -81,6 +81,27 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     { id: 'available-employees', label: 'Available Employees' },
   ];
 
+  
+  useEffect(() => {
+    const initializeWidgetSizes = () => {
+      const updatedSizes = { ...widgetSizes };
+      let hasChanges = false;
+      
+      availableWidgets.forEach(widget => {
+        if (!updatedSizes[widget.id]) {
+          updatedSizes[widget.id] = { cols: 1, rows: 2 };
+          hasChanges = true;
+        }
+      });
+      
+      if (hasChanges) {
+        setWidgetSizes(updatedSizes);
+      }
+    };
+    
+    initializeWidgetSizes();
+  }, []);
+  
   useEffect(() => {
     localStorage.setItem('selectedWidgets', JSON.stringify(selectedWidgets));
   }, [selectedWidgets]);
