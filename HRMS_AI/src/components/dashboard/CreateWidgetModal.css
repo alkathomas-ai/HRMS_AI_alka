@@ -133,7 +133,7 @@
 
 .error-message {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   padding: 10px 12px;
   background: #fee2e2;
@@ -146,6 +146,11 @@
 
 .error-message i {
   font-size: 14px;
+  margin-top: 3px;
+}
+
+.error-message span {
+  /* padding-top: 2px; */
 }
 
 .form-row {

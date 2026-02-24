@@ -19,6 +19,10 @@ const DynamicWidget = ({ widgetData }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
+  useEffect(() => {
+    setPage(0);
+  }, [data]);
+
   const dataKeys = data[0] ? Object.keys(data[0]) : [];
   const xKey = xAxis || dataKeys.find(k => k.includes('name') || k.includes('project')) || dataKeys[0];
   const yKey = yAxis || dataKeys.find(k => k.includes('count') || k.includes('number')) || dataKeys[1];
