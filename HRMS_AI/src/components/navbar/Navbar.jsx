@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./Navbar.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Icons } from "../../assets/icons";
@@ -9,6 +9,17 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
+  const notifRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (notifRef.current && !notifRef.current.contains(e.target)) {
+        setShowNotifDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const today = new Date();
 
@@ -40,7 +51,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
           className={`icon-btn ${location.pathname === "/" ? "active" : ""}`}
           aria-label="Home"
         >
-          <span class="material-symbols-outlined">home</span>{" "}
+          <span className="material-symbols-outlined">home</span>{" "}
         </button>
         <button
           onClick={() => {
@@ -49,7 +60,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
           className={`icon-btn ${location.pathname === "/user" ? "active" : ""}`}
           aria-label="Users"
         >
-          <span class="material-symbols-outlined">group</span>{" "}
+          <span className="material-symbols-outlined">group</span>{" "}
         </button>
         <button
           onClick={() => {
@@ -58,13 +69,13 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
           className={`icon-btn ${location.pathname === "/d" ? "active" : ""}`}
           aria-label="Documents"
         >
-          <span class="material-symbols-outlined">stacks</span>{" "}
+          <span className="material-symbols-outlined">stacks</span>{" "}
         </button>
         <button className="icon-btn" aria-label="Reports">
-          <span class="material-symbols-outlined">pie_chart</span>{" "}
+          <span className="material-symbols-outlined">pie_chart</span>{" "}
         </button>
         <button className="icon-btn" aria-label="Notes">
-          <span class="material-symbols-outlined">description</span>{" "}
+          <span className="material-symbols-outlined">description</span>{" "}
         </button>
       </div>
 
@@ -80,7 +91,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
           </div>
         </div>
 
-        <div className="notif-wrapper">
+        <div className="notif-wrapper" ref={notifRef}>
           <button
             className={`icon-btn ${showNotifDropdown ? "active" : ""}`}
             aria-label="Notifications"
@@ -130,7 +141,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
                 className="notif-show-all"
                 onClick={() => {
                   setShowNotifDropdown(false);
-                  onNotificationClick?.();
+                  navigate('/', { state: { expandSchedule: true, scheduleTab: 'notification', timestamp: Date.now() } });
                 }}
               >
                 Show all notifications

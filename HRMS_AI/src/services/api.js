@@ -1,8 +1,7 @@
 import axios from 'axios'
 import dummyUploadData from '../data/dummyUploadData';
 import { testData } from '../data/Upload_data_response';
-// const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const BASE_URL = 'http://172.25.247.15:8000'
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 export async function searchAPI(query) {
@@ -106,19 +105,53 @@ export async function getSoonAvailableEmployees() {
 }
 
 export async function getEmployeesPaginated(page, pageSize) {
-  // try {
-  //   const response = await axios.get(`${BASE_URL}/employees?page=${page}&page_size=${pageSize}`);
-  //   console.log(response.data)
-  //   return response.data;
-  // } catch (error) {
-  //   console.log(error);
-  // }
-  return new Promise((resolve) => {
-    const response ={
-      total_employees : testData.all_employees
+  try {
+    const response = await axios.get(`${BASE_URL}/employees?page=${page}&page_size=${pageSize}`);
+    console.log(response.data)
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+  // return new Promise((resolve) => {
+  //   const response ={
+  //     total_employees : testData.all_employees
+  //   }
+  //   setTimeout(() => {
+  //     resolve(response);
+  //   }, 1000);
+  // });
+}
+
+export async function generateWidgetFromPrompt(payload) {
+  try {
+    console.log(payload)
+    const response = await axios.post(`${BASE_URL}/ai-analytics`, {
+      "prompt": payload.prompt,
+      "chartType": payload.chartType
+    });
+
+    if (response.data.status === 'error') {
+      throw new Error(response.data.message);
     }
-    setTimeout(() => {
-      resolve(response);
-    }, 1000);
-  });
+
+    return response.data;
+  } catch (error) {
+    if (error.response?.data?.message) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error(error.message || 'Failed to generate widget');
+  }
+}
+
+export async function updateEmployeeSkills(employeeId, skills) {
+  try {
+    const cleanId = employeeId.replace('VVDN/', '');
+    const response = await axios.put(`${BASE_URL}/employees/${cleanId}/skills`, {
+      skills: skills
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }

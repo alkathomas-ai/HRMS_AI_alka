@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import './EditUser.css'
 import { Icons } from '../../assets/icons'
-import { getEmployeeDirectory, getEmployeesPaginated } from '../../services/api'
+import { getEmployeeDirectory, getEmployeesPaginated, updateEmployeeSkills } from '../../services/api'
 
 const EditUser = () => {
   const [employees, setEmployees] = useState([]);
@@ -39,8 +39,8 @@ const EditUser = () => {
       setTotalEmployees(total);
       
       const allData = await getEmployeesPaginated(1, total);
-      // setAllEmployees(allData.employees || []);
-      setAllEmployees(allData.total_employees)
+      setAllEmployees(allData.employees || []);   // comment when using dummy data
+      // setAllEmployees(allData.total_employees) // uncomment when using dummy data
     } catch (error) {
       console.log(error);
       setAllEmployees([]);
@@ -100,11 +100,44 @@ const EditUser = () => {
   };
 
   const handleUpdateSkills = async () => {
-    // TODO: Add API call to update skills
-    console.log('Updating skills for:', selectedEmployee.employee_id, 'with:', skillInput);
-    setIsModalOpen(false);
-    setSelectedEmployee(null);
-    setSkillInput('');
+    try {
+      const skillsArray = skillInput.split(',').map(s => s.trim()).filter(s => s);
+      console.log('Updating skills for:', selectedEmployee.employee_id);
+      console.log('Skills array:', skillsArray);
+      
+      const response = await updateEmployeeSkills(selectedEmployee.employee_id, skillsArray);
+      console.log('Update response:', response);
+      
+      // Update local state
+      const updatedSkills = skillInput;
+      if (isSearching) {
+        setFilteredEmployees(prev => prev.map(emp => 
+          emp.employee_id === selectedEmployee.employee_id 
+            ? { ...emp, skill_set: updatedSkills } 
+            : emp
+        ));
+      } else {
+        setEmployees(prev => prev.map(emp => 
+          emp.employee_id === selectedEmployee.employee_id 
+            ? { ...emp, skill_set: updatedSkills } 
+            : emp
+        ));
+      }
+      setAllEmployees(prev => prev.map(emp => 
+        emp.employee_id === selectedEmployee.employee_id 
+          ? { ...emp, skill_set: updatedSkills } 
+          : emp
+      ));
+      
+      alert('Skills updated successfully!');
+      setIsModalOpen(false);
+      setSelectedEmployee(null);
+      setSkillInput('');
+    } catch (error) {
+      console.error('Failed to update skills:', error);
+      console.error('Error details:', error.response?.data || error.message);
+      alert(`Failed to update skills: ${error.response?.data?.message || error.message || 'Please try again.'}`);
+    }
   };
 
   

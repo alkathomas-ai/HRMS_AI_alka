@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './ColorPalette.css';
 
 const themes = [
@@ -7,12 +7,13 @@ const themes = [
     primary: '#E22D30',
     soft: '#F04D4D',
     hover: '#B52226',
+    hover_secondary:'#ffe1e1',
     light: 'rgba(240, 77, 77, 0.23)',
     primary_medium: '#ed6669',
     primary_low: '#e5af78',
     background_light: '#ffdbdb',
     color_bg_dashboard: '#F5F6F7',
-    color_bg_dashboard_primary: '#f04d4d3b',
+    color_bg_pages_primary: '#f04d4d3b',
     assistant: {
       baseStart: '#FFF1E6',
       baseEnd: '#FDD6D6',
@@ -27,12 +28,13 @@ const themes = [
     primary: '#1E40AF',
     soft: '#3B82F6',
     hover: '#1E3A8A',
+    hover_secondary:'#e0e9ff',
     light: 'rgba(59, 130, 246, 0.23)',
     primary_medium: '#6397f4',
     primary_low: '#7dcefd',
     background_light: '#dbeafe',
     color_bg_dashboard: '#F5F6F7',
-    color_bg_dashboard_primary: '#b4cdff99',
+    color_bg_pages_primary: '#b4cdff99',
     assistant: {
       baseStart: '#EEF3FF',
       baseEnd: '#DCE7FF',
@@ -47,12 +49,13 @@ const themes = [
     primary: '#065F46',
     soft: '#16b480',
     hover: '#065F46',
+    hover_secondary:'#e9fff9',
     light: 'rgba(16, 185, 129, 0.23)',
     primary_medium: '#058a64',
     primary_low: '#15bf87',
     background_light: '#c0e6db',
     color_bg_dashboard: '#F5F6F7',
-    color_bg_dashboard_primary: '#b4f0d799',
+    color_bg_pages_primary: '#b4f0d799',
     assistant: {
       baseStart: '#ECFDF7',
       baseEnd: '#D1FAE5',
@@ -67,12 +70,13 @@ const themes = [
     primary: '#6D28D9',
     soft: '#8B5CF6',
     hover: '#5B21B6',
+    hover_secondary:'#f4ecff',
     light: 'rgba(139, 92, 246, 0.23)',
     primary_medium: '#b66dee',
     primary_low: '#d380ca',
     background_light: '#e9dbff',
     color_bg_dashboard: '#F5F6F7',
-    color_bg_dashboard_primary: '#dcc3ff99',
+    color_bg_pages_primary: '#dcc3ff99',
     assistant: {
       baseStart: '#F4F1FF',
       baseEnd: '#E4DCFF',
@@ -102,6 +106,17 @@ const themes = [
 const ColorPalette = () => {
   const [showPalette, setShowPalette] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState(themes[0].name);
+  const paletteRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (paletteRef.current && !paletteRef.current.contains(e.target)) {
+        setShowPalette(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const applyTheme = (theme) => {
     setSelectedTheme(theme.name);
@@ -112,12 +127,12 @@ const ColorPalette = () => {
     root.style.setProperty('--color-primary', theme.primary);
     root.style.setProperty('--color-primary-soft', theme.soft);
     root.style.setProperty('--color-primary-hover', theme.hover);
+    root.style.setProperty('--color-secondary-hover', theme.hover_secondary);
     root.style.setProperty('--color-primary-light', isDark ? theme.light.replace(/[\d.]+\)$/, '0.62)') : theme.light);
     root.style.setProperty('--color-primary-medium', theme.primary_medium || theme.primary);
     root.style.setProperty('--color-primary-low', theme.primary_low || theme.soft);
     root.style.setProperty('--background-light', theme.background_light);
-    root.style.setProperty('--color-bg-dashboard', theme.color_bg_dashboard);
-    root.style.setProperty('--color-bg-dashboard-primary', theme.color_bg_dashboard_primary);
+    root.style.setProperty('--color-bg-pages-primary', theme.color_bg_pages_primary);
 
 
     // Assistant bar colors
@@ -160,7 +175,7 @@ const ColorPalette = () => {
   }, []);
 
   return (
-    <div className="palette-wrapper">
+    <div className="palette-wrapper" ref={paletteRef}>
       <span
         className={`material-symbols-outlined color-palette icon-btn ${showPalette ? 'active' : ''}`}
         onClick={() => setShowPalette(!showPalette)}
