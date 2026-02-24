@@ -248,6 +248,8 @@
     font-size: 14px;
     font-family: inherit;
     resize: vertical;
+    background-color: var(--color-bg-muted);
+    color: var(--color-text-primary);
 }
 
 .modal-body textarea:focus {

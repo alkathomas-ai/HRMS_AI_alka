@@ -161,7 +161,8 @@ body {
   align-items: center;
   gap: 6px;
   transition: all 0.2s;
-  background: #f0f0f0;
+  /* background: #f0f0f0; */
+  background: var(--color-bg-muted);
   color: var(--color-text-primary);
 }
 
