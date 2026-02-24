@@ -614,6 +614,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  background-color: var(--color-bg-card);
 }
 
 .upload-prompt-container {
@@ -1202,7 +1203,7 @@
 }
 /* Quick Filters Section */
 .quick-filters {
-    margin-top: 24px;
+    /* margin-top: 24px; */
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -1211,7 +1212,7 @@
 
 .filter-label {
     font-size: 14px;
-    color: #64748b;
+    color: var(--color-text-secondary);
     align-self: center;
     margin-right: 8px;
 }
@@ -1219,12 +1220,12 @@
 /* Filter Button */
 .filter-btn {
     padding: 6px 16px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-bg-muted);
     border-radius: 999px;
     font-size: 14px;
     font-weight: 500;
-    color: #475569;
+    color: var(--color-text-secondary);
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -1236,8 +1237,9 @@
 
 /* Hover Effect */
 .filter-btn:hover {
-    border-color: #6366f1;
-    color: #6366f1;
+    border-color: var(--color-primary-soft);
+    color: var(--color-primary-soft);
+    background: var(--color-secondary-hover);
 }
 
 
@@ -1301,7 +1303,7 @@
 /* Hint Buttons */
 .hint-btn {
     padding: 6px 16px;
-    background: #ffffff;
+    background: var(--color-bg-card);
     border: 1px solid #e2e8f0;
     border-radius: 999px;
     font-size: 14px;

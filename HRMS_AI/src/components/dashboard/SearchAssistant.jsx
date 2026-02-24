@@ -1,9 +1,10 @@
 import { Icons } from "../../assets/icons";
 import "./Dashboard.css";
 import "./SearchAssistant.css";
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { uploadAPI, searchAPI } from "../../services/api";
 import { createPortal } from "react-dom";
+import { EmployeeContext } from "../../context/employeeContext";
 
 const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill }) => {
   const [showAllSkills, setShowAllSkills] = useState(false);
@@ -109,7 +110,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                         : `+${skill_set.split(",").length - 5} More`}
                     </button>
                   )}
-                </div>
+                  </div>
               </div>
             )}
 
@@ -158,9 +159,9 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                 {Object.entries(employee.ai_criteria).map(
                   ([criteria, criteriaScore]) => {
                     const criteriaClass =
-                      criteriaScore >= 80
+                      criteriaScore >= 70
                         ? "high"
-                        : criteriaScore >= 60
+                        : criteriaScore >= 50
                           ? "medium"
                           : "low";
                     return (
@@ -207,13 +208,14 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
     left: 0,
     arrowTop: 0,
   });
+  const {searchResult, setSearchResult} = useContext(EmployeeContext);
   // const [tablePage, setTablePage] = useState({});
   // const [rowsPerPage, setRowsPerPage] = useState({});
   // const [searchQuery, setSearchQuery] = useState({});
   // const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [cardEmployees, setCardEmployees] = useState();
+  // const [cardEmployees, setCardEmployees] = useState();
   const [allCardEmployees, setAllCardEmployees] = useState();
-  const [viewMode, setViewMode] = useState(null); // "table" | "card"
+  const [viewMode, setViewMode] = useState(searchResult.viewModeCard); // "table" | "card"
   const [activeSkill, setActiveSkill] = useState(null);
   const [tableEmployees, setTableEmployees] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -239,12 +241,12 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
     }
   };
 
-  const handleRemoveFile = () => {
-    setUploadedFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
+  // const handleRemoveFile = () => {
+  //   setUploadedFile(null);
+  //   if (fileInputRef.current) {
+  //     fileInputRef.current.value = "";
+  //   }
+  // };
   const handleRemoveUploadFile = () => {
     setUploadedFile(null);
     if (uploadModalFileInputRef.current) {
@@ -267,7 +269,8 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
     filtered = allCardEmployees;
   }
 
-  setCardEmployees(filtered);
+  // setCardEmployees(filtered);
+  setSearchResult({...searchResult, result : filtered})
 }
 
 
@@ -281,7 +284,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
   const fileToUpload = uploadedFile;
 
   // Reset UI immediately
-  setInputText("");
+  // setInputText("");
   setUploadedFile(null);
   if (fileInputRef.current) fileInputRef.current.value = "";
 
@@ -305,6 +308,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
 
       setTableEmployees(employees);
       setViewMode("table");
+      setSearchResult({...searchResult, viewModeCard : "table"})
 
       const elapsed = Date.now() - startTime;
       if (elapsed < 2000) {
@@ -316,7 +320,8 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
 
       const employees = response?.data || response?.employee || [];
 
-      setCardEmployees(employees);
+      // setCardEmployees(employees);
+      setSearchResult({ result: employees, viewModeCard: "card"})
       setAllCardEmployees(employees);
       setViewMode("card");
     }
@@ -335,7 +340,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
 
 
 
-  
+
 
   // const handleMicClick = async () => {
   //   if (isRecording) {
@@ -366,7 +371,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
 
   // console.log(messages);
 
-  console.log("Card", cardEmployees);
+  console.log("Card", searchResult);
   
   return (
     <>
@@ -515,7 +520,9 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                             className="chat-submit-btn"
                             onClick={handleSendMessage}
                           >
-                            <img src={Icons.search} alt="" />
+                        <span className="search-icon">
+                          <img src={Icons.search} alt="" />
+                        </span>
                           </button>
                         </div>
                       </div>
@@ -541,23 +548,6 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
 
                     <button className="hint-btn">
                       "Experts in Machine Learning"
-                    </button>
-                  </div>
-
-                  {/* Quick Filters */}
-                  <div className="quick-filters">
-                    <span className="filter-label">Filter by:</span>
-
-                    <button className="filter-btn">
-                      Department <i className="fas fa-chevron-down"></i>
-                    </button>
-
-                    <button className="filter-btn">
-                      Location <i className="fas fa-chevron-down"></i>
-                    </button>
-
-                    <button className="filter-btn">
-                      Experience <i className="fas fa-chevron-down"></i>
                     </button>
                   </div>
 
@@ -589,11 +579,8 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
 
                 <div className="search-header">
                   <div className="assistant-control">
-                    {/* <div className="assistant-box">
+                    <div className="assistant-box">
                       <div className="assistant-input">
-                        <span className="search-icon">
-                          <img src={Icons.search} alt="" />
-                        </span>
                         <span className="assistant-badge bubbles">
                           <img
                             src="src/assets/icons/bubbles.svg"
@@ -639,10 +626,12 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                           className="chat-submit-btn"
                           onClick={handleSendMessage}
                         >
+                        <span className="search-icon">
                           <img src={Icons.search} alt="" />
+                        </span>
                         </button>
                       </div>
-                    </div> */}
+                    </div>
                   </div>
 
                   <div className="assistant-btns">
@@ -823,12 +812,32 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
   {viewMode === "card" && (
     <div className="employee-matches-container">
       <div className="employee-matches-wrapper">
+        {/* Quick Filters */}
+        <div class="quick-filters">
+          <span class="filter-label">Filter by:</span>
 
-        {cardEmployees?.length === 0 ? (
+          <button class="filter-btn">
+            Department <i class="fas fa-chevron-down"></i>
+          </button>
+
+          <button class="filter-btn">
+            Location <i class="fas fa-chevron-down"></i>
+          </button>
+
+          <button class="filter-btn">
+            Experience <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+
+        {isLoading ? (
+          <div className="chat-loader-new">
+            <div className="spinner"></div>
+          </div>
+        ) : searchResult?.result?.length === 0 ? (
           <p>No employees found.</p>
         ) : (
           <div className="employee-cards-list">
-            {cardEmployees?.map((employee) => (
+            {searchResult?.result?.map((employee) => (
               <RequirementCard
                 key={employee.employee_id}
                 employee={employee}
