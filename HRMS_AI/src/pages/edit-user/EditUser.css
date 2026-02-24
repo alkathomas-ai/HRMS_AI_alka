@@ -1,7 +1,9 @@
 .edit-user-container {
     padding: 20px;
     max-width: 1400px;
+    height: 98%;
     margin: 0 auto;
+    background: var(--color-bg-muted);
 }
 
 .edit-user-header {
@@ -20,7 +22,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    background: white;
+    background: var(--color-bg-card);
     padding: 10px 16px;
     border-radius: 8px;
     border: 1px solid #e0e0e0;
@@ -37,6 +39,8 @@
     outline: none;
     flex: 1;
     font-size: 14px;
+    background: var(--color-bg-card);
+    color: var(--color-text-primary);
 }
 
 .loader-container {
@@ -66,7 +70,7 @@
 }
 
 .edit-employee-card {
-    background: white;
+    background: var(--color-bg-card);
     border-radius: 12px;
     padding: 18px;
     border: 1px solid #e0e0e0;
@@ -172,7 +176,7 @@
 }
 
 .modal-content {
-    background: white;
+    background: var(--color-bg-card);
     border-radius: 16px;
     width: 90%;
     max-width: 600px;
@@ -292,7 +296,7 @@
 .pagination button {
     padding: 8px 16px;
     border: 1px solid #d1d5db;
-    background: white;
+    background: var(--color-bg-card);
     cursor: pointer;
     border-radius: 6px;
     font-size: 14px;

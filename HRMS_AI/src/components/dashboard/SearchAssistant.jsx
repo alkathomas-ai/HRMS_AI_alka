@@ -551,23 +551,6 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                     </button>
                   </div>
 
-                  {/* Quick Filters */}
-                  <div class="quick-filters">
-                    <span class="filter-label">Filter by:</span>
-
-                    <button class="filter-btn">
-                      Department <i class="fas fa-chevron-down"></i>
-                    </button>
-
-                    <button class="filter-btn">
-                      Location <i class="fas fa-chevron-down"></i>
-                    </button>
-
-                    <button class="filter-btn">
-                      Experience <i class="fas fa-chevron-down"></i>
-                    </button>
-                  </div>
-
                   {/* Empty State  */}
                   <div className="empty-state">
                     <div className="empty-icon">

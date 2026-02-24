@@ -31,7 +31,7 @@
   --color-bg-muted: #F4F4F5;
   --color-bg-topbar: #FCFBFD;
   --color-bg-dashboard: #F5F6F7;
-  --color-bg-dashboard-primary: #f04d4d3b;
+  --color-bg-pages-primary: #f04d4d3b;
 
   /* scrore */
   --color-primary-medium:#e18889;
@@ -55,6 +55,8 @@
   --color-bg-muted: #252A31;
   --color-bg-topbar: #1A1F26;
   --color-bg-dashboard: #0F1419;
+  --color-bg-pages-primary: transparent;
+
 
   --color-text-primary: #E5E7EB;
   --color-text-secondary: #9CA3AF;
@@ -78,7 +80,7 @@ body {
     150deg,
     var(--color-bg-dashboard) 0%,
     var(--color-bg-dashboard) 50%,
-    var(--color-bg-dashboard-primary) 100%
+    var(--color-bg-edituser-primary) 100%
   );
 }
 /* Hide scrollbar but allow scrolling */
