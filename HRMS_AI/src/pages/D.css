@@ -1,6 +1,6 @@
 .employee-matches-container {
-  padding: 24px;
-  /* background: #f8f9fa; */
+  padding: 0px 24px;
+  /* background: var(--color-bg-page); */
   min-height: 100vh;
 }
 
@@ -12,7 +12,7 @@
 .employee-matches-title {
   font-size: 28px;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-text-primary);
   margin-bottom: 24px;
 }
 
@@ -24,13 +24,13 @@
 
 .employee-card {
   padding: 20px;
-  background: white;
+  background: var(--color-bg-card);
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   transition: all 0.2s ease;
-  border-top: 1px solid #80808054;
-  border-bottom: 1px solid #80808054;
-  border-right: 1px solid #80808054;
+  border-top: 1px solid var(--color-bg-muted);
+  border-bottom: 1px solid var(--color-bg-muted);
+  border-right: 1px solid var(--color-bg-muted);
   border-left: 5px solid #94a3b8;
 
   position: relative;
@@ -104,8 +104,8 @@
 
 .employee-info-section {
   display: grid;
-  grid-template-columns: 1.8fr 3fr 2fr;
-  gap: 20px;
+  grid-template-columns: 1.8fr 3fr 1.8fr;
+  gap: 25px;
 }
 
 .employee-header {
@@ -121,20 +121,20 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 6px;
+  margin-bottom: 22px;
 }
 
 .employee-name-search {
   font-size: 20px;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-text-primary);
   margin: 0;
 }
 
 .employee-designation-badge {
   font-size: 14px;
   font-weight: 400;
-  /* color: #1e40af; */
+  color: var(--color-text-secondary);
   /* background: #dbeafe; */
   padding: 4px 12px;
   /* border-radius: 20px; */
@@ -143,7 +143,7 @@
 
 .employee-details-text {
   font-size: 12px;
-  color: #64748b;
+  color: var(--color-text-secondary);
   margin: 0;
 }
 .employee-details-text p{
@@ -160,7 +160,7 @@
 }
 
 .skills-label {
-  color: #373737;
+  color: var(--color-text-primary);
   font-size: 12px;
   font-weight: 500;
   font-family: system-ui;
@@ -204,8 +204,7 @@
 }
 
 .skill-more-btn:hover {
-  /* background: #bfdbfe; */
-  background: #ffdadb;
+  background: var(--color-secondary-hover);
 }
 
 .employee-projects-section {
@@ -213,7 +212,7 @@
 }
 
 .projects-label {
-  color: #373737;
+  color: var(--color-text-primary);
   font-size: 12px;
   font-weight: 500;
   font-family: system-ui;
@@ -221,7 +220,7 @@
 
 .projects-text {
   font-size: 12px;
-  color: #334155;
+  color: var(--color-text-secondary);
 }
 
 .project-name {
@@ -236,7 +235,7 @@
   margin-top: 8px;
 }
 .reason-label {
-  color: #373737;
+  color: var(--color-text-primary);
   font-size: 12px;
   font-weight: 500;
   font-family: system-ui;
@@ -247,7 +246,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #64748b;
+  color: var(--color-text-secondary);
   font-size: 12px;
   background: none;
   border: none;
@@ -257,14 +256,14 @@
 }
 
 .reason-toggle-btn:hover {
-  color: #334155;
+  color: var(--color-text-primary);
 }
 
 .reason-text {
   font-size: 12px;
-  color: #475569;
+  color: var(--color-text-secondary);
   margin-top: 6px;
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--color-bg-muted);
   padding: 8px;
   border-radius: 8px;
   font-style: italic;
@@ -279,14 +278,14 @@
 
 
 .score-bg-path {
-  stroke: #e2e8f0;
+  stroke: var(--color-bg-muted);
 }
 
-.score-progress-path {
+/* .score-progress-path {
   stroke: var(--color-primary);
-}
+} */
 
-/* .score-progress-path.high {
+.score-progress-path.high {
   stroke: #0a5d0a;
 }
 
@@ -296,7 +295,7 @@
 
 .score-progress-path.low {
   stroke: #871f1f;
-} */
+}
 
 .score-value {
   position: absolute;
@@ -348,17 +347,17 @@
 .criteria-name {
   font-size: 13px;
   font-weight: 500;
-  color: #475569;
+  color: var(--color-text-secondary);
 }
 
 .criteria-score {
   font-size: 12px;
   font-weight: 700;
-  color: #334155;
+  color: var(--color-text-primary);
 }
 
 .criteria-bar-bg {
-  background: #e2e8f0;
+  background: var(--color-bg-muted);
   border-radius: 10px;
   height: 6px;
   overflow: hidden;
@@ -368,20 +367,23 @@
   height: 6px;
   border-radius: 10px;
   transition: width 0.3s ease;
+  /* background: var(--color-primary); */
+}
+
+.criteria-bar-fill.high {
+  /* background: #0a5d0a; */
   background: var(--color-primary);
 }
 
-/* .criteria-bar-fill.high {
-  background: #0a5d0a;
-}
-
 .criteria-bar-fill.medium {
-  background: #ce6d07;
+  /* background: #ce6d07; */
+  background: var(--color-primary-medium);
 }
 
 .criteria-bar-fill.low {
-  background: #871f1f;
-} */
+  /* background: #871f1f; */
+  background: var(--color-primary-low);
+}
 
 @media (min-width: 1024px) {
   .employee-card-content {
@@ -414,6 +416,10 @@
     height: 70vh;
     min-width: 100%;
     padding: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    bottom: 50px;
 }
 .score-text span{
   font-size: 20px;

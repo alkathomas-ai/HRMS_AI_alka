@@ -105,21 +105,21 @@ export async function getSoonAvailableEmployees() {
 }
 
 export async function getEmployeesPaginated(page, pageSize) {
-  // try {
-  //   const response = await axios.get(`${BASE_URL}/employees?page=${page}&page_size=${pageSize}`);
-  //   console.log(response.data)
-  //   return response.data;
-  // } catch (error) {
-  //   console.log(error);
-  // }
-  return new Promise((resolve) => {
-    const response ={
-      total_employees : testData.all_employees
-    }
-    setTimeout(() => {
-      resolve(response);
-    }, 1000);
-  });
+  try {
+    const response = await axios.get(`${BASE_URL}/employees?page=${page}&page_size=${pageSize}`);
+    console.log(response.data)
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+  // return new Promise((resolve) => {
+  //   const response ={
+  //     total_employees : testData.all_employees
+  //   }
+  //   setTimeout(() => {
+  //     resolve(response);
+  //   }, 1000);
+  // });
 }
 
 export async function generateWidgetFromPrompt(payload) {
@@ -140,5 +140,18 @@ export async function generateWidgetFromPrompt(payload) {
       throw new Error(error.response.data.message);
     }
     throw new Error(error.message || 'Failed to generate widget');
+  }
+}
+
+export async function updateEmployeeSkills(employeeId, skills) {
+  try {
+    const cleanId = employeeId.replace('VVDN/', '');
+    const response = await axios.put(`${BASE_URL}/employees/${cleanId}/skills`, {
+      skills: skills
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
 }
