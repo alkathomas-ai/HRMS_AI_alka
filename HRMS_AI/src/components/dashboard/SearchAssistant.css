@@ -1202,7 +1202,7 @@
 }
 /* Quick Filters Section */
 .quick-filters {
-    margin-top: 24px;
+    /* margin-top: 24px; */
     display: flex;
     flex-wrap: wrap;
     justify-content: center;

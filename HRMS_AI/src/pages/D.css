@@ -1,5 +1,5 @@
 .employee-matches-container {
-  padding: 24px;
+  padding: 0px 24px;
   /* background: #f8f9fa; */
   min-height: 100vh;
 }
@@ -121,7 +121,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 6px;
+  margin-bottom: 22px;
 }
 
 .employee-name-search {
