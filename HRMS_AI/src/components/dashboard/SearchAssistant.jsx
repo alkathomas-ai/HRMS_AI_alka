@@ -403,6 +403,9 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
   if (!inputText.trim() && !uploadedFile) return;
 
   setIsLoading(true);
+  if (!uploadedFile) {
+    setViewMode("card");
+  }
 
   const textToSend = inputText;
   const fileToUpload = uploadedFile;
@@ -665,10 +668,10 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                     <span className="hint-label">Try searching:</span>
 
                     <button className="hint-btn">
-                      "Senior Java developers with 5+ years"
+                      "Senior developers in Kochi"
                     </button>
 
-                    <button className="hint-btn">"React developers in Kochi"</button>
+                    <button className="hint-btn">"Design team lead"</button>
 
                     <button className="hint-btn">
                       "Experts in Machine Learning"
@@ -684,7 +687,10 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                     <h3>Start typing to see results</h3>
 
                     <p>
-                      Search by name, skills, department, or location to find the perfect match for your project requirements.
+                      {/* Enter name, department, or skill and let AI help you find the best-fit employee. */}
+                      Enter name, department, or skill to discover matching
+                      employees, with the most relevant profiles rising to the
+                      top.
                     </p>
                   </div>
                 </div>
@@ -694,7 +700,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
             <>
               <div className="assistant-header">
                 <h3>
-                  AI-Powered Employee Search
+                  Ready To Find the Right Resource for Your Project, Instantly?
                 </h3>
               </div>
 
@@ -1043,17 +1049,19 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
             </h3>
 
             <div className="assistant-links">
-              <span>
+              <span onClick={onExpand}>
                 <span className="material-symbols-outlined">search</span>Find
                 Matches
               </span>
-              <span>
-                <span className="material-symbols-outlined">work</span>My
-                Pipeline
-              </span>
-              <span>
+              <span onClick={onExpand}>
                 <span className="material-symbols-outlined">pie_chart</span>
                 Insights
+              </span>
+              <span onClick={() => setShowUploadModal(true)}>
+                <span className="material-symbols-outlined">
+                upload
+                </span>Upload
+                Dataset
               </span>
             </div>
           </div>

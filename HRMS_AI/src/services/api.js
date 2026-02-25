@@ -1,6 +1,5 @@
 import axios from 'axios'
 import dummyUploadData from '../data/dummyUploadData';
-import { testData } from '../data/Upload_data_response';
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
@@ -19,14 +18,6 @@ export async function searchAPI(query) {
     }
     
      return response.json();
-  //   return new Promise((resolve) => {
-  //   const response ={
-  //     employee : testData.all_employees
-  //   }
-  //   setTimeout(() => {
-  //     resolve(response);
-  //   }, 1000);
-  // });
   }
 
 
@@ -49,12 +40,6 @@ export async function uploadAPI(formData) {
     console.log("Backend not available. Using dummy data.");
     return dummyUploadData; 
   }
-  
-  // return new Promise((resolve) => {
-  //   setTimeout(() => {
-  //     resolve(dummyUploadData);
-  //   }, 1000);
-  // });
 }
 
 export async function getProjectDistributions() {
@@ -63,7 +48,6 @@ const response = await  axios.get(`${BASE_URL}/dashboard/project_distribution`);
     return response.data;
   } catch (error) {
     console.log(error);
-     
   }
 }
 
