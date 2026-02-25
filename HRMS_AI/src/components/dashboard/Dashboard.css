@@ -676,7 +676,8 @@
 .dashboard-content {
   min-height: 720px;
   background-color: #ffffffa6;
-  border-radius: 2px;
+  border-radius: 6px;
+  padding: 10px;
 }
 
   .primary-btn {
