@@ -77,21 +77,19 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                       .split(",")
                       .slice(0, showAllSkills ? undefined : 5)
                       .map((skill, skillIndex) => {
-                        const trimmedSkill = skill.trim();
+                          const trimmedSkill = skill.trim();
+                          const isActive = activeSkill && (trimmedSkill.toLowerCase().includes(activeSkill.toLowerCase()) || activeSkill.toLowerCase().includes(trimmedSkill.toLowerCase()));
 
                         return (
                           <span
                             key={skillIndex}
                             onClick={() => {
-                              const newSkill =
-                                activeSkill === trimmedSkill
-                                  ? null
-                                  : trimmedSkill;
+                              const newSkill = isActive ? null : trimmedSkill;
                               setActiveSkill(newSkill);
                               filterFunction(newSkill);
                             }}
                             className={
-                              activeSkill === trimmedSkill
+                              isActive
                                 ? "skill-badge active-skill-badge"
                                 : "skill-badge"
                             }
@@ -228,20 +226,18 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                     .slice(0, showAllSkills ? undefined : 5)
                     .map((skill, skillIndex) => {
                       const trimmedSkill = skill.trim();
+                      const isActive = activeSkill && (trimmedSkill.toLowerCase().includes(activeSkill.toLowerCase()) || activeSkill.toLowerCase().includes(trimmedSkill.toLowerCase()));
 
                       return (
                         <span
                           key={skillIndex}
                           onClick={() => {
-                            const newSkill =
-                              activeSkill === trimmedSkill
-                                ? null
-                                : trimmedSkill;
+                            const newSkill = isActive ? null : trimmedSkill;
                             setActiveSkill(newSkill);
                             filterFunction(newSkill);
                           }}
                           className={
-                            activeSkill === trimmedSkill
+                            isActive
                               ? "skill-badge active-skill-badge"
                               : "skill-badge"
                           }
@@ -362,21 +358,41 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
     setInputText("");
   };
 
-  function filterOnSearch(skill) {
+//   function filterOnSearch(skill) {
+//   let filtered;
+
+//   if (skill) {
+//     filtered = allCardEmployees.filter((item) =>
+//       item.skill_set
+//         ?.split(",")
+//         .map((s) => s.trim())
+//         .includes(skill.trim())
+//     );
+//   } else {
+//     filtered = allCardEmployees;
+//   }
+
+//   setSearchResult({...searchResult, result : filtered})
+// }
+
+function filterOnSearch(skill) {
   let filtered;
 
   if (skill) {
+    const searchSkill = skill.trim().toLowerCase();
+
     filtered = allCardEmployees.filter((item) =>
       item.skill_set
-        ?.split(",")
+        ?.toLowerCase()
+        .split(",")
         .map((s) => s.trim())
-        .includes(skill.trim())
+        .some((s) => s.includes(searchSkill) || searchSkill.includes(s))
     );
   } else {
     filtered = allCardEmployees;
   }
 
-  setSearchResult({...searchResult, result : filtered})
+  setSearchResult({ ...searchResult, result: filtered });
 }
 
   function filterOnDepartment() {
