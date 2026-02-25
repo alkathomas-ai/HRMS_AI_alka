@@ -1,7 +1,7 @@
 import { Icons } from "../../assets/icons";
 import "./Dashboard.css";
 import "./SearchAssistant.css";
-import { useContext, useRef, useState } from "react";
+import { useContext, useRef, useState, useEffect } from "react";
 import { uploadAPI, searchAPI } from "../../services/api";
 import { createPortal } from "react-dom";
 import { EmployeeContext } from "../../context/employeeContext";
@@ -33,20 +33,170 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
 
   const scoreClass = getScoreClass();
 
- 
-
-  return (
-    <div className={`employee-card ${scoreClass}-score`}>
-      {ai_score && <div className={`match-badge ${scoreClass}`}>
-        <div className="score-text"><span>{ai_score || 0}%</span> match</div>
-      </div>}
-      <div className="employee-card-content">
-        <div className="employee-info-section">
-          <div className="employee-header">
-            <div className="employee-name-row">
-              <h2 className="employee-name-search">{display_name}</h2>
-              <span className="employee-designation-badge">{designation}</span>
+  // AI-powered UI with scores and criteria
+  if (ai_reason) {
+    return (
+      <div className={`employee-card ${scoreClass}-score`}>
+        {ai_score && <div className={`match-badge ${scoreClass}`}>
+          <div className="score-text"><span>{ai_score || 0}%</span> match</div>
+        </div>}
+        <div className="employee-card-content">
+          <div className="employee-name-row">
+            <h2 className="employee-name-search">{display_name}</h2>
+            <span className="employee-designation-badge">{designation}</span>
+          </div>
+          <div className="employee-info-section">
+            <div className="employee-header">
+              <p className="employee-details-text">
+                <p>
+                  <i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;
+                </p>
+                <p>
+                  <i className="fa-solid fa-building"></i> {employee_department}{" "}
+                  &nbsp;
+                </p>
+                <p>
+                  <i className="fa-solid fa-location-dot"></i> {emp_location}{" "}
+                  &nbsp;
+                </p>
+                <p>
+                  <i className="fa-solid fa-laptop-code"></i> {tech_group} &nbsp;
+                </p>
+                <p>
+                  <i className="fa-solid fa-business-time"></i> {total_exp}
+                </p>
+              </p>
             </div>
+
+            <div className="employee-skill-description">
+              {skill_set && (
+                <div className="employee-skills-section">
+                  <span className="skills-label">Skills:</span>
+                  <div className="skills-container">
+                    {skill_set
+                      .split(",")
+                      .slice(0, showAllSkills ? undefined : 5)
+                      .map((skill, skillIndex) => {
+                        const trimmedSkill = skill.trim();
+
+                        return (
+                          <span
+                            key={skillIndex}
+                            onClick={() => {
+                              const newSkill =
+                                activeSkill === trimmedSkill
+                                  ? null
+                                  : trimmedSkill;
+                              setActiveSkill(newSkill);
+                              filterFunction(newSkill);
+                            }}
+                            className={
+                              activeSkill === trimmedSkill
+                                ? "skill-badge active-skill-badge"
+                                : "skill-badge"
+                            }
+                          >
+                            {trimmedSkill}
+                          </span>
+                        );
+                      })}
+                    {skill_set.split(",").length > 5 && (
+                      <button
+                        onClick={() => setShowAllSkills(!showAllSkills)}
+                        className="skill-more-btn"
+                      >
+                        {showAllSkills
+                          ? "Show Less"
+                          : `+${skill_set.split(",").length - 5} More`}
+                      </button>
+                    )}
+                    </div>
+                </div>
+              )}
+
+              {employee.projects && employee.projects.length > 0 && (
+                <div className="employee-projects-section">
+                  <span className="projects-label">Projects: </span>
+                  <span className="projects-text">
+                    {employee.projects.map((project, projectIndex) => (
+                      <span key={projectIndex}>
+                        <span className="project-name">
+                          {project.project_name}
+                        </span>
+                        <span className="project-customer">
+                          {" "}
+                          ({project.customer})
+                        </span>
+                        {projectIndex < employee.projects.length - 1 && (
+                          <span>, </span>
+                        )}
+                      </span>
+                    ))}
+                  </span>
+                </div>
+              )}
+
+              <div className="ai-reason-section">
+                <button
+                  onClick={() => setShowReason(!showReason)}
+                  className="reason-toggle-btn"
+                >
+                  <span className="reason-label">Why this match?</span>
+                  <i
+                    className={`fa-solid fa-chevron-${showReason ? "up" : "down"}`}
+                  ></i>
+                </button>
+                {!showReason && <p className="reason-text">{ai_reason}</p>}
+              </div>
+            </div>
+            <div className="employee-score-section">
+              {employee.ai_criteria && (
+                <div className="criteria-list">
+                  {Object.entries(employee.ai_criteria).map(
+                    ([criteria, criteriaScore]) => {
+                      const criteriaClass =
+                        criteriaScore >= 70
+                          ? "high"
+                          : criteriaScore >= 50
+                            ? "medium"
+                            : "low";
+                      return (
+                        <div key={criteria} className="criteria-item">
+                          <div className="criteria-header">
+                            <span className="criteria-name">{criteria}</span>
+                            <span className="criteria-score">
+                              {criteriaScore}%
+                            </span>
+                          </div>
+                          <div className="criteria-bar-bg">
+                            <div
+                              className={`criteria-bar-fill ${criteriaClass}`}
+                              style={{ width: `${criteriaScore}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    },
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Simple UI without AI features
+  return (
+    <div className="employee-card">
+      <div className="employee-card-content">
+        <div className="employee-name-row">
+          <h2 className="employee-name-search">{display_name}</h2>
+          <span className="employee-designation-badge">{designation}</span>
+        </div>
+        <div className="employee-info-section-plain">
+          <div className="employee-header">
             <p className="employee-details-text">
               <p>
                 <i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;
@@ -135,55 +285,6 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                 </span>
               </div>
             )}
-
-            {ai_reason && (
-              <div className="ai-reason-section">
-                <button
-                  onClick={() => setShowReason(!showReason)}
-                  className="reason-toggle-btn"
-                >
-                  <span className="reason-label">Why this match?</span>
-                  <i
-                    className={`fa-solid fa-chevron-${showReason ? "up" : "down"}`}
-                  ></i>
-                </button>
-                {!showReason && <p className="reason-text">{ai_reason}</p>}
-              </div>
-            )}
-          </div>
-          <div className="employee-score-section">
-
-
-            {employee.ai_criteria && (
-              <div className="criteria-list">
-                {Object.entries(employee.ai_criteria).map(
-                  ([criteria, criteriaScore]) => {
-                    const criteriaClass =
-                      criteriaScore >= 70
-                        ? "high"
-                        : criteriaScore >= 50
-                          ? "medium"
-                          : "low";
-                    return (
-                      <div key={criteria} className="criteria-item">
-                        <div className="criteria-header">
-                          <span className="criteria-name">{criteria}</span>
-                          <span className="criteria-score">
-                            {criteriaScore}%
-                          </span>
-                        </div>
-                        <div className="criteria-bar-bg">
-                          <div
-                            className={`criteria-bar-fill ${criteriaClass}`}
-                            style={{ width: `${criteriaScore}%` }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  },
-                )}
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -220,6 +321,12 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
   const [tableEmployees, setTableEmployees] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 6;
+  const [showDeptDropdown, setShowDeptDropdown] = useState(false);
+  const [deptFilters, setDeptFilters] = useState({
+    cloud: false,
+    vision: false,
+    others: false
+  });
 
 
 
@@ -269,9 +376,26 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
     filtered = allCardEmployees;
   }
 
-  // setCardEmployees(filtered);
   setSearchResult({...searchResult, result : filtered})
 }
+
+  function filterOnDepartment() {
+    if (!allCardEmployees) return;
+    
+    const selectedDepts = [];
+    if (deptFilters.cloud) selectedDepts.push("Cloud and Mobile Apps");
+    if (deptFilters.vision) selectedDepts.push("Vision");
+    if (deptFilters.others) selectedDepts.push("Others");
+    
+    if (selectedDepts.length === 0) {
+      setSearchResult({...searchResult, result: allCardEmployees});
+    } else {
+      const filtered = allCardEmployees.filter(emp => 
+        selectedDepts.includes(emp.employee_department)
+      );
+      setSearchResult({...searchResult, result: filtered});
+    }
+  }
 
 
   const handleSendMessage = async () => {
@@ -474,7 +598,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                             {/* <img src={Icons.search} alt="" /> */}
                             <span className="assistant-badge bubbles">
                               <img
-                                src="src/assets/icons/bubbles.svg"
+                                src="/bubbles.svg"
                                 alt=""
                                 srcSet=""
                               />
@@ -583,7 +707,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                       <div className="assistant-input">
                         <span className="assistant-badge bubbles">
                           <img
-                            src="src/assets/icons/bubbles.svg"
+                            src="/bubbles.svg"
                             alt=""
                             srcSet=""
                           />
@@ -813,19 +937,58 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
     <div className="employee-matches-container">
       <div className="employee-matches-wrapper">
         {/* Quick Filters */}
-        <div class="quick-filters">
-          <span class="filter-label">Filter by:</span>
+        <div className="quick-filters">
+          <span className="filter-label">Filter by:</span>
 
-          <button class="filter-btn">
-            Department <i class="fas fa-chevron-down"></i>
+          <div className="filter-dropdown-wrapper">
+            <button className="filter-btn" onClick={() => setShowDeptDropdown(!showDeptDropdown)}>
+              Department <i className="fas fa-chevron-down"></i>
+            </button>
+            {showDeptDropdown && (
+              <div className="filter-dropdown">
+                <label className="filter-option">
+                  <input 
+                    type="checkbox" 
+                    checked={deptFilters.cloud}
+                    onChange={(e) => {
+                      setDeptFilters({...deptFilters, cloud: e.target.checked});
+                      setTimeout(() => filterOnDepartment(), 0);
+                    }}
+                  />
+                  Cloud and Mobile Apps
+                </label>
+                <label className="filter-option">
+                  <input 
+                    type="checkbox" 
+                    checked={deptFilters.vision}
+                    onChange={(e) => {
+                      setDeptFilters({...deptFilters, vision: e.target.checked});
+                      setTimeout(() => filterOnDepartment(), 0);
+                    }}
+                  />
+                  Vision
+                </label>
+                <label className="filter-option">
+                  <input 
+                    type="checkbox" 
+                    checked={deptFilters.others}
+                    onChange={(e) => {
+                      setDeptFilters({...deptFilters, others: e.target.checked});
+                      setTimeout(() => filterOnDepartment(), 0);
+                    }}
+                  />
+                  Others
+                </label>
+              </div>
+            )}
+          </div>
+
+          <button className="filter-btn">
+            Location <i className="fas fa-chevron-down"></i>
           </button>
 
-          <button class="filter-btn">
-            Location <i class="fas fa-chevron-down"></i>
-          </button>
-
-          <button class="filter-btn">
-            Experience <i class="fas fa-chevron-down"></i>
+          <button className="filter-btn">
+            Experience <i className="fas fa-chevron-down"></i>
           </button>
         </div>
 
@@ -864,7 +1027,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
           <div className="assistant-header">
             <span className="assistant-badge bubbles">
               {/* <span className="material-symbols-outlined">smart_toy</span> */}
-              <img src="src/assets/icons/bubbles.svg" alt="" srcSet="" />
+              <img src="/bubbles.svg" alt="" srcSet="" />
             </span>
 
             {!isExpanded ? (
@@ -895,73 +1058,6 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                 <span className="material-symbols-outlined">pie_chart</span>
                 Insights
               </span>
-            </div>
-
-            <div className="assistant-control">
-              {/* <div className="assistant-box">
-                <div className="assistant-input dflex">
-                  <span
-                    alt="Attach"
-                    onClick={handlePlusClick}
-                    className="material-symbols-outlined"
-                  >
-                    upload_file
-                  </span>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    accept=".csv"
-                    style={{ display: "none" }}
-                  />
-                  {uploadedFile ? (
-                    <div
-                      className="assistant-file"
-                      style={{
-                        flex: 1,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                      }}
-                    >
-                      <span className="material-symbols-outlined">csv</span>
-                      <span>{uploadedFile.name}</span>
-                      <button
-                        className="remove-file-btn"
-                        onClick={handleRemoveFile}
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ) : (
-                    <input type="text" placeholder="Ask me anything..." />
-                  )}
-                </div>
-                <div
-                  className="assistant-microphone"
-                  style={{
-                    cursor: uploadedFile ? "not-allowed" : "pointer",
-                  }}
-                >
-
-                  <button
-                    className="chat-submit-btn"
-                    onClick={handleSendMessage}
-                  >
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <line x1="22" y1="2" x2="11" y2="13" />
-                      <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                    </svg>
-                  </button>
-                </div>
-              </div> */}
             </div>
           </div>
         </div>
