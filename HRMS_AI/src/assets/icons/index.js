@@ -1,6 +1,6 @@
 import bell from './bell.svg';
 import briefcase from './briefcase.svg';
-import bubbles from './bubbles.svg';
+// import bubbles from './bubbles.svg';
 import doc from './doc.svg';
 import expand from './expand.svg';
 import home from './home.svg';
@@ -32,7 +32,7 @@ export const Icons = {
   barChart,
   bell,
   briefcase,
-  bubbles,
+  // bubbles,
   doc,
   expand,
   home,

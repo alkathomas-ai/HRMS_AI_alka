@@ -1320,3 +1320,49 @@
     background-color: #faf5ff;  /* light purple background */
 }
 /* --- */
+
+/* Filter Dropdown */
+.filter-dropdown-wrapper {
+    position: relative;
+}
+
+.filter-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-bg-muted);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-width: 150px;
+    z-index: 1000;
+}
+
+.filter-option {
+    padding: 10px 16px;
+    font-size: 14px;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-option input[type="checkbox"] {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+}
+
+.filter-option:hover {
+    background: var(--color-secondary-hover);
+}
+
+.filter-option:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.filter-option:last-child {
+    border-radius: 0 0 8px 8px;
+}

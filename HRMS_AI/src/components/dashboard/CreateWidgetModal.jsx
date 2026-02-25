@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './CreateWidgetModal.css';
 import { generateWidgetFromPrompt } from '../../services/api';
-import bubbles from '../../assets/icons/bubbles.svg';
+// import bubbles from '../../assets/icons/bubbles.svg';
 
 const CreateWidgetModal = ({ isOpen, onClose, onGenerate, editingWidget }) => {
   const [title, setTitle] = useState('');
