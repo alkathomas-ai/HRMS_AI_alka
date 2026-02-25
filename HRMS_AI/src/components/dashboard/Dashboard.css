@@ -285,6 +285,14 @@
   background-color: var(--color-bg-card);
   padding: 5px;
   border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.assistant-links span:hover {
+  background-color: var(--assistant-base-start);
+  transform: scale(1.05);
+  box-shadow: 0 2px 12px rgba(255, 255, 255, 0.3);
 }
 
 .assistant-links img {
