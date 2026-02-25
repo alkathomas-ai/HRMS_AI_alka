@@ -598,7 +598,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                             {/* <img src={Icons.search} alt="" /> */}
                             <span className="assistant-badge bubbles">
                               <img
-                                src="src/assets/icons/bubbles.svg"
+                                src="/bubbles.svg"
                                 alt=""
                                 srcSet=""
                               />
@@ -707,7 +707,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                       <div className="assistant-input">
                         <span className="assistant-badge bubbles">
                           <img
-                            src="src/assets/icons/bubbles.svg"
+                            src="/bubbles.svg"
                             alt=""
                             srcSet=""
                           />
@@ -1027,7 +1027,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
           <div className="assistant-header">
             <span className="assistant-badge bubbles">
               {/* <span className="material-symbols-outlined">smart_toy</span> */}
-              <img src="src/assets/icons/bubbles.svg" alt="" srcSet="" />
+              <img src="/bubbles.svg" alt="" srcSet="" />
             </span>
 
             {!isExpanded ? (
