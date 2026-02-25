@@ -37,7 +37,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
       {/* Left section  */}
       <div className="topbar-left">
         <div className="logo">
-          <img src={Icons.logo} className="logo-icon" />
+          {/* <img src={Icons.logo} className="logo-icon" /> */}
           <span className="logo-text">HRMS.AI</span>
         </div>
       </div>
