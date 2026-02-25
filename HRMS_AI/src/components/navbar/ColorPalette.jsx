@@ -159,16 +159,21 @@ const ColorPalette = () => {
   };
 
   useEffect(() => {
-    const saved = localStorage.getItem('theme');
-    if (saved) {
-      const theme = JSON.parse(saved);
-      setSelectedTheme(theme.name);
-      applyTheme(theme);
-    }
+    const initTheme = () => {
+      const saved = localStorage.getItem('theme');
+      const theme = saved ? JSON.parse(saved) : themes[0];
+      const fullTheme = themes.find(t => t.name === theme.name) || themes[0];
+      setSelectedTheme(fullTheme.name);
+      applyTheme(fullTheme);
+    };
+
+    setTimeout(initTheme, 0);
 
     const observer = new MutationObserver(() => {
       const saved = localStorage.getItem('theme');
-      if (saved) applyTheme(JSON.parse(saved));
+      const theme = saved ? JSON.parse(saved) : themes[0];
+      const fullTheme = themes.find(t => t.name === theme.name) || themes[0];
+      applyTheme(fullTheme);
     });
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     return () => observer.disconnect();
