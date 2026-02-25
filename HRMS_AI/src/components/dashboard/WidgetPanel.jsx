@@ -761,39 +761,49 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
 
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={selectedWidgets} strategy={rectSortingStrategy}>
-            {/* Pinned Widgets Row */}
-            {pinnedWidgets.length > 0 && (
-              <div className="widgets-grid">
-                {selectedWidgets
-                  .filter(widgetId => {
-                    const widget = availableWidgets.find(w => w.id === widgetId);
-                    const dynamicWidget = dynamicWidgets.find(w => w.id === widgetId);
-                    const label = widget?.label || dynamicWidget?.title || '';
-                    return pinnedWidgets.includes(widgetId) && label.toLowerCase().includes(widgetSearch.toLowerCase());
-                  })
-                  .map(widgetId => (
-                    <SortableWidget key={widgetId} id={widgetId} isPinned={true} widgetSize={widgetSizes[widgetId]}>
-                      {renderWidget(widgetId)}
-                    </SortableWidget>
-                  ))}
+            {selectedWidgets.length === 0 ? (
+              <div className="no-widgets-message">
+                <i className="fa-solid fa-chart-line"></i>
+                <h3>No Widgets Selected</h3>
+                <p>Select widgets from the dropdown above or create a new custom widget to get started</p>
               </div>
-            )}
+            ) : (
+              <>
+                {/* Pinned Widgets Row */}
+                {pinnedWidgets.length > 0 && (
+                  <div className="widgets-grid">
+                    {selectedWidgets
+                      .filter(widgetId => {
+                        const widget = availableWidgets.find(w => w.id === widgetId);
+                        const dynamicWidget = dynamicWidgets.find(w => w.id === widgetId);
+                        const label = widget?.label || dynamicWidget?.title || '';
+                        return pinnedWidgets.includes(widgetId) && label.toLowerCase().includes(widgetSearch.toLowerCase());
+                      })
+                      .map(widgetId => (
+                        <SortableWidget key={widgetId} id={widgetId} isPinned={true} widgetSize={widgetSizes[widgetId]}>
+                          {renderWidget(widgetId)}
+                        </SortableWidget>
+                      ))}
+                  </div>
+                )}
 
-            {/* Unpinned Widgets Grid */}
-            <div className="widgets-grid">
-              {selectedWidgets
-                .filter(widgetId => {
-                  const widget = availableWidgets.find(w => w.id === widgetId);
-                  const dynamicWidget = dynamicWidgets.find(w => w.id === widgetId);
-                  const label = widget?.label || dynamicWidget?.title || '';
-                  return !pinnedWidgets.includes(widgetId) && label.toLowerCase().includes(widgetSearch.toLowerCase());
-                })
-                .map(widgetId => (
-                  <SortableWidget key={widgetId} id={widgetId} isPinned={false} widgetSize={widgetSizes[widgetId]}>
-                    {renderWidget(widgetId)}
-                  </SortableWidget>
-                ))}
-            </div>
+                {/* Unpinned Widgets Grid */}
+                <div className="widgets-grid">
+                  {selectedWidgets
+                    .filter(widgetId => {
+                      const widget = availableWidgets.find(w => w.id === widgetId);
+                      const dynamicWidget = dynamicWidgets.find(w => w.id === widgetId);
+                      const label = widget?.label || dynamicWidget?.title || '';
+                      return !pinnedWidgets.includes(widgetId) && label.toLowerCase().includes(widgetSearch.toLowerCase());
+                    })
+                    .map(widgetId => (
+                      <SortableWidget key={widgetId} id={widgetId} isPinned={false} widgetSize={widgetSizes[widgetId]}>
+                        {renderWidget(widgetId)}
+                      </SortableWidget>
+                    ))}
+                </div>
+              </>
+            )}
           </SortableContext>
         </DndContext>
       </div>
