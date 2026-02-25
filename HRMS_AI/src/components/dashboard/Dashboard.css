@@ -685,7 +685,7 @@
   min-height: 720px;
   background-color: #ffffffa6;
   border-radius: 6px;
-  padding: 10px;
+  /* padding: 10px; */
 }
 
   .primary-btn {
