@@ -47,20 +47,20 @@
 }
 
 .employee-card.high-score {
-  /* border-left-color: #0a5d0a; */
-  border-left-color: var(--color-primary);
+  border-left-color: #0a5d0a;
+  /* border-left-color: var(--color-primary); */
   /* background: #f0fdf4; */
 }
 
 .employee-card.medium-score {
-  /* border-left-color: #ce6d07; */
-  border-left-color: var(--color-primary-medium);
+  border-left-color: #ce6d07;
+  /* border-left-color: var(--color-primary-medium); */
   /* background: #fffbeb; */
 }
 
 .employee-card.low-score {
-  /* border-left-color: #871f1f; */
-  border-left-color: var(--color-primary-low);
+  border-left-color: #871f1f;
+  /* border-left-color: var(--color-primary-low); */
   /* background: #fef2f2; */
 }
 /* Badge Base Style */
@@ -82,18 +82,18 @@
 
 /* Color Variants */
 .match-badge.high {
-  /* background: #0a5d0a; */
-  background: var(--color-primary);
+  background: #0a5d0a;
+  /* background: var(--color-primary); */
 }
 
 .match-badge.medium {
-  /* background: #ce6d07; */
-  background: var(--color-primary-medium);
+  background: #ce6d07;
+  /* background: var(--color-primary-medium); */
 }
 
 .match-badge.low {
-  /* background: #871f1f; */
-  background: var(--color-primary-low);
+  background: #871f1f;
+  /* background: var(--color-primary-low); */
 }
 
 .employee-card-content {
@@ -377,18 +377,18 @@
 }
 
 .criteria-bar-fill.high {
-  /* background: #0a5d0a; */
-  background: var(--color-primary);
+  background: #0a5d0a;
+  /* background: var(--color-primary); */
 }
 
 .criteria-bar-fill.medium {
-  /* background: #ce6d07; */
-  background: var(--color-primary-medium);
+  background: #ce6d07;
+  /* background: var(--color-primary-medium); */
 }
 
 .criteria-bar-fill.low {
-  /* background: #871f1f; */
-  background: var(--color-primary-low);
+  background: #871f1f;
+  /* background: var(--color-primary-low); */
 }
 
 @media (min-width: 1024px) {

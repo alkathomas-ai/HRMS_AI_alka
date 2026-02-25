@@ -665,10 +665,10 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                     <span className="hint-label">Try searching:</span>
 
                     <button className="hint-btn">
-                      "Senior developers in Kochi"
+                      "Senior Java developers with 5+ years"
                     </button>
 
-                    <button className="hint-btn">"Design team lead"</button>
+                    <button className="hint-btn">"React developers in Kochi"</button>
 
                     <button className="hint-btn">
                       "Experts in Machine Learning"
@@ -684,10 +684,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                     <h3>Start typing to see results</h3>
 
                     <p>
-                      {/* Enter name, department, or skill and let AI help you find the best-fit employee. */}
-                      Enter name, department, or skill to discover matching
-                      employees, with the most relevant profiles rising to the
-                      top.
+                      Search by name, skills, department, or location to find the perfect match for your project requirements.
                     </p>
                   </div>
                 </div>
@@ -697,7 +694,7 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
             <>
               <div className="assistant-header">
                 <h3>
-                  Ready To Find the Right Resource for Your Project, Instantly?
+                  AI-Powered Employee Search
                 </h3>
               </div>
 
