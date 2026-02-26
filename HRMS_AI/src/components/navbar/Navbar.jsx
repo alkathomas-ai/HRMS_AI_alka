@@ -4,11 +4,13 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Icons } from "../../assets/icons";
 import ColorPalette from "./ColorPalette";
 import ThemeToggle from "./ThemeToggle";
+import AnimatedSearchInput from "../dashboard/AnimatedSearchInput";
 
 const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
   const notifRef = useRef(null);
 
   useEffect(() => {
@@ -37,7 +39,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
       {/* Left section  */}
       <div className="topbar-left">
         <div className="logo">
-          <img src={Icons.logo} className="logo-icon" />
+          {/* <img src={Icons.logo} className="logo-icon" /> */}
           <span className="logo-text">HRMS.AI</span>
         </div>
       </div>
@@ -74,9 +76,23 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
         <button className="icon-btn" aria-label="Reports">
           <span className="material-symbols-outlined">pie_chart</span>{" "}
         </button>
-        <button className="icon-btn" aria-label="Notes">
-          <span className="material-symbols-outlined">description</span>{" "}
-        </button>
+        <div className="search-bar">
+          <div className="search-icon-wrapper">
+            <span className="material-symbols-outlined search-icon">search</span>
+            <span className="material-symbols-outlined spark-icon">auto_awesome</span>
+          </div>
+          <AnimatedSearchInput
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            className="search-input"
+            prompts={[
+              "Ask me anything...",
+              "Search employees...",
+              "Find projects...",
+              "Explore departments..."
+            ]}
+          />
+        </div>
       </div>
 
       {/* Right section */}

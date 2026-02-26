@@ -105,7 +105,7 @@ const themes = [
 
 const ColorPalette = () => {
   const [showPalette, setShowPalette] = useState(false);
-  const [selectedTheme, setSelectedTheme] = useState(themes[0].name);
+  const [selectedTheme, setSelectedTheme] = useState(themes[1].name);
   const paletteRef = useRef(null);
 
   useEffect(() => {
@@ -161,7 +161,7 @@ const ColorPalette = () => {
   useEffect(() => {
     const initTheme = () => {
       const saved = localStorage.getItem('theme');
-      const theme = saved ? JSON.parse(saved) : themes[0];
+      const theme = saved ? JSON.parse(saved) : themes[1];
       const fullTheme = themes.find(t => t.name === theme.name) || themes[0];
       setSelectedTheme(fullTheme.name);
       applyTheme(fullTheme);
