@@ -10,6 +10,7 @@ import DoughnutChart from './charts/DoughnutChart';
 import BarChart from './charts/BarChart';
 import CreateWidgetModal from './CreateWidgetModal';
 import DynamicWidget from './DynamicWidget';
+import AnimatedSearchInput from './AnimatedSearchInput';
 
 
 const SortableWidget = ({ id, children, isPinned, widgetSize }) => {
@@ -408,13 +409,17 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             </div>
             <div style={{ marginBottom: '12px' }}>
               <div className="search-input">
-                <input
-                  type="text"
-                  placeholder="Search employees..."
+                <AnimatedSearchInput
                   value={employeeSearch}
                   onChange={(e) => { setEmployeeSearch(e.target.value); setEmployeePage(0); }}
-                  className="employee-search-input"
                   onClick={(e) => e.stopPropagation()}
+                  className="employee-search-input"
+                  prompts={[
+                    "Search by name...",
+                    "Find by department...",
+                    "Search by designation...",
+                    "Type to filter employees..."
+                  ]}
                 />
                 <i className="fa-solid fa-search"></i>
               </div>
