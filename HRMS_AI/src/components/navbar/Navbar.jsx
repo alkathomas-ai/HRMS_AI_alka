@@ -20,6 +20,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
     setTimeout(() => {
       setShowSearchResults(false);
       setIsClosing(false);
+      setSearchValue('');
     }, 300);
   };
 
@@ -58,6 +59,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
       <div className="topbar-center">
         <button
           onClick={() => {
+            handleCloseSearch();
             navigate("/");
           }}
           className={`icon-btn ${location.pathname === "/" ? "active" : ""}`}
