@@ -17,6 +17,7 @@ const DynamicWidget = ({ widgetData }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [expandedCells, setExpandedCells] = useState({});
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -162,9 +163,41 @@ const DynamicWidget = ({ widgetData }) => {
                 <tbody>
                   {paginatedData.map((row, idx) => (
                     <tr key={idx} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                      {dataKeys.map(key => (
-                        <td key={key} style={{ padding: '12px', fontSize: '14px', color: 'var(--color-text-primary)' }}>{row[key] != null ? row[key] : '-'}</td>
-                      ))}
+                      {dataKeys.map(key => {
+                        const cellValue = row[key] != null ? row[key] : '-';
+                        const cellId = `${idx}-${key}`;
+                        const isExpanded = expandedCells[cellId];
+                        const isSkillSet = key.toLowerCase().includes('skill');
+                        const needsExpansion = isSkillSet && String(cellValue).length > 100;
+                        
+                        return (
+                          <td key={key} style={{ padding: '12px', fontSize: '14px', color: 'var(--color-text-primary)' }}>
+                            {needsExpansion && !isExpanded ? (
+                              <div>
+                                <span className="cell-truncated">{String(cellValue).substring(0, 100)}...</span>
+                                <span 
+                                  className="cell-more-btn" 
+                                  onClick={() => setExpandedCells(prev => ({ ...prev, [cellId]: true }))}
+                                >
+                                  more
+                                </span>
+                              </div>
+                            ) : needsExpansion && isExpanded ? (
+                              <div>
+                                <span>{cellValue}</span>
+                                <span 
+                                  className="cell-more-btn" 
+                                  onClick={() => setExpandedCells(prev => ({ ...prev, [cellId]: false }))}
+                                >
+                                  less
+                                </span>
+                              </div>
+                            ) : (
+                              cellValue
+                            )}
+                          </td>
+                        );
+                      })}
                     </tr>
                   ))}
                 </tbody>

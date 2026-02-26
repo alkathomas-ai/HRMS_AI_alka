@@ -4,12 +4,25 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Icons } from "../../assets/icons";
 import ColorPalette from "./ColorPalette";
 import ThemeToggle from "./ThemeToggle";
+import AnimatedSearchInput from "../dashboard/AnimatedSearchInput";
 
 const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const notifRef = useRef(null);
+
+  const handleCloseSearch = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setShowSearchResults(false);
+      setIsClosing(false);
+      setSearchValue('');
+    }, 300);
+  };
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -37,7 +50,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
       {/* Left section  */}
       <div className="topbar-left">
         <div className="logo">
-          <img src={Icons.logo} className="logo-icon" />
+          {/* <img src={Icons.logo} className="logo-icon" /> */}
           <span className="logo-text">HRMS.AI</span>
         </div>
       </div>
@@ -46,6 +59,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
       <div className="topbar-center">
         <button
           onClick={() => {
+            handleCloseSearch();
             navigate("/");
           }}
           className={`icon-btn ${location.pathname === "/" ? "active" : ""}`}
@@ -74,9 +88,28 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
         <button className="icon-btn" aria-label="Reports">
           <span className="material-symbols-outlined">pie_chart</span>{" "}
         </button>
-        <button className="icon-btn" aria-label="Notes">
-          <span className="material-symbols-outlined">description</span>{" "}
-        </button>
+        <div className="search-bar">
+          <div className="search-icon-wrapper">
+            <span className="material-symbols-outlined search-icon">search</span>
+            <span className="material-symbols-outlined spark-icon">auto_awesome</span>
+          </div>
+          <AnimatedSearchInput
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && searchValue.trim()) {
+                setShowSearchResults(true);
+              }
+            }}
+            className="search-input"
+            prompts={[
+              "Ask me anything...",
+              "Search employees...",
+              "Find projects...",
+              "Explore departments..."
+            ]}
+          />
+        </div>
       </div>
 
       {/* Right section */}
@@ -154,6 +187,21 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
           <img src="https://i.pravatar.cc/32" alt="User avatar" />
         </div>
       </div>
+
+      {/* Search Results Panel */}
+      {showSearchResults && (
+        <div className={`search-results-panel ${isClosing ? 'closing' : ''}`}>
+          <div className="search-results-header">
+            <h3>Search Results for "{searchValue}"</h3>
+            <button className="close-btn" onClick={handleCloseSearch}>
+              <span className="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          <div className="search-results-content">
+            <p>Results will appear here...</p>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
