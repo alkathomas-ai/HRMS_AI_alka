@@ -1,27 +1,60 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import "./Navbar.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Icons } from "../../assets/icons";
 import ColorPalette from "./ColorPalette";
 import ThemeToggle from "./ThemeToggle";
 import AnimatedSearchInput from "../dashboard/AnimatedSearchInput";
+import UploadCSVModal from "../dashboard/UploadCSVModal";
+import NavbarSearchResults from "./NavbarSearchResults";
+import { searchAPI } from "../../services/api";
+import { EmployeeContext } from "../../context/employeeContext";
 
-const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
+const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead, onCSVUpload }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [hasSearchResults, setHasSearchResults] = useState(false);
   const notifRef = useRef(null);
+  const { setSearchResult } = useContext(EmployeeContext);
 
   const handleCloseSearch = () => {
     setIsClosing(true);
     setTimeout(() => {
       setShowSearchResults(false);
       setIsClosing(false);
-      setSearchValue('');
     }, 300);
+  };
+
+  const handleReopenSearch = () => {
+    if (hasSearchResults) {
+      setShowSearchResults(true);
+    }
+  };
+
+  const handleSearch = async () => {
+    if (!searchValue.trim()) return;
+    
+    setIsSearching(true);
+    setShowSearchResults(true);
+    
+    try {
+      const response = await searchAPI(searchValue);
+      const employees = response?.data || response?.employee || [];
+      setSearchResult({ result: employees, viewModeCard: "card" });
+      setHasSearchResults(employees.length > 0);
+    } catch (error) {
+      console.error(error);
+      setSearchResult({ result: [], viewModeCard: "card" });
+      setHasSearchResults(false);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   useEffect(() => {
@@ -98,7 +131,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
             onChange={(e) => setSearchValue(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && searchValue.trim()) {
-                setShowSearchResults(true);
+                handleSearch();
               }
             }}
             className="search-input"
@@ -114,6 +147,23 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
 
       {/* Right section */}
       <div className="topbar-right">
+        {hasSearchResults && !showSearchResults && (
+          <button
+            className="icon-btn"
+            aria-label="View Search Results"
+            onClick={handleReopenSearch}
+            title="View search results"
+          >
+            <span className="material-symbols-outlined">history</span>
+          </button>
+        )}
+        <button
+          className="icon-btn"
+          aria-label="Upload CSV"
+          onClick={() => setShowUploadModal(true)}
+        >
+          <span className="material-symbols-outlined">upload</span>
+        </button>
         <ThemeToggle />
         <ColorPalette />
         <div className="date">
@@ -198,10 +248,25 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
             </button>
           </div>
           <div className="search-results-content">
-            <p>Results will appear here...</p>
+            {isSearching ? (
+              <div className="chat-loader">
+                <div className="spinner"></div>
+              </div>
+            ) : (
+              <NavbarSearchResults searchQuery={searchValue} />
+            )}
           </div>
         </div>
       )}
+
+      <UploadCSVModal 
+        show={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        onUpload={(file) => {
+          setShowUploadModal(false);
+          onCSVUpload?.(file);
+        }}
+      />
     </header>
   );
 };
