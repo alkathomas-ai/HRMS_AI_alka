@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const AnimatedSearchInput = ({ value, onChange, onClick, className, prompts }) => {
+const AnimatedSearchInput = ({ value, onChange, onClick, onKeyDown, className, prompts }) => {
   const [displayText, setDisplayText] = useState('');
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -38,6 +38,7 @@ const AnimatedSearchInput = ({ value, onChange, onClick, className, prompts }) =
       value={value}
       onChange={onChange}
       onClick={onClick}
+      onKeyDown={onKeyDown}
       className={className}
     />
   );
