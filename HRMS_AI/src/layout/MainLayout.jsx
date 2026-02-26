@@ -5,6 +5,7 @@ import './MainLayout.css'
 
 const MainLayout = () => {
     const [scheduleTab, setScheduleTab] = useState('schedule');
+    const [csvFile, setCsvFile] = useState(null);
     const [notifications, setNotifications] = useState([
       { id: 1, title: 'Interview Reminder', text: 'Interview with Habibur Rahman at 09:30 AM', time: '2h ago', read: false },
       { id: 2, title: 'Schedule Updated', text: "Willem van Helden's interview rescheduled", time: '5h ago', read: false },
@@ -28,13 +29,23 @@ const MainLayout = () => {
       setNotifications(notifications.map(n => ({ ...n, read: true })));
     };
 
+    const handleCSVUpload = (file) => {
+      setCsvFile(file);
+      setTimeout(() => setCsvFile(null), 100);
+    };
+
   return (
     <>
         {/* <Navbar /> */}
-      <Navbar notifications={notifications} onNotificationClick={handleNotificationClick} onMarkAllRead={handleMarkAllRead} />
+      <Navbar 
+        notifications={notifications} 
+        onNotificationClick={handleNotificationClick} 
+        onMarkAllRead={handleMarkAllRead}
+        onCSVUpload={handleCSVUpload}
+      />
 
         <div className="page-content">
-            <Outlet context={{ scheduleTab, setScheduleTab }} />
+            <Outlet context={{ scheduleTab, setScheduleTab, csvFile }} />
         </div>
     </>
   )
