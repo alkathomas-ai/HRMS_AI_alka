@@ -82,9 +82,9 @@
 
 .spark-icon {
   position: absolute;
-  top: -3px;
+  top: -2px;
   right: -2px;
-  font-size: 10px;
+  font-size: 9px;
   background-color: var(--color-icon-default);
   /* background: linear-gradient(135deg, #4285f4, #ea4335, #fbbc04); */
   -webkit-background-clip: text;
@@ -95,11 +95,9 @@
 
 @keyframes sparkPulse {
   0%, 100% {
-    opacity: 0.8;
     transform: scale(1);
   }
   50% {
-    opacity: 1;
     transform: scale(1.08);
   }
 }
@@ -117,18 +115,6 @@
 
 .search-input::placeholder {
   color: var(--color-text-secondary);
-  animation: placeholderSlide 3s ease-in-out infinite;
-}
-
-@keyframes placeholderSlide {
-  0%, 15% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  20%, 100% {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
 }
 
 .icon-btn {
