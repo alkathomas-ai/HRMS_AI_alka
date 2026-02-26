@@ -11,7 +11,17 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
   const location = useLocation();
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const notifRef = useRef(null);
+
+  const handleCloseSearch = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setShowSearchResults(false);
+      setIsClosing(false);
+    }, 300);
+  };
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -84,6 +94,11 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
           <AnimatedSearchInput
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && searchValue.trim()) {
+                setShowSearchResults(true);
+              }
+            }}
             className="search-input"
             prompts={[
               "Ask me anything...",
@@ -170,6 +185,21 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
           <img src="https://i.pravatar.cc/32" alt="User avatar" />
         </div>
       </div>
+
+      {/* Search Results Panel */}
+      {showSearchResults && (
+        <div className={`search-results-panel ${isClosing ? 'closing' : ''}`}>
+          <div className="search-results-header">
+            <h3>Search Results for "{searchValue}"</h3>
+            <button className="close-btn" onClick={handleCloseSearch}>
+              <span className="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          <div className="search-results-content">
+            <p>Results will appear here...</p>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
