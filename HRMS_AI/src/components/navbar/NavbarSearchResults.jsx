@@ -1,11 +1,27 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useRef, useEffect } from "react";
 import { EmployeeContext } from "../../context/employeeContext";
 import "../dashboard/SearchAssistant.css";
+import "./NavbarSearchResults.css";
 
 const NavbarSearchResults = ({ searchQuery }) => {
   const { searchResult } = useContext(EmployeeContext);
   const [activeSkill, setActiveSkill] = useState(null);
   const [showAllSkills, setShowAllSkills] = useState({});
+  const [filterText, setFilterText] = useState('');
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const filterOnSearch = (skill) => {
     // This would need to be implemented if filtering is needed
@@ -15,9 +31,86 @@ const NavbarSearchResults = ({ searchQuery }) => {
     return <p>No results found for "{searchQuery}"</p>;
   }
 
+  const filteredResults = searchResult.result.filter(emp => 
+    emp.display_name?.toLowerCase().includes(filterText.toLowerCase()) ||
+    emp.employee_id?.toLowerCase().includes(filterText.toLowerCase()) ||
+    emp.designation?.toLowerCase().includes(filterText.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredResults.length / rowsPerPage);
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const paginatedResults = filteredResults.slice(startIndex, startIndex + rowsPerPage);
+
   return (
-    <div className="employee-cards-list">
-      {searchResult.result.map((employee) => {
+    <>
+      <div className="search-results-toolbar">
+        <div className="toolbar-left">
+          <div className="search-filter">
+            <span className="material-symbols-outlined">search</span>
+            <input
+              type="text"
+              placeholder="Filter results..."
+              value={filterText}
+              onChange={(e) => {
+                setFilterText(e.target.value);
+                setCurrentPage(1);
+              }}
+            />
+          </div>
+        </div>
+        <div className="toolbar-right">
+          <div className="rows-selector">
+            <span>Rows per page:</span>
+            <div className="custom-select-wrapper" ref={dropdownRef}>
+              <div className="select-trigger" onClick={() => {
+                console.log('Dropdown clicked, current state:', isDropdownOpen);
+                setIsDropdownOpen(!isDropdownOpen);
+              }}>
+                <span>{rowsPerPage}</span>
+                <i className="fa-solid fa-chevron-down"></i>
+              </div>
+              {isDropdownOpen && (
+                <div className="dropdown-menu" style={{ display: 'block' }}>
+                  {[5, 10, 20, 50].map(num => (
+                    <div 
+                      key={num} 
+                      className="option" 
+                      onClick={() => { 
+                        setRowsPerPage(num); 
+                        setCurrentPage(1); 
+                        setIsDropdownOpen(false); 
+                      }}
+                    >
+                      {num}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="pagination-info">
+            {startIndex + 1}-{Math.min(startIndex + rowsPerPage, filteredResults.length)} of {filteredResults.length}
+          </div>
+          <div className="pagination-controls">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="page-btn"
+            >
+              <span className="material-symbols-outlined">chevron_left</span>
+            </button>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+              className="page-btn"
+            >
+              <span className="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="employee-cards-list">
+      {paginatedResults.map((employee) => {
         const {
           display_name,
           designation,
@@ -126,7 +219,8 @@ const NavbarSearchResults = ({ searchQuery }) => {
           </div>
         );
       })}
-    </div>
+      </div>
+    </>
   );
 };
 

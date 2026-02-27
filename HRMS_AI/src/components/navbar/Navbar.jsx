@@ -142,28 +142,28 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead, onCSVU
               "Explore departments..."
             ]}
           />
+          {hasSearchResults && !showSearchResults && (
+            <button
+              className="icon-btn history-btn"
+              aria-label="View Search Results"
+              onClick={handleReopenSearch}
+              title="View search results"
+            >
+              <span className="material-symbols-outlined">history</span>
+            </button>
+          )}
         </div>
+          <button
+            className="icon-btn"
+            aria-label="Upload CSV"
+            onClick={() => setShowUploadModal(true)}
+          >
+            <span className="material-symbols-outlined">upload</span>
+          </button>
       </div>
 
       {/* Right section */}
       <div className="topbar-right">
-        {hasSearchResults && !showSearchResults && (
-          <button
-            className="icon-btn"
-            aria-label="View Search Results"
-            onClick={handleReopenSearch}
-            title="View search results"
-          >
-            <span className="material-symbols-outlined">history</span>
-          </button>
-        )}
-        <button
-          className="icon-btn"
-          aria-label="Upload CSV"
-          onClick={() => setShowUploadModal(true)}
-        >
-          <span className="material-symbols-outlined">upload</span>
-        </button>
         <ThemeToggle />
         <ColorPalette />
         <div className="date">
@@ -242,7 +242,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead, onCSVU
       {showSearchResults && (
         <div className={`search-results-panel ${isClosing ? 'closing' : ''}`}>
           <div className="search-results-header">
-            <h3>Search Results for "{searchValue}"</h3>
+            <h3>Search Results</h3>
             <button className="close-btn" onClick={handleCloseSearch}>
               <span className="material-symbols-outlined">close</span>
             </button>
