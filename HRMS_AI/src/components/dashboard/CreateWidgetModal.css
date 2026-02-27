@@ -14,7 +14,7 @@
 
 .modal-content {
   background: var(--color-bg-card);
-  border-radius: 10px;
+  border-radius: 9px;
   width: 90%;
   max-width: 500px;
   box-shadow: 0 20px 60px rgba(70, 70, 70, 0.171);

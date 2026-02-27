@@ -6,7 +6,7 @@ import SearchAssistant from './SearchAssistant';
 import Schedule from './Schedule';
 import { useLocation } from 'react-router-dom';
 
-const Dashboard = () => {
+const Dashboard = ({ csvFile }) => {
   const location = useLocation();
   const [expandedPanel, setExpandedPanel] = useState(null);
   const [scheduleTab, setScheduleTab] = useState('schedule');
@@ -72,6 +72,7 @@ const Dashboard = () => {
                 <SearchAssistant
                   isExpanded={false}
                   onExpand={() => setExpandedPanel('assistant')}
+                  csvFile={csvFile}
                 />
               </Panel>
               <Panel title="Widgets">
@@ -89,6 +90,7 @@ const Dashboard = () => {
                 <SearchAssistant
                   isExpanded={false}
                   onExpand={() => setExpandedPanel('assistant')}
+                  csvFile={csvFile}
                 />
               </Panel>
 
@@ -107,6 +109,7 @@ const Dashboard = () => {
                 <SearchAssistant
                   isExpanded={false}
                   onExpand={() => setExpandedPanel('assistant')}
+                  csvFile={csvFile}
                 />
               </Panel>
 
@@ -145,6 +148,7 @@ const Dashboard = () => {
               <SearchAssistant
                 isExpanded
                 onClose={() => setExpandedPanel(null)}
+                csvFile={csvFile}
               />
             </Panel>
           )}

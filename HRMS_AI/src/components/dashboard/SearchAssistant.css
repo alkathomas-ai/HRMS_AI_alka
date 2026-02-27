@@ -4,7 +4,8 @@
 
 .assistant-card-expanded .assistant-box {
   border: 1px solid var(--color-primary);
-  border-radius: 5px;
+  border-radius: 22px;
+  padding: 0 9px 0 1px;
 }
 
 .assistant-btns {

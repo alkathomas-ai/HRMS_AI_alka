@@ -12,18 +12,18 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
   const [currentDate, setCurrentDate] = useState(new Date());
   const [expandedTab, setExpandedTab] = useState('schedule');
   const [notifications, setNotifications] = useState([
-    { id: 1, title: 'Interview Reminder', text: 'Interview with Habibur Rahman at 09:30 AM', time: '2h ago', read: false },
-    { id: 2, title: 'Schedule Updated', text: "Willem van Helden's interview rescheduled", time: '5h ago', read: false },
-    { id: 3, title: 'Task Completed', text: 'Design Task Review completed', time: '1d ago', read: true },
-    { id: 4, title: 'New Application', text: 'New application received for Chef position', time: '2d ago', read: false },
+    { id: 1, title: 'Interview Reminder', text: 'Technical interview scheduled at 09:30 AM', time: '2h ago', read: false },
+    { id: 2, title: 'Schedule Updated', text: 'Backend developer interview rescheduled', time: '5h ago', read: false },
+    { id: 3, title: 'Task Completed', text: 'Code review completed for new hire', time: '1d ago', read: true },
+    { id: 4, title: 'New Application', text: 'New application received for Senior Developer position', time: '2d ago', read: false },
     { id: 5, title: 'Meeting Reminder', text: 'Team standup meeting in 30 minutes', time: '1h ago', read: false },
-    { id: 6, title: 'Document Uploaded', text: 'Employee handbook updated by HR', time: '3h ago', read: false },
-    { id: 7, title: 'Leave Request', text: 'John Doe submitted leave request for approval', time: '4h ago', read: true },
+    { id: 6, title: 'Document Uploaded', text: 'Employee onboarding checklist updated', time: '3h ago', read: false },
+    { id: 7, title: 'Leave Request', text: 'Leave request submitted for approval', time: '4h ago', read: true },
     { id: 8, title: 'Payroll Processed', text: 'Monthly payroll has been processed successfully', time: '1d ago', read: true },
-    { id: 9, title: 'New Message', text: 'You have a new message from Sarah Johnson', time: '6h ago', read: false },
-    { id: 10, title: 'Training Session', text: 'Mandatory safety training scheduled for tomorrow', time: '2d ago', read: true },
+    { id: 9, title: 'New Message', text: 'Message from hiring manager regarding candidate', time: '6h ago', read: false },
+    { id: 10, title: 'Training Session', text: 'New employee orientation scheduled for tomorrow', time: '2d ago', read: true },
     { id: 11, title: 'Performance Review', text: 'Q4 performance reviews are now open', time: '3d ago', read: false },
-    { id: 12, title: 'System Update', text: 'HRMS system will be updated tonight at 10 PM', time: '5h ago', read: true },
+    { id: 12, title: 'System Update', text: 'HRMS system maintenance scheduled tonight', time: '5h ago', read: true },
   ]);
   const [selectedNotifs, setSelectedNotifs] = useState([]);
 
@@ -35,20 +35,20 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
   // --- SHARED DATA ---
   const scheduleData = {
     Screening: [
-      { time: '09:30', text: 'Interview with Habibur Rahman', role: "Kitchen Staff" },
-      { time: '11:00', text: 'Design Task Review & QA', role: "Chef" },
-      { time: '12:30', text: 'Design Task Review', role: "Manager" },
-      { time: '14:00', text: 'Team Meeting', role: "Staff" },
-      { time: '15:30', text: 'Client Call - ABC Corp', role: "Client" }
+      { time: '09:30', text: 'Interview with Candidate A', role: "Software Engineer" },
+      { time: '11:00', text: 'Technical Assessment Review', role: "Senior Developer" },
+      { time: '12:30', text: 'HR Screening Call', role: "HR Manager" },
+      { time: '14:00', text: 'Team Fit Interview', role: "Team Lead" },
+      { time: '15:30', text: 'Final Round Discussion', role: "Department Head" }
     ],
     'Design Task': [
-      { time: '10:00', text: 'UI/UX Design Review', role: "Designer" },
-      { time: '14:00', text: 'Prototype Presentation', role: "Product Owner" }
+      { time: '10:00', text: 'UI/UX Portfolio Review', role: "Designer" },
+      { time: '14:00', text: 'Design Challenge Presentation', role: "Product Manager" }
     ],
     Interview: [
-      { time: '09:00', text: 'Technical Interview - John Doe', role: "Lead Dev" },
-      { time: '13:00', text: 'HR Interview - Jane Smith', role: "HR" },
-      { time: '15:30', text: 'Final Round - Mike Johnson', role: "CTO" }
+      { time: '09:00', text: 'Technical Interview - Backend Role', role: "Lead Developer" },
+      { time: '13:00', text: 'Behavioral Interview', role: "HR Specialist" },
+      { time: '15:30', text: 'Final Round - Senior Position', role: "CTO" }
     ]
   };
 
@@ -56,28 +56,28 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
   const expandedScheduleData = [
     { 
       time: '08:00 AM', 
-      name: 'James Williams', 
-      role: 'Kitchen Staff Local',
+      name: 'Sarah Johnson', 
+      role: 'Software Engineer - Frontend',
       category: 'staff'
     },
     { 
       time: '09:00 AM', 
-      name: 'Willem van Helden', 
-      role: 'Dishwasher',
+      name: 'Michael Chen', 
+      role: 'Senior Backend Developer',
       status: 'Rescheduled',
       originalTime: '09:00 AM',
       category: 'rescheduled'
     },
     { 
       time: '09:30 AM', 
-      name: 'Dianne Russell', 
-      role: 'Dishwasher',
+      name: 'Emily Rodriguez', 
+      role: 'DevOps Engineer',
       category: 'staff'
     },
     { 
       time: '10:30 AM', 
-      name: 'Theresa Webb', 
-      role: 'Operational Manager Regional',
+      name: 'David Kumar', 
+      role: 'Technical Lead - Cloud Services',
       category: 'manager'
     }
   ];

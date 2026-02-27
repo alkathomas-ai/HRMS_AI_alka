@@ -5,6 +5,7 @@ import { useContext, useRef, useState, useEffect } from "react";
 import { uploadAPI, searchAPI } from "../../services/api";
 import { createPortal } from "react-dom";
 import { EmployeeContext } from "../../context/employeeContext";
+import UploadResultsModal from "./UploadResultsModal";
 
 const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill }) => {
   const [showAllSkills, setShowAllSkills] = useState(false);
@@ -77,21 +78,19 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                       .split(",")
                       .slice(0, showAllSkills ? undefined : 5)
                       .map((skill, skillIndex) => {
-                        const trimmedSkill = skill.trim();
+                          const trimmedSkill = skill.trim();
+                          const isActive = activeSkill && (trimmedSkill.toLowerCase().includes(activeSkill.toLowerCase()) || activeSkill.toLowerCase().includes(trimmedSkill.toLowerCase()));
 
                         return (
                           <span
                             key={skillIndex}
                             onClick={() => {
-                              const newSkill =
-                                activeSkill === trimmedSkill
-                                  ? null
-                                  : trimmedSkill;
+                              const newSkill = isActive ? null : trimmedSkill;
                               setActiveSkill(newSkill);
                               filterFunction(newSkill);
                             }}
                             className={
-                              activeSkill === trimmedSkill
+                              isActive
                                 ? "skill-badge active-skill-badge"
                                 : "skill-badge"
                             }
@@ -228,20 +227,18 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                     .slice(0, showAllSkills ? undefined : 5)
                     .map((skill, skillIndex) => {
                       const trimmedSkill = skill.trim();
+                      const isActive = activeSkill && (trimmedSkill.toLowerCase().includes(activeSkill.toLowerCase()) || activeSkill.toLowerCase().includes(trimmedSkill.toLowerCase()));
 
                       return (
                         <span
                           key={skillIndex}
                           onClick={() => {
-                            const newSkill =
-                              activeSkill === trimmedSkill
-                                ? null
-                                : trimmedSkill;
+                            const newSkill = isActive ? null : trimmedSkill;
                             setActiveSkill(newSkill);
                             filterFunction(newSkill);
                           }}
                           className={
-                            activeSkill === trimmedSkill
+                            isActive
                               ? "skill-badge active-skill-badge"
                               : "skill-badge"
                           }
@@ -292,15 +289,9 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
   );
 };
 
-const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
+const SearchAssistant = ({ isExpanded, onExpand, onClose, csvFile }) => {
   const fileInputRef = useRef(null);
-  const uploadModalFileInputRef = useRef(null);
-
-  // const mediaRecorderRef = useRef(null);
-  // const [isRecording, setIsRecording] = useState(false);
-  const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
-  // const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [inputText, setInputText] = useState("");
   const [hoveredIndex, setHoveredIndex] = useState(null);
@@ -310,13 +301,8 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
     arrowTop: 0,
   });
   const {searchResult, setSearchResult} = useContext(EmployeeContext);
-  // const [tablePage, setTablePage] = useState({});
-  // const [rowsPerPage, setRowsPerPage] = useState({});
-  // const [searchQuery, setSearchQuery] = useState({});
-  // const [selectedEmployee, setSelectedEmployee] = useState(null);
-  // const [cardEmployees, setCardEmployees] = useState();
   const [allCardEmployees, setAllCardEmployees] = useState();
-  const [viewMode, setViewMode] = useState(searchResult.viewModeCard); // "table" | "card"
+  const [viewMode, setViewMode] = useState(searchResult.viewModeCard);
   const [activeSkill, setActiveSkill] = useState(null);
   const [tableEmployees, setTableEmployees] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -327,56 +313,49 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
     vision: false,
     others: false
   });
+  const [showUploadModal, setShowUploadModal] = useState(false);
 
-
-
-  const handlePlusClick = () => {
-    setShowUploadModal(true);
-  };
-
-  const handleModalFileSelect = () => {
-    uploadModalFileInputRef.current?.click();
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file && file.type === "text/csv") {
-      console.log("CSV file selected:", file.name);
-      setUploadedFile(file);
-    } else if (file) {
-      alert("Please select a CSV file");
+  useEffect(() => {
+    if (csvFile) {
+      handleSendMessage(csvFile);
     }
-  };
+  }, [csvFile]);
 
-  // const handleRemoveFile = () => {
-  //   setUploadedFile(null);
-  //   if (fileInputRef.current) {
-  //     fileInputRef.current.value = "";
-  //   }
-  // };
-  const handleRemoveUploadFile = () => {
-    setUploadedFile(null);
-    if (uploadModalFileInputRef.current) {
-      uploadModalFileInputRef.current.value = "";
-    }
-    setInputText("");
-  };
+//   function filterOnSearch(skill) {
+//   let filtered;
 
-  function filterOnSearch(skill) {
+//   if (skill) {
+//     filtered = allCardEmployees.filter((item) =>
+//       item.skill_set
+//         ?.split(",")
+//         .map((s) => s.trim())
+//         .includes(skill.trim())
+//     );
+//   } else {
+//     filtered = allCardEmployees;
+//   }
+
+//   setSearchResult({...searchResult, result : filtered})
+// }
+
+function filterOnSearch(skill) {
   let filtered;
 
   if (skill) {
+    const searchSkill = skill.trim().toLowerCase();
+
     filtered = allCardEmployees.filter((item) =>
       item.skill_set
-        ?.split(",")
+        ?.toLowerCase()
+        .split(",")
         .map((s) => s.trim())
-        .includes(skill.trim())
+        .some((s) => s.includes(searchSkill) || searchSkill.includes(s))
     );
   } else {
     filtered = allCardEmployees;
   }
 
-  setSearchResult({...searchResult, result : filtered})
+  setSearchResult({ ...searchResult, result: filtered });
 }
 
   function filterOnDepartment() {
@@ -398,21 +377,18 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
   }
 
 
-  const handleSendMessage = async () => {
-  setShowUploadModal(false);
-  if (!inputText.trim() && !uploadedFile) return;
+  const handleSendMessage = async (fileToUpload = null) => {
+  if (!inputText.trim() && !fileToUpload) return;
 
   setIsLoading(true);
+  if (!fileToUpload) {
+    setViewMode("card");
+  }
 
   const textToSend = inputText;
-  const fileToUpload = uploadedFile;
 
-  // Reset UI immediately
-  // setInputText("");
   setUploadedFile(null);
   if (fileInputRef.current) fileInputRef.current.value = "";
-
-
 
   try {
     const startTime = Date.now();
@@ -433,33 +409,26 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
       setTableEmployees(employees);
       setViewMode("table");
       setSearchResult({...searchResult, viewModeCard : "table"})
+      setShowUploadModal(true);
 
       const elapsed = Date.now() - startTime;
       if (elapsed < 2000) {
         await new Promise((resolve) => setTimeout(resolve, 2000 - elapsed));
       }
     } else {
-      // Use searchAPI for text queries
       response = await searchAPI(textToSend);
 
       const employees = response?.data || response?.employee || [];
 
-      // setCardEmployees(employees);
       setSearchResult({ result: employees, viewModeCard: "card"})
       setAllCardEmployees(employees);
       setViewMode("card");
     }
-
-
-    // Assistant success messa
   } catch (error) {
     console.error(error);
-
-
   } finally {
     setIsLoading(false);
   }
-
 };
 
 
@@ -499,85 +468,12 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
   
   return (
     <>
-      {/* {isLoading && (
-        <div className="chat-loader">
-          <div className="spinner"></div>
-        </div>
-      )} */}
-
-      {showUploadModal && (
-        <div
-          className="upload-modal-overlay"
-          onClick={() => setShowUploadModal(false)}
-        >
-          <div className="upload-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="upload-modal-header">
-              <h3>Upload CSV File</h3>
-              <button
-                className="modal-close-btn"
-                onClick={() => setShowUploadModal(false)}
-              >
-                ✕
-              </button>
-            </div>
-            <div className="upload-modal-body">
-              {!uploadedFile ? (
-                <>
-                  <div className="upload-icon">
-                    <span className="material-symbols-outlined">
-                      upload_file
-                    </span>
-                  </div>
-                  <p>Select a CSV file to upload and process employee data</p>
-                  <input
-                    type="file"
-                    ref={uploadModalFileInputRef}
-                    onChange={handleFileChange}
-                    accept=".csv"
-                    style={{ display: "none" }}
-                  />
-                  <button
-                    className="choose-csv-btn btn-primary"
-                    onClick={handleModalFileSelect}
-                  >
-                    <span className="material-symbols-outlined">
-                      folder_open
-                    </span>
-                    Choose CSV
-                  </button>
-                </>
-              ) : (
-                <>
-                  <div className="upload-icon success">
-                    <span className="material-symbols-outlined">
-                      check_circle
-                    </span>
-                  </div>
-                  <div className="selected-file-info">
-                    <span className="material-symbols-outlined">
-                      description
-                    </span>
-                    <span className="file-name">{uploadedFile.name}</span>
-                    <button
-                      className="remove-file-icon"
-                      onClick={handleRemoveUploadFile}
-                    >
-                      <span className="material-symbols-outlined">close</span>
-                    </button>
-                  </div>
-                  <button
-                    className="btn-primary upload-process-btn"
-                    onClick={handleSendMessage}
-                  >
-                    <span className="material-symbols-outlined">upload</span>
-                    Upload CSV
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      <UploadResultsModal 
+        show={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        employees={tableEmployees}
+        isLoading={isLoading}
+      />
       {isExpanded ? (
         <div className="card assistant-card assistant-card-expanded">
           {viewMode === null ?  (
@@ -652,12 +548,6 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                       </div>
                     </div>
                     <div className="assistant-btns">
-                      <button
-                        className="upload-btn-top btn-primary"
-                        onClick={handlePlusClick}
-                      >
-                        <img src={Icons.upload1} alt="" />
-                      </button>
                     </div>
                   </div>
                   {/* AI Context / Search Hints  */}
@@ -764,13 +654,6 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
                       onClick={() => {}}
                     >
                       <img src={Icons.filter1} alt="" />
-                    </button>
-
-                    <button
-                      className="upload-btn-top btn-primary"
-                      onClick={handlePlusClick}
-                    >
-                      <img src={Icons.upload1} alt="" />
                     </button>
                   </div>
                 </div>
@@ -1046,15 +929,11 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose }) => {
             </h3>
 
             <div className="assistant-links">
-              <span>
+              <span onClick={onExpand}>
                 <span className="material-symbols-outlined">search</span>Find
                 Matches
               </span>
-              <span>
-                <span className="material-symbols-outlined">work</span>My
-                Pipeline
-              </span>
-              <span>
+              <span onClick={onExpand}>
                 <span className="material-symbols-outlined">pie_chart</span>
                 Insights
               </span>

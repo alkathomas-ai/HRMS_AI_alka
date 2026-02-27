@@ -1,5 +1,12 @@
 .dynmaic-table thead {
     background: var(--assistant-base-end) !important;
+    border: 1px solid var(--color-bg-page);
+}
+
+.dynmaic-table td {
+  text-align: left;
+  vertical-align: top;
+  border: 1px solid var(--color-bg-dashboard);
 }
 
 .dynamic-widget {
@@ -13,7 +20,7 @@
 .custom-select-wrapper {
     position: relative;
     min-width: 120px;
-    border: 2px solid var(--color-bg-muted);
+    border: 2px solid var(--color-bg-dashboard);
 }
 
 .custom-select-wrapper .select-trigger {
@@ -125,4 +132,22 @@
 }
 .table-filter .search-input {
     width: calc(100% - 140px);
+}
+
+.cell-truncated {
+    display: inline;
+}
+
+.cell-more-btn {
+    color: var(--color-primary);
+    cursor: pointer;
+    font-weight: 500;
+    margin-left: 6px;
+    font-size: 13px;
+    text-decoration: underline;
+    user-select: none;
+}
+
+.cell-more-btn:hover {
+    color: var(--color-primary-hover);
 }

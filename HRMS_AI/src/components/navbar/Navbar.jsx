@@ -1,15 +1,61 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import "./Navbar.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Icons } from "../../assets/icons";
 import ColorPalette from "./ColorPalette";
 import ThemeToggle from "./ThemeToggle";
+import AnimatedSearchInput from "../dashboard/AnimatedSearchInput";
+import UploadCSVModal from "../dashboard/UploadCSVModal";
+import NavbarSearchResults from "./NavbarSearchResults";
+import { searchAPI } from "../../services/api";
+import { EmployeeContext } from "../../context/employeeContext";
 
-const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
+const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead, onCSVUpload }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [hasSearchResults, setHasSearchResults] = useState(false);
   const notifRef = useRef(null);
+  const { setSearchResult } = useContext(EmployeeContext);
+
+  const handleCloseSearch = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setShowSearchResults(false);
+      setIsClosing(false);
+    }, 300);
+  };
+
+  const handleReopenSearch = () => {
+    if (hasSearchResults) {
+      setShowSearchResults(true);
+    }
+  };
+
+  const handleSearch = async () => {
+    if (!searchValue.trim()) return;
+    
+    setIsSearching(true);
+    setShowSearchResults(true);
+    
+    try {
+      const response = await searchAPI(searchValue);
+      const employees = response?.data || response?.employee || [];
+      setSearchResult({ result: employees, viewModeCard: "card" });
+      setHasSearchResults(employees.length > 0);
+    } catch (error) {
+      console.error(error);
+      setSearchResult({ result: [], viewModeCard: "card" });
+      setHasSearchResults(false);
+    } finally {
+      setIsSearching(false);
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -37,7 +83,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
       {/* Left section  */}
       <div className="topbar-left">
         <div className="logo">
-          <img src={Icons.logo} className="logo-icon" />
+          {/* <img src={Icons.logo} className="logo-icon" /> */}
           <span className="logo-text">HRMS.AI</span>
         </div>
       </div>
@@ -46,6 +92,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
       <div className="topbar-center">
         <button
           onClick={() => {
+            handleCloseSearch();
             navigate("/");
           }}
           className={`icon-btn ${location.pathname === "/" ? "active" : ""}`}
@@ -74,9 +121,45 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
         <button className="icon-btn" aria-label="Reports">
           <span className="material-symbols-outlined">pie_chart</span>{" "}
         </button>
-        <button className="icon-btn" aria-label="Notes">
-          <span className="material-symbols-outlined">description</span>{" "}
-        </button>
+        <div className="search-bar">
+          <div className="search-icon-wrapper">
+            <span className="material-symbols-outlined search-icon">search</span>
+            <span className="material-symbols-outlined spark-icon">auto_awesome</span>
+          </div>
+          <AnimatedSearchInput
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && searchValue.trim()) {
+                handleSearch();
+              }
+            }}
+            className="search-input"
+            prompts={[
+              "Ask me anything...",
+              "Search employees...",
+              "Find projects...",
+              "Explore departments..."
+            ]}
+          />
+          {hasSearchResults && !showSearchResults && (
+            <button
+              className="icon-btn history-btn"
+              aria-label="View Search Results"
+              onClick={handleReopenSearch}
+              title="View search results"
+            >
+              <span className="material-symbols-outlined">history</span>
+            </button>
+          )}
+        </div>
+          <button
+            className="icon-btn"
+            aria-label="Upload CSV"
+            onClick={() => setShowUploadModal(true)}
+          >
+            <span className="material-symbols-outlined">upload</span>
+          </button>
       </div>
 
       {/* Right section */}
@@ -154,6 +237,36 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead }) => {
           <img src="https://i.pravatar.cc/32" alt="User avatar" />
         </div>
       </div>
+
+      {/* Search Results Panel */}
+      {showSearchResults && (
+        <div className={`search-results-panel ${isClosing ? 'closing' : ''}`}>
+          <div className="search-results-header">
+            <h3>Search Results</h3>
+            <button className="close-btn" onClick={handleCloseSearch}>
+              <span className="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          <div className="search-results-content">
+            {isSearching ? (
+              <div className="chat-loader">
+                <div className="spinner"></div>
+              </div>
+            ) : (
+              <NavbarSearchResults searchQuery={searchValue} />
+            )}
+          </div>
+        </div>
+      )}
+
+      <UploadCSVModal 
+        show={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        onUpload={(file) => {
+          setShowUploadModal(false);
+          onCSVUpload?.(file);
+        }}
+      />
     </header>
   );
 };
