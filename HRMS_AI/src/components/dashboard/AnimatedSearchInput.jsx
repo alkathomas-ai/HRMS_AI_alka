@@ -4,9 +4,10 @@ const AnimatedSearchInput = ({ value, onChange, onClick, onKeyDown, className, p
   const [displayText, setDisplayText] = useState('');
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
-    if (value) return;
+    if (value || isFocused) return;
 
     const currentPrompt = prompts[currentPromptIndex];
     const typingSpeed = isDeleting ? 50 : 100;
@@ -29,16 +30,18 @@ const AnimatedSearchInput = ({ value, onChange, onClick, onKeyDown, className, p
     }, typingSpeed);
 
     return () => clearTimeout(timeout);
-  }, [displayText, isDeleting, currentPromptIndex, prompts, value]);
+  }, [displayText, isDeleting, currentPromptIndex, prompts, value, isFocused]);
 
   return (
     <input
       type="text"
-      placeholder={displayText}
+      placeholder={isFocused ? "Ask me anything..." : displayText}
       value={value}
       onChange={onChange}
       onClick={onClick}
       onKeyDown={onKeyDown}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
       className={className}
     />
   );
