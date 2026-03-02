@@ -163,6 +163,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead, onCSVU
           <button
             className="icon-btn"
             aria-label="Upload CSV"
+            title="Upload CSV"
             onClick={() => setShowUploadModal(true)}
           >
             <span className="material-symbols-outlined">upload</span>
@@ -255,7 +256,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead, onCSVU
         <div className={`search-results-panel ${isClosing ? 'closing' : ''}`}>
           <div className="search-results-header">
             <h3>Search Results</h3>
-            <button className="close-btn" onClick={handleCloseSearch}>
+            <button className="search-results-close-btn" onClick={handleCloseSearch}>
               <span className="material-symbols-outlined">close</span>
             </button>
           </div>

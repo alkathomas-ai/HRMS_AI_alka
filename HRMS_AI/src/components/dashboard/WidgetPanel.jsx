@@ -303,7 +303,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
               >
                 <img src={Icons.pin} alt="" />
               </button>
-              <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+              <span className='widget-close-btn' onClick={() => removeWidget(widgetId)}>×</span>
             </div>
           </div>
           <DynamicWidget widgetData={dynamicWidget} />
@@ -325,7 +325,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                 >
                   <img src={Icons.pin} alt="" />
                 </button>
-                <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+                <span className='widget-close-btn' onClick={() => removeWidget(widgetId)}>×</span>
               </div>
             </div>
             <span className="widget-subtitle">{projectDistribution.total_employees} Total employees</span>
@@ -369,7 +369,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                 >
                   <img src={Icons.pin} alt="" />
                 </button>
-                <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+                <span className='widget-close-btn' onClick={() => removeWidget(widgetId)}>×</span>
               </div>
             </div>
             <div className="widget-subtitle">
@@ -404,7 +404,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                 >
                   <img src={Icons.pin} alt="" />
                 </button>
-                <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+                <span className='widget-close-btn' onClick={() => removeWidget(widgetId)}>×</span>
               </div>
             </div>
             <div style={{ marginBottom: '12px' }}>
@@ -502,7 +502,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                 >
                   <img src={Icons.pin} alt="" />
                 </button>
-                <span className='close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+                <span className='widget-close-btn' onClick={() => removeWidget(widgetId)}>×</span>
               </div>
             </div>
 
