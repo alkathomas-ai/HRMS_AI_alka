@@ -440,6 +440,73 @@ const NavbarSearchResults = ({ searchQuery }) => {
     );
   }
 
+  // Simple UI without AI features
+  return (
+    <div key={employee_id} className="employee-card-list">
+      <div className="employee-card-content">
+        <div className="employee-name-row">
+          <h2 className="employee-name-search">{display_name}</h2>
+          <span className="employee-designation-badge">{designation}</span>
+        </div>
+        <div className="employee-info-section-plain">
+          <div className="employee-header">
+            <p className="employee-details-text">
+              <p><i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;</p>
+              <p><i className="fa-solid fa-building"></i> {employee_department} &nbsp;</p>
+              <p><i className="fa-solid fa-location-dot"></i> {emp_location} &nbsp;</p>
+              <p><i className="fa-solid fa-laptop-code"></i> {tech_group} &nbsp;</p>
+              <p><i className="fa-solid fa-business-time"></i> {total_exp}</p>
+            </p>
+          </div>
+          <div className="employee-skill-description">
+            {employee.projects && employee.projects.length > 0 && (
+              <div className="employee-projects-section">
+                <div className="projects-container">
+                  {employee.projects.map((project, projectIndex) => (
+                    <span key={projectIndex} className="project-badge">
+                      {project.project_name} ({project.customer}) - {project.occupancy}%
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {skill_set && (
+              <div className="employee-skills-section">
+                <span className="skills-label">Skills:</span>
+                <div className="skills-container">
+                  {skill_set.split(",").slice(0, showSkills ? undefined : 8).map((skill, skillIndex) => {
+                    const trimmedSkill = skill.trim();
+                    return (
+                      <span
+                        key={skillIndex}
+                        onClick={() => {
+                          const newSkill = activeSkill === trimmedSkill ? null : trimmedSkill;
+                          setActiveSkill(newSkill);
+                          setCurrentPage(1);
+                        }}
+                        className={activeSkill === trimmedSkill ? "skill-badge active-skill-badge" : "skill-badge"}
+                      >
+                        {trimmedSkill}
+                      </span>
+                    );
+                  })}
+                  {skill_set.split(",").length > 8 && (
+                    <button
+                      onClick={() => setShowAllSkills({...showAllSkills, [employee_id]: !showSkills})}
+                      className="skill-more-btn"
+                    >
+                      {showSkills ? "Show Less" : `+${skill_set.split(",").length - 8} More`}
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
       })}
       </div>
     </>
