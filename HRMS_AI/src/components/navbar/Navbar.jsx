@@ -102,6 +102,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead, onCSVU
         </button>
         <button
           onClick={() => {
+            handleCloseSearch();
             navigate("/user");
           }}
           className={`icon-btn ${location.pathname === "/user" ? "active" : ""}`}
@@ -111,6 +112,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead, onCSVU
         </button>
         <button
           onClick={() => {
+            handleCloseSearch();
             navigate("/d");
           }}
           className={`icon-btn ${location.pathname === "/d" ? "active" : ""}`}
