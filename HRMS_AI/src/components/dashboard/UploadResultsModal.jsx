@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import "./UploadResultsModal.css";
+import "./Dashboard.css";
 
 const UploadResultsModal = ({ show, onClose, employees, isLoading }) => {
   const [currentPage, setCurrentPage] = useState(1);

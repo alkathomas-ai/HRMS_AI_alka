@@ -70,6 +70,27 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
             </div>
 
             <div className="employee-skill-description">
+              {employee.projects && employee.projects.length > 0 && (
+                <div className="employee-projects-section">
+                  <span className="projects-label">Projects: </span>
+                  <span className="projects-text">
+                    {employee.projects.map((project, projectIndex) => (
+                      <span key={projectIndex}>
+                        <span className="project-name">
+                          {project.project_name}
+                        </span>
+                        <span className="project-customer">
+                          {" "}
+                          ({project.customer})
+                        </span>
+                        {projectIndex < employee.projects.length - 1 && (
+                          <span>, </span>
+                        )}
+                      </span>
+                    ))}
+                  </span>
+                </div>
+              )}
               {skill_set && (
                 <div className="employee-skills-section">
                   <span className="skills-label">Skills:</span>
@@ -113,27 +134,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                 </div>
               )}
 
-              {employee.projects && employee.projects.length > 0 && (
-                <div className="employee-projects-section">
-                  <span className="projects-label">Projects: </span>
-                  <span className="projects-text">
-                    {employee.projects.map((project, projectIndex) => (
-                      <span key={projectIndex}>
-                        <span className="project-name">
-                          {project.project_name}
-                        </span>
-                        <span className="project-customer">
-                          {" "}
-                          ({project.customer})
-                        </span>
-                        {projectIndex < employee.projects.length - 1 && (
-                          <span>, </span>
-                        )}
-                      </span>
-                    ))}
-                  </span>
-                </div>
-              )}
+              
 
               <div className="ai-reason-section">
                 <button
@@ -468,7 +469,7 @@ function filterOnSearch(skill) {
   
   return (
     <>
-      <UploadResultsModal 
+      <UploadResultsModal
         show={showUploadModal}
         onClose={() => setShowUploadModal(false)}
         employees={tableEmployees}
