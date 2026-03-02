@@ -37,6 +37,11 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead, onCSVU
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    navigate('/login');
+  };
+
   const handleSearch = async () => {
     if (!searchValue.trim()) return;
     
@@ -238,6 +243,11 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead, onCSVU
         <div className="avatar">
           <img src="https://i.pravatar.cc/32" alt="User avatar" />
         </div>
+      <div>
+        <button className="icon-btn" aria-label="Logout" onClick={handleLogout} style={{ cursor: 'pointer' }} title="Logout">
+          <span className="material-symbols-outlined">logout</span>
+        </button>
+      </div>
       </div>
 
       {/* Search Results Panel */}
