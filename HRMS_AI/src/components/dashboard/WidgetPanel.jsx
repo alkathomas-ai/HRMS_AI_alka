@@ -28,7 +28,7 @@ const SortableWidget = ({ id, children, isPinned, widgetSize }) => {
   };
 
   return (
-    <div ref={(node) => { setNodeRef(node); itemRef.current = node; }} style={style} {...attributes} {...listeners} className={`masonry-item ${isPinned ? 'pinned' : ''}`}>
+    <div ref={(node) => { setNodeRef(node); itemRef.current = node; }} style={style} {...attributes} {...listeners} className={`masonry-item ${isPinned ? 'pinned' : ''}`} data-widget-id={id}>
       {children}
     </div>
   );
@@ -127,6 +127,12 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
 
   const setWidgetSize = (widgetId, cols, rows) => {
     setWidgetSizes(prev => ({ ...prev, [widgetId]: { cols, rows } }));
+    setTimeout(() => {
+      const widgetElement = document.querySelector(`[data-widget-id="${widgetId}"]`);
+      if (widgetElement) {
+        widgetElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }, 100);
   };
 
   useEffect(() => {
