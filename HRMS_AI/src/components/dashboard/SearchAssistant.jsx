@@ -913,7 +913,7 @@ function filterOnSearch(skill) {
               {/* <span className="material-symbols-outlined">smart_toy</span> */}
               <img src="/bubbles.svg" alt="" srcSet="" />
             </span>
-
+{/* 
             {!isExpanded ? (
               <span className="expand-icon" onClick={onExpand}>
                 <span className="material-symbols-outlined">open_in_full</span>
@@ -922,7 +922,7 @@ function filterOnSearch(skill) {
               <span className="expand-icon" onClick={onClose}>
                 ✕
               </span>
-            )}
+            )} */}
           </div>
           <div>
             <h3>

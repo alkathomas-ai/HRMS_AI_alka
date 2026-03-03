@@ -94,13 +94,13 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-primary-medium);
+  background: #d1d5db;
   border-radius: 2px;
   cursor:pointer;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-hover);
+  background: #9ca3af;
 }
 
 ::-webkit-scrollbar-button {

@@ -8,6 +8,7 @@ import Dashboard from './components/dashboard/Dashboard'
 import MainLayout from './layout/MainLayout'
 import Login from './pages/Login'
 import { EmployeeContext } from './context/employeeContext'
+import { ScheduleNotificationProvider } from './context/scheduleNotificationContext'
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('isAuthenticated');
@@ -24,7 +25,7 @@ const App = () => {
 
   return (
     <EmployeeContext.Provider value={{searchResult, setSearchResult}}>
-
+      <ScheduleNotificationProvider>
        <Routes>
          <Route path="/login" element={<Login />} />
          
@@ -36,7 +37,7 @@ const App = () => {
           </Route>
 
       </Routes>
-
+      </ScheduleNotificationProvider>
     </EmployeeContext.Provider>
      
   )

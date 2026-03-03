@@ -2,29 +2,18 @@ import { useState, useMemo, useEffect } from "react";
 import { Icons } from "../../assets/icons";
 import "./Dashboard.css";
 import "./Schedule.css";
+import { useScheduleNotification } from "../../context/scheduleNotificationContext";
 
 const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTabChange }) => {
+  const { notifications, scheduleData, markAsRead, deleteNotifications, markMultipleAsRead } = useScheduleNotification();
+  
   // --- STATE FOR COMPACT VIEW ---
-  const [activeTab, setActiveTab] = useState('Screening');
+  const [activeTab, setActiveTab] = useState('schedule');
   const [selectedDateIndex, setSelectedDateIndex] = useState(null);
 
   // --- STATE FOR EXPANDED VIEW ---
   const [currentDate, setCurrentDate] = useState(new Date());
   const [expandedTab, setExpandedTab] = useState('schedule');
-  const [notifications, setNotifications] = useState([
-    { id: 1, title: 'Interview Reminder', text: 'Technical interview scheduled at 09:30 AM', time: '2h ago', read: false },
-    { id: 2, title: 'Schedule Updated', text: 'Backend developer interview rescheduled', time: '5h ago', read: false },
-    { id: 3, title: 'Task Completed', text: 'Code review completed for new hire', time: '1d ago', read: true },
-    { id: 4, title: 'New Application', text: 'New application received for Senior Developer position', time: '2d ago', read: false },
-    { id: 5, title: 'Meeting Reminder', text: 'Team standup meeting in 30 minutes', time: '1h ago', read: false },
-    { id: 6, title: 'Document Uploaded', text: 'Employee onboarding checklist updated', time: '3h ago', read: false },
-    { id: 7, title: 'Leave Request', text: 'Leave request submitted for approval', time: '4h ago', read: true },
-    { id: 8, title: 'Payroll Processed', text: 'Monthly payroll has been processed successfully', time: '1d ago', read: true },
-    { id: 9, title: 'New Message', text: 'Message from hiring manager regarding candidate', time: '6h ago', read: false },
-    { id: 10, title: 'Training Session', text: 'New employee orientation scheduled for tomorrow', time: '2d ago', read: true },
-    { id: 11, title: 'Performance Review', text: 'Q4 performance reviews are now open', time: '3d ago', read: false },
-    { id: 12, title: 'System Update', text: 'HRMS system maintenance scheduled tonight', time: '5h ago', read: true },
-  ]);
   const [selectedNotifs, setSelectedNotifs] = useState([]);
 
   // Sync with external tab
@@ -33,54 +22,7 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
   }, [externalTab]);
 
   // --- SHARED DATA ---
-  const scheduleData = {
-    Screening: [
-      { time: '09:30', text: 'Interview with Candidate A', role: "Software Engineer" },
-      { time: '11:00', text: 'Technical Assessment Review', role: "Senior Developer" },
-      { time: '12:30', text: 'HR Screening Call', role: "HR Manager" },
-      { time: '14:00', text: 'Team Fit Interview', role: "Team Lead" },
-      { time: '15:30', text: 'Final Round Discussion', role: "Department Head" }
-    ],
-    'Design Task': [
-      { time: '10:00', text: 'UI/UX Portfolio Review', role: "Designer" },
-      { time: '14:00', text: 'Design Challenge Presentation', role: "Product Manager" }
-    ],
-    Interview: [
-      { time: '09:00', text: 'Technical Interview - Backend Role', role: "Lead Developer" },
-      { time: '13:00', text: 'Behavioral Interview', role: "HR Specialist" },
-      { time: '15:30', text: 'Final Round - Senior Position', role: "CTO" }
-    ]
-  };
-
-  // --- EXPANDED VIEW DATA (matching the design) ---
-  const expandedScheduleData = [
-    { 
-      time: '08:00 AM', 
-      name: 'Sarah Johnson', 
-      role: 'Software Engineer - Frontend',
-      category: 'staff'
-    },
-    { 
-      time: '09:00 AM', 
-      name: 'Michael Chen', 
-      role: 'Senior Backend Developer',
-      status: 'Rescheduled',
-      originalTime: '09:00 AM',
-      category: 'rescheduled'
-    },
-    { 
-      time: '09:30 AM', 
-      name: 'Emily Rodriguez', 
-      role: 'DevOps Engineer',
-      category: 'staff'
-    },
-    { 
-      time: '10:30 AM', 
-      name: 'David Kumar', 
-      role: 'Technical Lead - Cloud Services',
-      category: 'manager'
-    }
-  ];
+  const expandedScheduleData = scheduleData.schedule;
 
   // --- LOGIC FOR COMPACT VIEW (Week Days) ---
   const weekDays = useMemo(() => {
@@ -201,24 +143,36 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
         </div>
 
         <div className="tabs">
-          {Object.keys(scheduleData).map(tab => (
-            <span 
-              key={tab}
-              className={activeTab === tab ? 'active' : ''}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </span>
-          ))}
+          <span 
+            className={activeTab === 'schedule' ? 'active' : ''}
+            onClick={() => setActiveTab('schedule')}
+          >
+            Schedule
+          </span>
+          <span 
+            className={activeTab === 'notification' ? 'active' : ''}
+            onClick={() => setActiveTab('notification')}
+          >
+            Notification
+          </span>
         </div>
 
         <div className="schedule-list">
-          {scheduleData[activeTab].map((item, idx) => (
-            <div key={idx} className="item">
-              <span className="time">{item.time}</span>
-              <span className="text">{item.text}</span>
-            </div>
-          ))}
+          {activeTab === 'schedule' ? (
+            expandedScheduleData.map((item, idx) => (
+              <div key={idx} className="item">
+                <span className="time">{item.time}</span>
+                <span className="text">{item.name} - {item.role}</span>
+              </div>
+            ))
+          ) : (
+            notifications.slice(0, 5).map((notif, idx) => (
+              <div key={idx} className="item">
+                <span className="time">{notif.time}</span>
+                <span className="text">{notif.title}</span>
+              </div>
+            ))
+          )}
         </div>
       </div>
     );
@@ -360,7 +314,7 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
               {selectedNotifs.length > 0 && (
                 <>
                   <button className="icon-btn" onClick={() => {
-                    setNotifications(notifications.filter(n => !selectedNotifs.includes(n.id)));
+                    deleteNotifications(selectedNotifs);
                     setSelectedNotifs([]);
                   }} title="Delete">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -368,7 +322,7 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
                     </svg>
                   </button>
                   <button className="icon-btn" onClick={() => {
-                    setNotifications(notifications.map(n => selectedNotifs.includes(n.id) ? {...n, read: true} : n));
+                    markMultipleAsRead(selectedNotifs, true);
                     setSelectedNotifs([]);
                   }} title="Mark as read">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -376,7 +330,7 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
                     </svg>
                   </button>
                   <button className="icon-btn" onClick={() => {
-                    setNotifications(notifications.map(n => selectedNotifs.includes(n.id) ? {...n, read: false} : n));
+                    markMultipleAsRead(selectedNotifs, false);
                     setSelectedNotifs([]);
                   }} title="Mark as unread">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -395,7 +349,7 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
                 className={`notif-row ${notif.read ? 'read' : 'unread'} ${selectedNotifs.includes(notif.id) ? 'selected' : ''}`}
                 onClick={(e) => {
                   if (e.target.type !== 'checkbox') {
-                    setNotifications(notifications.map(n => n.id === notif.id ? {...n, read: true} : n));
+                    markAsRead(notif.id);
                   }
                 }}
               >

@@ -9,8 +9,10 @@ import UploadCSVModal from "../dashboard/UploadCSVModal";
 import NavbarSearchResults from "./NavbarSearchResults";
 import { searchAPI } from "../../services/api";
 import { EmployeeContext } from "../../context/employeeContext";
+import { useScheduleNotification } from "../../context/scheduleNotificationContext";
 
-const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead, onCSVUpload }) => {
+const Navbar = ({ onCSVUpload }) => {
+  const { notifications, markAllAsRead } = useScheduleNotification();
   const navigate = useNavigate();
   const location = useLocation();
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
@@ -198,7 +200,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead, onCSVU
                 {todayNotifications.length > 0 && (
                   <button
                     className="mark-all-read"
-                    onClick={() => onMarkAllRead?.()}
+                    onClick={() => markAllAsRead()}
                   >
                     Mark all as read
                   </button>
