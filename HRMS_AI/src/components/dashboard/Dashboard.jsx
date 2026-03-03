@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './Dashboard.css';
 import Panel from './Panel';
 import WidgetPanel from './WidgetPanel';
@@ -17,6 +17,15 @@ const Dashboard = ({ csvFile }) => {
       setScheduleTab(location.state.scheduleTab || 'schedule');
     }
   }, [location.state?.timestamp]);
+
+  const leftPanels = useMemo(() => {
+    const panels = [
+      { key: 'assistant', title: 'Assistant', Component: SearchAssistant, props: { csvFile } },
+      { key: 'schedule', title: 'Schedule', Component: Schedule, props: {} },
+      { key: 'widgets', title: 'Widgets', Component: WidgetPanel, props: {} }
+    ];
+    return panels.filter(p => p.key !== expandedPanel);
+  }, [expandedPanel, csvFile]);
   // const [notifications, setNotifications] = useState([
   //   { id: 1, title: 'Interview Reminder', text: 'Interview with Habibur Rahman at 09:30 AM', time: '2h ago', read: false },
   //   { id: 2, title: 'Schedule Updated', text: "Willem van Helden's interview rescheduled", time: '5h ago', read: false },
@@ -42,146 +51,36 @@ const Dashboard = ({ csvFile }) => {
   // };
 
   return (
-    <>
-      {/* <Navbar notifications={notifications} onNotificationClick={handleNotificationClick} onMarkAllRead={handleMarkAllRead} /> */}
-      <div className="dashboard">
+    <div className="dashboard">
       <div className="dashboard-grid">
-
-        {/* LEFT COLUMN */}
         <div className="dashboard-left">
-          {expandedPanel === 'assistant' && (
-            <>
-              <Panel title="Widgets">
-                <WidgetPanel
-                  isExpanded={false}
-                  onExpand={() => setExpandedPanel('widgets')}
-                />
-              </Panel>
-              <Panel title="Schedule">
-                <Schedule
-                  isExpanded={false}
-                  onExpand={() => setExpandedPanel('schedule')}
-                />
-              </Panel>
-            </>
-          )}
-          
-          {expandedPanel === 'schedule' && (
-            <>
-              <Panel title="Assistant">
-                <SearchAssistant
-                  isExpanded={false}
-                  onExpand={() => setExpandedPanel('assistant')}
-                  csvFile={csvFile}
-                />
-              </Panel>
-              <Panel title="Widgets">
-                <WidgetPanel
-                  isExpanded={false}
-                  onExpand={() => setExpandedPanel('widgets')}
-                />
-              </Panel>
-            </>
-          )}
-          
-          {expandedPanel === 'widgets' && (
-            <>
-              <Panel title="Assistant">
-                <SearchAssistant
-                  isExpanded={false}
-                  onExpand={() => setExpandedPanel('assistant')}
-                  csvFile={csvFile}
-                />
-              </Panel>
-
-              <Panel title="Schedule">
-                <Schedule
-                  isExpanded={false}
-                  onExpand={() => setExpandedPanel('schedule')}
-                />
-              </Panel>
-            </>
-          )}
-          
-          {!expandedPanel && (
-            <>
-              <Panel title="Assistant">
-                <SearchAssistant
-                  isExpanded={false}
-                  onExpand={() => setExpandedPanel('assistant')}
-                  csvFile={csvFile}
-                />
-              </Panel>
-
-              <Panel title="Schedule">
-                <Schedule
-                  isExpanded={false}
-                  onExpand={() => setExpandedPanel('schedule')}
-                />
-              </Panel>
-            </>
-          )}
+          {leftPanels.slice(0, 2).map(({ key, title, Component, props }) => (
+            <Panel key={key} title={title}>
+              <Component
+                isExpanded={false}
+                onExpand={() => setExpandedPanel(key)}
+                {...props}
+              />
+            </Panel>
+          ))}
         </div>
 
-        {/* RIGHT COLUMN */}
         <div className="dashboard-right">
-          {expandedPanel === 'widgets' && (
-            <Panel
-              title="Widgets"
-              expanded
-              onClose={() => setExpandedPanel(null)}
-            >
-              <WidgetPanel
-                isExpanded={true}
-                onExpand={() => setExpandedPanel('widgets')}
-                onClose={() => setExpandedPanel(null)}
-              />
+          {expandedPanel ? (
+            <Panel title={expandedPanel.charAt(0).toUpperCase() + expandedPanel.slice(1)} expanded onClose={() => setExpandedPanel(null)}>
+              {expandedPanel === 'assistant' && <SearchAssistant isExpanded onClose={() => setExpandedPanel(null)} csvFile={csvFile} />}
+              {expandedPanel === 'schedule' && <Schedule isExpanded onClose={() => setExpandedPanel(null)} activeTab={scheduleTab} onTabChange={setScheduleTab} />}
+              {expandedPanel === 'widgets' && <WidgetPanel isExpanded onClose={() => setExpandedPanel(null)} />}
             </Panel>
-          )}
-
-          {expandedPanel === 'assistant' && (
-            <Panel
-              title="Assistant"
-              expanded
-              onClose={() => setExpandedPanel(null)}
-            >
-              <SearchAssistant
-                isExpanded
-                onClose={() => setExpandedPanel(null)}
-                csvFile={csvFile}
-              />
-            </Panel>
-          )}
-
-          {expandedPanel === 'schedule' && (
-            <Panel
-              title="Schedule"
-              expanded
-              onClose={() => setExpandedPanel(null)}
-            >
-              <Schedule
-                isExpanded
-                onClose={() => setExpandedPanel(null)}
-                activeTab={scheduleTab}
-                onTabChange={setScheduleTab}
-              />
-            </Panel>
-          )}
-          
-          {!expandedPanel && (
+          ) : (
             <Panel title="Widgets">
-              <WidgetPanel
-                isExpanded={null}
-                onExpand={() => setExpandedPanel('widgets')}
-              />
+              <WidgetPanel isExpanded={null} onExpand={() => setExpandedPanel('widgets')} />
             </Panel>
           )}
         </div>
-
       </div>
-      </div>
-    </>
+    </div>
   );
 };
 
-export default Dashboard;
+export default React.memo(Dashboard);

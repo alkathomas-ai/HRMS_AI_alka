@@ -117,8 +117,105 @@ const NavbarSearchResults = ({ searchQuery }) => {
                 }}
               />
             </div>
+                        <div className="quick-filters">
+              <div className="filter-dropdown-wrapper" ref={deptDropdownRef}>
+  
+                <button className="filter-btn" onClick={() => setShowDeptDropdown(!showDeptDropdown)}>
+                  Department <i className="fas fa-chevron-down"></i>
+                </button>
+                {showDeptDropdown && (
+                  <div className="filter-dropdown">
+                    {uniqueDepts.map(dept => (
+                      <label key={dept} className="filter-option">
+                        <input 
+                          type="checkbox" 
+                          checked={deptFilters[dept] || false}
+                          onChange={(e) => setDeptFilters({...deptFilters, [dept]: e.target.checked})}
+                        />
+                        {dept}
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+  
+              <div className="filter-dropdown-wrapper" ref={expDropdownRef}>
+                <button className="filter-btn" onClick={() => setShowExpDropdown(!showExpDropdown)}>
+                  Experience <i className="fas fa-chevron-down"></i>
+                </button>
+                {showExpDropdown && (
+                  <div className="filter-dropdown">
+                    <label className="filter-option">
+                      <input 
+                        type="radio" 
+                        name="exp"
+                        checked={expFilter === ""}
+                        onChange={() => setExpFilter("")}
+                      />
+                      All
+                    </label>
+                    <label className="filter-option">
+                      <input 
+                        type="radio" 
+                        name="exp"
+                        checked={expFilter === "0-2"}
+                        onChange={() => setExpFilter("0-2")}
+                      />
+                      0-2 years
+                    </label>
+                    <label className="filter-option">
+                      <input 
+                        type="radio" 
+                        name="exp"
+                        checked={expFilter === "3-5"}
+                        onChange={() => setExpFilter("3-5")}
+                      />
+                      3-5 years
+                    </label>
+                    <label className="filter-option">
+                      <input 
+                        type="radio" 
+                        name="exp"
+                        checked={expFilter === "6-10"}
+                        onChange={() => setExpFilter("6-10")}
+                      />
+                      6-10 years
+                    </label>
+                    <label className="filter-option">
+                      <input 
+                        type="radio" 
+                        name="exp"
+                        checked={expFilter === "10+"}
+                        onChange={() => setExpFilter("10+")}
+                      />
+                      10+ years
+                    </label>
+                  </div>
+                )}
+              </div>
+  
+              <div className="filter-dropdown-wrapper" ref={locDropdownRef}>
+                <button className="filter-btn" onClick={() => setShowLocDropdown(!showLocDropdown)}>
+                  Location <i className="fas fa-chevron-down"></i>
+                </button>
+                {showLocDropdown && (
+                  <div className="filter-dropdown">
+                    {uniqueLocs.map(loc => (
+                      <label key={loc} className="filter-option">
+                        <input 
+                          type="checkbox" 
+                          checked={locFilters[loc] || false}
+                          onChange={(e) => setLocFilters({...locFilters, [loc]: e.target.checked})}
+                        />
+                        {loc}
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-          <div className="toolbar-right">
+          {/* <div className="toolbar-right">
             <div className="quick-filters">
               <div className="filter-dropdown-wrapper" ref={deptDropdownRef}>
               <span className="filter-label">Filter by:</span>
@@ -217,7 +314,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
                 )}
               </div>
             </div>
-          </div>
+          </div> */}
 
           <div className="search-results-pagination">
             <div className="rows-selector">

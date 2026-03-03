@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useMemo, useCallback } from 'react';
 
 const ScheduleNotificationContext = createContext();
 
@@ -26,40 +26,42 @@ export const ScheduleNotificationProvider = ({ children }) => {
     { id: 12, title: 'System Update', text: 'HRMS system maintenance scheduled tonight', time: '5h ago', read: true },
   ]);
 
-  const scheduleData = {
+  const scheduleData = useMemo(() => ({
     schedule: [
       { time: '08:00 AM', name: 'Sarah Johnson', role: 'Software Engineer - Frontend', category: 'staff' },
       { time: '09:00 AM', name: 'Michael Chen', role: 'Senior Backend Developer', status: 'Rescheduled', originalTime: '09:00 AM', category: 'rescheduled' },
       { time: '09:30 AM', name: 'Emily Rodriguez', role: 'DevOps Engineer', category: 'staff' },
       { time: '10:30 AM', name: 'David Kumar', role: 'Technical Lead - Cloud Services', category: 'manager' }
     ]
-  };
+  }), []);
 
-  const markAsRead = (id) => {
+  const markAsRead = useCallback((id) => {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
-  };
+  }, []);
 
-  const markAllAsRead = () => {
+  const markAllAsRead = useCallback(() => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-  };
+  }, []);
 
-  const deleteNotifications = (ids) => {
+  const deleteNotifications = useCallback((ids) => {
     setNotifications(prev => prev.filter(n => !ids.includes(n.id)));
-  };
+  }, []);
 
-  const markMultipleAsRead = (ids, readStatus) => {
+  const markMultipleAsRead = useCallback((ids, readStatus) => {
     setNotifications(prev => prev.map(n => ids.includes(n.id) ? { ...n, read: readStatus } : n));
-  };
+  }, []);
+
+  const value = useMemo(() => ({
+    notifications,
+    scheduleData,
+    markAsRead,
+    markAllAsRead,
+    deleteNotifications,
+    markMultipleAsRead
+  }), [notifications, scheduleData, markAsRead, markAllAsRead, deleteNotifications, markMultipleAsRead]);
 
   return (
-    <ScheduleNotificationContext.Provider value={{
-      notifications,
-      scheduleData,
-      markAsRead,
-      markAllAsRead,
-      deleteNotifications,
-      markMultipleAsRead
-    }}>
+    <ScheduleNotificationContext.Provider value={value}>
       {children}
     </ScheduleNotificationContext.Provider>
   );

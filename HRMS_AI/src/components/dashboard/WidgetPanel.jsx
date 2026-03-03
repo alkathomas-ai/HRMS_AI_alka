@@ -198,7 +198,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     if (selectedWidgets.includes(widgetId)) {
       setSelectedWidgets(prev => prev.filter(id => id !== widgetId));
     } else {
-      setSelectedWidgets(prev => [...prev, widgetId]);
+      setSelectedWidgets(prev => [widgetId, ...prev]);
     }
   };
 
