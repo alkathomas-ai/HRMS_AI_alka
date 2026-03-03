@@ -1,8 +1,7 @@
-import { createContext, useMemo } from "react";
+import { createContext } from "react";
 
 export const EmployeeContext = createContext();
 
 export const EmployeeProvider = ({ children, value }) => {
-  const memoizedValue = useMemo(() => value, [value.searchResult]);
-  return <EmployeeContext.Provider value={memoizedValue}>{children}</EmployeeContext.Provider>;
+  return <EmployeeContext.Provider value={value}>{children}</EmployeeContext.Provider>;
 };

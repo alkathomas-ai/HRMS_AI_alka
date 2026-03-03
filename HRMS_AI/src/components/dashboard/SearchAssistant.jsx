@@ -316,11 +316,31 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose, csvFile }) => {
   });
   const [showUploadModal, setShowUploadModal] = useState(false);
 
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file && file.type === "text/csv") {
+      setUploadedFile(file);
+    } else if (file) {
+      alert("Please select a CSV file");
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setUploadedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   useEffect(() => {
     if (csvFile) {
       handleSendMessage(csvFile);
     }
   }, [csvFile]);
+
+  useEffect(() => {
+    filterOnDepartment();
+  }, [deptFilters]);
 
 //   function filterOnSearch(skill) {
 //   let filtered;
@@ -835,8 +855,8 @@ function filterOnSearch(skill) {
                     type="checkbox" 
                     checked={deptFilters.cloud}
                     onChange={(e) => {
-                      setDeptFilters({...deptFilters, cloud: e.target.checked});
-                      setTimeout(() => filterOnDepartment(), 0);
+                      const newFilters = {...deptFilters, cloud: e.target.checked};
+                      setDeptFilters(newFilters);
                     }}
                   />
                   Cloud and Mobile Apps
@@ -846,8 +866,8 @@ function filterOnSearch(skill) {
                     type="checkbox" 
                     checked={deptFilters.vision}
                     onChange={(e) => {
-                      setDeptFilters({...deptFilters, vision: e.target.checked});
-                      setTimeout(() => filterOnDepartment(), 0);
+                      const newFilters = {...deptFilters, vision: e.target.checked};
+                      setDeptFilters(newFilters);
                     }}
                   />
                   Vision
@@ -857,8 +877,8 @@ function filterOnSearch(skill) {
                     type="checkbox" 
                     checked={deptFilters.others}
                     onChange={(e) => {
-                      setDeptFilters({...deptFilters, others: e.target.checked});
-                      setTimeout(() => filterOnDepartment(), 0);
+                      const newFilters = {...deptFilters, others: e.target.checked};
+                      setDeptFilters(newFilters);
                     }}
                   />
                   Others

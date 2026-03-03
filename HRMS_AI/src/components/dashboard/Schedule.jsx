@@ -35,16 +35,21 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
       const date = new Date(sunday);
       date.setDate(sunday.getDate() + i);
       const isToday = date.toDateString() === today.toDateString();
-      if (isToday && selectedDateIndex === null) {
-        setSelectedDateIndex(i);
-      }
       return {
         day: ['S', 'M', 'T', 'W', 'T', 'F', 'S'][i],
         date: date.getDate(),
         isToday
       };
     });
-  }, [selectedDateIndex]);
+  }, []);
+
+  useEffect(() => {
+    if (selectedDateIndex === null) {
+      const today = new Date();
+      const currentDay = today.getDay();
+      setSelectedDateIndex(currentDay);
+    }
+  }, []);
 
   // --- LOGIC FOR EXPANDED VIEW (Calendar) ---
   const renderCalendarDays = () => {
