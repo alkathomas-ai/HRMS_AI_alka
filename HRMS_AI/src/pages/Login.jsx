@@ -4,6 +4,8 @@ import "./Login.css";
 import ColorPalette from "../components/navbar/ColorPalette";
 import ThemeToggle from "../components/navbar/ThemeToggle";
 import { loginApi } from "../services/api";
+import { Eye, EyeOff, ArrowRight, User, Lock } from "lucide-react";
+import { OnboardingIllustration, AnalyticsIllustration, TalentMatchingIllustration } from "../components/illustrations/HRMSIllustrations";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -15,17 +17,17 @@ const Login = () => {
 
   const slides = [
     {
-      icon: "person_search",
+      component: OnboardingIllustration,
       title: "Onboarding New Talent with Digital HRMS",
       description: "Everything you need in an easily customizable dashboard"
     },
     {
-      icon: "analytics",
+      component: AnalyticsIllustration,
       title: "AI-Powered Analytics & Insights",
       description: "Make data-driven decisions with intelligent workforce analytics"
     },
     {
-      icon: "groups",
+      component: TalentMatchingIllustration,
       title: "Smart Talent Matching System",
       description: "Find the perfect candidate with AI-powered search technology"
     }
@@ -49,10 +51,9 @@ const Login = () => {
 
     try {
       const response = await loginApi({ username, password });
-      localStorage.setItem("isAuthenticated", "true");
       const token = response.access_token || response.token;
       if (token) {
-        localStorage.setItem("authToken", token);
+        sessionStorage.setItem("authToken", token);
       }
       navigate("/");
     } catch (error) {
@@ -69,20 +70,21 @@ const Login = () => {
       <div className="login-wrapper">
         <div className="login-info">
           <div className="info-slides">
-            {slides.map((slide, index) => (
-              <div
-              key={index}
-              className={`slide-content ${index === currentSlide ? 'active' : ''}`}
-              >
-                <div className="illustration">
-                  <div className="illustration-circle">
-                    <span className="material-symbols-outlined">{slide.icon}</span>
+            {slides.map((slide, index) => {
+              const IllustrationComponent = slide.component;
+              return (
+                <div
+                key={index}
+                className={`slide-content ${index === currentSlide ? 'active' : ''}`}
+                >
+                  <div className="illustration">
+                    <IllustrationComponent />
                   </div>
+                  <h2>{slide.title}</h2>
+                  <p>{slide.description}</p>
                 </div>
-                <h2>{slide.title}</h2>
-                <p>{slide.description}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="slide-indicators">
@@ -113,7 +115,7 @@ const Login = () => {
                 <div className="form-group">
                   <label htmlFor="username">Username</label>
                   <div className="input-wrapper">
-                    <span className="material-symbols-outlined input-icon">person</span>
+                    <User size={20} className="input-icon" />
                     <input
                       type="text"
                       id="username"
@@ -128,7 +130,7 @@ const Login = () => {
                 <div className="form-group">
                   <label htmlFor="password">Password</label>
                   <div className="input-wrapper">
-                    <span className="material-symbols-outlined input-icon">lock</span>
+                    <Lock size={20} className="input-icon" />
                     <input
                       type={showPassword ? "text" : "password"}
                       id="password"
@@ -142,9 +144,7 @@ const Login = () => {
                       className="toggle-password"
                       onClick={() => setShowPassword(!showPassword)}
                     >
-                      <span className="material-symbols-outlined">
-                        {showPassword ? "visibility_off" : "visibility"}
-                      </span>
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
                   </div>
                 </div>
@@ -159,7 +159,7 @@ const Login = () => {
       
                 <button type="submit" className="login-button">
                   Login
-                  <span className="material-symbols-outlined">arrow_forward</span>
+                  <ArrowRight size={20} />
                 </button>
               </form>
             </div>

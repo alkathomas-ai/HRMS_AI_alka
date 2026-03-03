@@ -38,7 +38,7 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead, onCSVU
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
+    sessionStorage.removeItem('authToken');
     navigate('/login');
   };
 
