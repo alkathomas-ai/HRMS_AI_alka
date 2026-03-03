@@ -2,13 +2,27 @@ import axios from 'axios'
 import dummyUploadData from '../data/dummyUploadData';
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+// Add token to all axios requests
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    config.headers = config.headers || {};
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
 
 export async function searchAPI(query) {
+    const token = localStorage.getItem('authToken');
     const response = await fetch(`${BASE_URL}/search-rank-simplified-new`, 
     {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` })
       },
       body: JSON.stringify({ query : query }),
     });
@@ -24,9 +38,15 @@ export async function searchAPI(query) {
 export async function uploadAPI(formData) {
   try{
     console.log(formData)
-  const response = await fetch(`${BASE_URL}/upload/hrms-data`,
+    const token = localStorage.getItem('authToken');
+    const headers = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+    const response = await fetch(`${BASE_URL}/upload/hrms-data`,
         {
           method: "POST",
+          headers,
           body: formData,
         }
       );
@@ -138,4 +158,9 @@ export async function updateEmployeeSkills(employeeId, skills) {
     console.error(error);
     throw error;
   }
+}
+
+export async function loginApi(credentials) {
+  const response = await axios.post(`${BASE_URL}/login`, credentials);
+  return response.data;
 }
