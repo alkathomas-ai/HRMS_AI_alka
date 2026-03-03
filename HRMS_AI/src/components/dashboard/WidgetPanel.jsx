@@ -11,6 +11,7 @@ import BarChart from './charts/BarChart';
 import CreateWidgetModal from './CreateWidgetModal';
 import DynamicWidget from './DynamicWidget';
 import AnimatedSearchInput from './AnimatedSearchInput';
+import StatsWidget from './StatsWidget';
 
 
 const SortableWidget = ({ id, children, isPinned, widgetSize }) => {
@@ -76,6 +77,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const employeesPerPage = 5;
 
   const availableWidgets = [
+    { id: 'stats-overview', label: 'Stats Overview' },
     { id: 'project-distribution', label: 'Project Distribution' },
     { id: 'department-overview', label: 'Department Overview' },
     { id: 'employee-directory', label: 'Employee Directory' },
@@ -90,7 +92,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
       
       availableWidgets.forEach(widget => {
         if (!updatedSizes[widget.id]) {
-          updatedSizes[widget.id] = { cols: 1, rows: 2 };
+          updatedSizes[widget.id] = { cols: 1, rows: widget.id === 'stats-overview' ? 1 : 2 };
           hasChanges = true;
         }
       });
@@ -242,11 +244,11 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
 
   const renderWidget = (widgetId) => {
     const dynamicWidget = dynamicWidgets.find(w => w.id === widgetId);
-    const defaultRows = dynamicWidget?.chartType === 'card' ? 1 : 2;
+    const defaultRows = dynamicWidget?.chartType === 'card' || widgetId === 'stats-overview' ? 1 : 2;
     const widgetSize = widgetSizes[widgetId] || { cols: 1, rows: defaultRows };
     
     const SizeSelector = () => {
-      const isCardType = dynamicWidget?.chartType === 'card';
+      const isCardType = dynamicWidget?.chartType === 'card' || widgetId === 'stats-overview';
       const minRows = isCardType ? 1 : 2;
       
       return (
@@ -286,7 +288,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
       return (
         <>
           <div className="grid-item-header">
-            <h4>{dynamicWidget.title}</h4>
+            <h4 title={dynamicWidget.title}>{dynamicWidget.title}</h4>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               <SizeSelector />
               <button
@@ -312,11 +314,35 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     }
 
     switch (widgetId) {
+      case 'stats-overview':
+        return (
+          <>
+            <div className="grid-item-header">
+              <h4 title="Stats Overview">Stats Overview</h4>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <SizeSelector />
+                <button
+                  onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
+                  className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
+                >
+                  <img src={Icons.pin} alt="" />
+                </button>
+                <span className='widget-close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+              </div>
+            </div>
+            <StatsWidget
+              employeeCount={employeeCount.employeeCount}
+              projectCount={employeeCount.projectCount}
+              freepoolCount={employeeCount.freepoolCount}
+            />
+          </>
+        );
+
       case 'project-distribution':
         return (
           <>
             <div className="grid-item-header">
-              <h4>Project Distribution</h4>
+              <h4 title="Project Distribution">Project Distribution</h4>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <SizeSelector />
                 <button
@@ -360,7 +386,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         return (
           <>
             <div className="grid-item-header">
-              <h4>Department Overview</h4>
+              <h4 title="Department Overview">Department Overview</h4>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <SizeSelector />
                 <button
@@ -395,7 +421,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         return (
           <>
             <div className="grid-item-header">
-              <h4>Employee Directory</h4>
+              <h4 title="Employee Directory">Employee Directory</h4>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <SizeSelector />
                 <button
@@ -445,10 +471,10 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
               ))}
             </div>
             {totalPages > 1 && (
-              <div className="pagination">
-                <button onClick={() => setEmployeePage(prev => Math.max(0, prev - 1))} disabled={employeePage === 0} className="page-btn">‹</button>
+              <div className="widget-pagination">
+                <button onClick={() => setEmployeePage(prev => Math.max(0, prev - 1))} disabled={employeePage === 0} className="widget-page-btn">‹</button>
                 <span className="page-info">{employeePage + 1}/{totalPages}</span>
-                <button onClick={() => setEmployeePage(prev => Math.min(totalPages - 1, prev + 1))} disabled={employeePage >= totalPages - 1} className="page-btn">›</button>
+                <button onClick={() => setEmployeePage(prev => Math.min(totalPages - 1, prev + 1))} disabled={employeePage >= totalPages - 1} className="widget-page-btn">›</button>
               </div>
             )}
           </>
@@ -493,7 +519,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         return (
           <>
             <div className="grid-item-header">
-              <h4>Available Timeline</h4>
+              <h4 title="Available Timeline">Available Timeline</h4>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <SizeSelector />
                 <button

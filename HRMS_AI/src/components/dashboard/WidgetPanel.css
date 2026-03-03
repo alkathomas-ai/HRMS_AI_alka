@@ -366,7 +366,7 @@
   grid-template-columns: repeat(3, 1fr);
   grid-auto-rows: 200px;
   grid-auto-flow: dense;
-  gap: 16px;
+  gap: 10px;
   padding: 10px;
   width: 100%;
 }
@@ -442,10 +442,10 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  /* margin-bottom: 16px; */
-  padding-bottom: 12px;
   gap: 8px;
   border-bottom: 1px solid var(--color-border);
+  /* padding-bottom: 12px;
+  margin-bottom: 12px; */
 }
 
 .grid-item-header h4 {
@@ -454,6 +454,11 @@
   font-weight: 600;
   color: var(--color-text-primary);
   margin-top: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90%;
+  cursor: pointer;
 }
 /* Pie Chart Styles */
 .widget-subtitle {
@@ -846,15 +851,15 @@
   padding: 20px;
 }
 
-.pagination {
+.widget-pagination {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 8px 0;
+  padding-top: 10px;
 }
 
-.page-btn {
+.widget-page-btn {
   background: #f1f5f9;
   border: 1px solid #e2e8f0;
   border-radius: 4px;
@@ -869,12 +874,12 @@
   transition: all 0.2s ease;
 }
 
-.page-btn:hover:not(:disabled) {
+.widget-page-btn:hover:not(:disabled) {
   background: #e2e8f0;
   color: #334155;
 }
 
-.page-btn:disabled {
+.widget-page-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
