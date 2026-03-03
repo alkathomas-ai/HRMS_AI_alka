@@ -736,7 +736,7 @@
   margin-top: 10px;
 }
 
-.close-btn {
+.widget-close-btn {
   background: var(--color-primary-soft);
   color: white;
   border: none;
@@ -751,8 +751,8 @@
   transition: background 0.2s ease;
 }
 
-.close-btn:hover {
-  background: var(--color-primary);
+.widget-close-btn:hover {
+  background: var(--color-primary-hover);
 }
 
 .grid-item-body p {

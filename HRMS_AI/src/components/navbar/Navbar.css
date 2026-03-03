@@ -166,7 +166,11 @@
 
 .icon-btn:hover, .icon-btn.active {
   background: var(--assistant-base-end);
-  color: var(--color-primary));
+  color: var(--color-primary);
+}
+
+.icon-btn:hover span, .icon-btn.active span {
+  color: var(--color-primary);
 }
 
 .icon-svg {
@@ -488,7 +492,7 @@
   color: var(--color-text-primary);
 }
 
-.close-btn {
+.search-results-close-btn {
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -502,13 +506,17 @@
   transition: all 0.2s ease;
 }
 
-.close-btn span {
+.search-results-close-btn span {
   font-size: 20px;
 }
 
-.close-btn:hover {
+.search-results-close-btn:hover {
   background: var(--color-primary-soft);
-  color: var(--color-primary));
+  color: var(--color-primary);
+}
+
+.search-results-close-btn:hover span {
+  color: var(--color-bg-card);
 }
 
 .search-results-content {

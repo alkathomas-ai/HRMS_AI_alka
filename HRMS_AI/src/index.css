@@ -83,19 +83,44 @@ body {
     var(--color-bg-edituser-primary) 100%
   );
 }
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 0;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary-medium);
+  border-radius: 2px;
+  cursor:pointer;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-hover);
+}
+
+::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+  display: none;
+}
 /* Hide scrollbar but allow scrolling */
 ::-webkit-scrollbar {
-  display: none;
+  /* display: none; */
 }
 
 /* Firefox */
 html {
-  scrollbar-width: none;
+  /* scrollbar-width: none; */
 }
 
 /* IE / Edge (legacy) */
 body {
-  -ms-overflow-style: none;
+  /* -ms-overflow-style: none; */
 }
 
 

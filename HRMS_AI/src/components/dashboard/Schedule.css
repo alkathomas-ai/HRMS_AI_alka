@@ -41,6 +41,7 @@
     padding: 10px;
     border-radius: 12px;
     transition: 0.3s;
+    width: 100%;
 }
 .schedule-card.compact .dates .active {
     background-color: var(--color-text-primary);
