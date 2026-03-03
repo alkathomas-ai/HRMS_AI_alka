@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import ColorPalette from "../components/navbar/ColorPalette";
 import ThemeToggle from "../components/navbar/ThemeToggle";
+import { loginApi } from "../services/api";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -37,20 +38,25 @@ const Login = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    if (!email || !password) {
+    if (!username || !password) {
       setError("Please fill in all fields");
       return;
     }
 
-    if (email && password) {
+    try {
+      const response = await loginApi({ username, password });
       localStorage.setItem("isAuthenticated", "true");
+      const token = response.access_token || response.token;
+      if (token) {
+        localStorage.setItem("authToken", token);
+      }
       navigate("/");
-    } else {
-      setError("Invalid credentials");
+    } catch (error) {
+      setError(error.response?.data?.message || "Invalid credentials");
     }
   };
 
@@ -105,16 +111,16 @@ const Login = () => {
                 {error && <div className="error-message">{error}</div>}
       
                 <div className="form-group">
-                  <label htmlFor="email">Email Address</label>
+                  <label htmlFor="username">Username</label>
                   <div className="input-wrapper">
-                    <span className="material-symbols-outlined input-icon">mail</span>
+                    <span className="material-symbols-outlined input-icon">person</span>
                     <input
-                      type="email"
-                      id="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email"
-                      autoComplete="email"
+                      type="text"
+                      id="username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      placeholder="Enter your username"
+                      autoComplete="username"
                     />
                   </div>
                 </div>
