@@ -10,7 +10,7 @@
 }
 
 .dynamic-widget {
-    height: calc(100% - 72px);
+    height: calc(100% - 45px);
 }
 
 .chart-wrapper {

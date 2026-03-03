@@ -203,7 +203,7 @@ const DynamicWidget = ({ widgetData }) => {
                 </tbody>
               </table>
             </div>
-            <div style={{ padding: '12px', borderTop: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '12px 12px 0 12px', borderTop: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>
                 {filteredData.length} total | Page {page + 1} of {totalPages || 1}
               </span>
