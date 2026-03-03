@@ -724,8 +724,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-  height: 60px;
+  /* margin-bottom: 12px; */
+  height: 45px;
 }
 
 .grid-item-header h4 {
