@@ -118,97 +118,51 @@ const NavbarSearchResults = ({ searchQuery }) => {
               />
             </div>
                         <div className="quick-filters">
-              <div className="filter-dropdown-wrapper" ref={deptDropdownRef}>
-  
-                <button className="filter-btn" onClick={() => setShowDeptDropdown(!showDeptDropdown)}>
-                  Department <i className="fas fa-chevron-down"></i>
-                </button>
+              <div className="custom-select-wrapper" ref={deptDropdownRef}>
+                <div className="select-trigger search-result-filter" onClick={() => setShowDeptDropdown(!showDeptDropdown)}>
+                  <span>Department</span>
+                  <i className="fa-solid fa-chevron-down"></i>
+                </div>
                 {showDeptDropdown && (
-                  <div className="filter-dropdown">
+                  <div className="dropdown-menu" style={{ display: 'block' }}>
                     {uniqueDepts.map(dept => (
-                      <label key={dept} className="filter-option">
-                        <input 
-                          type="checkbox" 
-                          checked={deptFilters[dept] || false}
-                          onChange={(e) => setDeptFilters({...deptFilters, [dept]: e.target.checked})}
-                        />
+                      <div key={dept} className="option" onClick={() => setDeptFilters({...deptFilters, [dept]: !deptFilters[dept]})}>
+                        <input type="checkbox" checked={deptFilters[dept] || false} readOnly />
                         {dept}
-                      </label>
+                      </div>
                     ))}
                   </div>
                 )}
               </div>
   
-              <div className="filter-dropdown-wrapper" ref={expDropdownRef}>
-                <button className="filter-btn" onClick={() => setShowExpDropdown(!showExpDropdown)}>
-                  Experience <i className="fas fa-chevron-down"></i>
-                </button>
+              <div className="custom-select-wrapper" ref={expDropdownRef}>
+                <div className="select-trigger search-result-filter" onClick={() => setShowExpDropdown(!showExpDropdown)}>
+                  <span>{expFilter || "Experience"}</span>
+                  <i className="fa-solid fa-chevron-down"></i>
+                </div>
                 {showExpDropdown && (
-                  <div className="filter-dropdown">
-                    <label className="filter-option">
-                      <input 
-                        type="radio" 
-                        name="exp"
-                        checked={expFilter === ""}
-                        onChange={() => setExpFilter("")}
-                      />
-                      All
-                    </label>
-                    <label className="filter-option">
-                      <input 
-                        type="radio" 
-                        name="exp"
-                        checked={expFilter === "0-2"}
-                        onChange={() => setExpFilter("0-2")}
-                      />
-                      0-2 years
-                    </label>
-                    <label className="filter-option">
-                      <input 
-                        type="radio" 
-                        name="exp"
-                        checked={expFilter === "3-5"}
-                        onChange={() => setExpFilter("3-5")}
-                      />
-                      3-5 years
-                    </label>
-                    <label className="filter-option">
-                      <input 
-                        type="radio" 
-                        name="exp"
-                        checked={expFilter === "6-10"}
-                        onChange={() => setExpFilter("6-10")}
-                      />
-                      6-10 years
-                    </label>
-                    <label className="filter-option">
-                      <input 
-                        type="radio" 
-                        name="exp"
-                        checked={expFilter === "10+"}
-                        onChange={() => setExpFilter("10+")}
-                      />
-                      10+ years
-                    </label>
+                  <div className="dropdown-menu" style={{ display: 'block' }}>
+                    <div className="option" onClick={() => { setExpFilter(""); setShowExpDropdown(false); }}>All</div>
+                    <div className="option" onClick={() => { setExpFilter("0-2"); setShowExpDropdown(false); }}>0-2 years</div>
+                    <div className="option" onClick={() => { setExpFilter("3-5"); setShowExpDropdown(false); }}>3-5 years</div>
+                    <div className="option" onClick={() => { setExpFilter("6-10"); setShowExpDropdown(false); }}>6-10 years</div>
+                    <div className="option" onClick={() => { setExpFilter("10+"); setShowExpDropdown(false); }}>10+ years</div>
                   </div>
                 )}
               </div>
   
-              <div className="filter-dropdown-wrapper" ref={locDropdownRef}>
-                <button className="filter-btn" onClick={() => setShowLocDropdown(!showLocDropdown)}>
-                  Location <i className="fas fa-chevron-down"></i>
-                </button>
+              <div className="custom-select-wrapper" ref={locDropdownRef}>
+                <div className="select-trigger search-result-filter" onClick={() => setShowLocDropdown(!showLocDropdown)}>
+                  <span>Location</span>
+                  <i className="fa-solid fa-chevron-down"></i>
+                </div>
                 {showLocDropdown && (
-                  <div className="filter-dropdown">
+                  <div className="dropdown-menu" style={{ display: 'block' }}>
                     {uniqueLocs.map(loc => (
-                      <label key={loc} className="filter-option">
-                        <input 
-                          type="checkbox" 
-                          checked={locFilters[loc] || false}
-                          onChange={(e) => setLocFilters({...locFilters, [loc]: e.target.checked})}
-                        />
+                      <div key={loc} className="option" onClick={() => setLocFilters({...locFilters, [loc]: !locFilters[loc]})}>
+                        <input type="checkbox" checked={locFilters[loc] || false} readOnly />
                         {loc}
-                      </label>
+                      </div>
                     ))}
                   </div>
                 )}
