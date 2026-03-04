@@ -9,6 +9,7 @@ import MainLayout from './layout/MainLayout'
 import Login from './pages/Login'
 import { EmployeeContext } from './context/employeeContext'
 import { ScheduleNotificationProvider } from './context/scheduleNotificationContext'
+import ErrorBoundary from './components/common/ErrorBoundary'
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('isAuthenticated');
@@ -28,31 +29,24 @@ const App = () => {
     setSearchResult
   }), [searchResult]);
 
-  // Global cleanup on unmount
-  useEffect(() => {
-    return () => {
-      // Clear search results to free memory
-      setSearchResult({result: [], viewModeCard: null});
-    };
-  }, []);
-
   return (
-    <EmployeeContext.Provider value={contextValue}>
-      <ScheduleNotificationProvider>
-       <Routes>
-         <Route path="/login" element={<Login />} />
-         
-         <Route path='/' element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
-            <Route index element={<DashboardWrapper/>} />
-            <Route path="dashboard" element={<DashboardWrapper />} />
-            <Route path="user" element={<EditUser />} />
-            <Route path="d" element={<D />} />
-          </Route>
+    <ErrorBoundary>
+      <EmployeeContext.Provider value={contextValue}>
+        <ScheduleNotificationProvider>
+         <Routes>
+           <Route path="/login" element={<Login />} />
+           
+           <Route path='/' element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+              <Route index element={<DashboardWrapper/>} />
+              <Route path="dashboard" element={<DashboardWrapper />} />
+              <Route path="user" element={<EditUser />} />
+              <Route path="d" element={<D />} />
+            </Route>
 
-      </Routes>
-      </ScheduleNotificationProvider>
-    </EmployeeContext.Provider>
-     
+        </Routes>
+        </ScheduleNotificationProvider>
+      </EmployeeContext.Provider>
+    </ErrorBoundary>
   )
 }
 

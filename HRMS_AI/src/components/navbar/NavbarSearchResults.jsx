@@ -360,7 +360,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
           </div>
           <div className="employee-info-section">
             <div className="employee-header">
-              <p className="employee-details-text">
+              <div className="employee-details-text">
                 <p>
                   <i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;
                 </p>
@@ -378,7 +378,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
                 <p>
                   <i className="fa-solid fa-business-time"></i> {total_exp}
                 </p>
-              </p>
+              </div>
             </div>
 
             <div className="employee-skill-description">
@@ -501,13 +501,13 @@ const NavbarSearchResults = ({ searchQuery }) => {
         </div>
         <div className="employee-info-section-plain">
           <div className="employee-header">
-            <p className="employee-details-text">
+            <div className="employee-details-text">
               <p><i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;</p>
               <p><i className="fa-solid fa-building"></i> {employee_department} &nbsp;</p>
               <p><i className="fa-solid fa-location-dot"></i> {emp_location} &nbsp;</p>
               <p><i className="fa-solid fa-laptop-code"></i> {tech_group} &nbsp;</p>
               <p><i className="fa-solid fa-business-time"></i> {total_exp}</p>
-            </p>
+            </div>
           </div>
           <div className="employee-skill-description">
             {employee.projects && employee.projects.length > 0 && (

@@ -48,7 +48,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
           </div>
           <div className="employee-info-section">
             <div className="employee-header">
-              <p className="employee-details-text">
+              <div className="employee-details-text">
                 <p>
                   <i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;
                 </p>
@@ -66,7 +66,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                 <p>
                   <i className="fa-solid fa-business-time"></i> {total_exp}
                 </p>
-              </p>
+              </div>
             </div>
 
             <div className="employee-skill-description">
@@ -197,7 +197,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
         </div>
         <div className="employee-info-section-plain">
           <div className="employee-header">
-            <p className="employee-details-text">
+            <div className="employee-details-text">
               <p>
                 <i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;
               </p>
@@ -215,7 +215,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
               <p>
                 <i className="fa-solid fa-business-time"></i> {total_exp}
               </p>
-            </p>
+            </div>
           </div>
 
           <div className="employee-skill-description">
@@ -292,6 +292,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
 
 const SearchAssistant = ({ isExpanded, onExpand, onClose, csvFile }) => {
   const fileInputRef = useRef(null);
+  const isMountedRef = useRef(true);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [inputText, setInputText] = useState("");
@@ -344,7 +345,9 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose, csvFile }) => {
 
   // Cleanup on unmount
   useEffect(() => {
+    isMountedRef.current = true;
     return () => {
+      isMountedRef.current = false;
       setHoveredIndex(null);
       setAllCardEmployees(null);
       setTableEmployees([]);
@@ -410,7 +413,7 @@ function filterOnSearch(skill) {
 
 
   const handleSendMessage = async (fileToUpload = null) => {
-  if (!inputText.trim() && !fileToUpload) return;
+  if (!fileToUpload && !inputText.trim()) return;
 
   setIsLoading(true);
   if (!fileToUpload) {
@@ -433,6 +436,8 @@ function filterOnSearch(skill) {
 
       response = await uploadAPI(formData);
 
+      if (!isMountedRef.current) return;
+
       const employees =
         response?.all_employees ||
         response?.data?.all_employees ||
@@ -450,6 +455,8 @@ function filterOnSearch(skill) {
     } else {
       response = await searchAPI(textToSend);
 
+      if (!isMountedRef.current) return;
+
       const employees = response?.data || response?.employee || [];
 
       setSearchResult({ result: employees, viewModeCard: "card"})
@@ -459,7 +466,9 @@ function filterOnSearch(skill) {
   } catch (error) {
     console.error(error);
   } finally {
-    setIsLoading(false);
+    if (isMountedRef.current) {
+      setIsLoading(false);
+    }
   }
 };
 
