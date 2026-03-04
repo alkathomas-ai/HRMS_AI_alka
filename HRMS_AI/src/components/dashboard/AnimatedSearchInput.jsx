@@ -1,36 +1,62 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const AnimatedSearchInput = ({ value, onChange, onClick, onKeyDown, className, prompts }) => {
   const [displayText, setDisplayText] = useState('');
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
-    if (value || isFocused) return;
+    if (value || isFocused) {
+      // Clear any pending timeouts when focused or has value
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      return;
+    }
 
     const currentPrompt = prompts[currentPromptIndex];
     const typingSpeed = isDeleting ? 50 : 100;
 
-    const timeout = setTimeout(() => {
-      if (!isDeleting) {
-        if (displayText.length < currentPrompt.length) {
+    if (!isDeleting) {
+      if (displayText.length < currentPrompt.length) {
+        timeoutRef.current = setTimeout(() => {
           setDisplayText(currentPrompt.slice(0, displayText.length + 1));
-        } else {
-          setTimeout(() => setIsDeleting(true), 2000);
-        }
+        }, typingSpeed);
       } else {
-        if (displayText.length > 0) {
-          setDisplayText(displayText.slice(0, -1));
-        } else {
-          setIsDeleting(false);
-          setCurrentPromptIndex((prev) => (prev + 1) % prompts.length);
-        }
+        timeoutRef.current = setTimeout(() => {
+          setIsDeleting(true);
+        }, 2000);
       }
-    }, typingSpeed);
+    } else {
+      if (displayText.length > 0) {
+        timeoutRef.current = setTimeout(() => {
+          setDisplayText(displayText.slice(0, -1));
+        }, typingSpeed);
+      } else {
+        setIsDeleting(false);
+        setCurrentPromptIndex((prev) => (prev + 1) % prompts.length);
+      }
+    }
 
-    return () => clearTimeout(timeout);
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
   }, [displayText, isDeleting, currentPromptIndex, prompts, value, isFocused]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <input

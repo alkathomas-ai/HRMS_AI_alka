@@ -105,17 +105,30 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
   };
 
   // Get current time for red line indicator
-  const getCurrentTime = () => {
+  const [currentTime, setCurrentTime] = useState(() => {
     const now = new Date();
     return {
       hour: now.getHours(),
       minute: now.getMinutes(),
-      // Calculate position within the hour (0-100%)
       percentage: (now.getMinutes() / 60) * 100
     };
-  };
+  });
 
-  const currentTime = getCurrentTime();
+  useEffect(() => {
+    // Only update time when in expanded schedule view
+    if (!isExpanded || expandedTab !== 'schedule') return;
+
+    const interval = setInterval(() => {
+      const now = new Date();
+      setCurrentTime({
+        hour: now.getHours(),
+        minute: now.getMinutes(),
+        percentage: (now.getMinutes() / 60) * 100
+      });
+    }, 60000);
+    
+    return () => clearInterval(interval);
+  }, [isExpanded, expandedTab]);
 
   // Generate all 24 hours
   const allHours = Array.from({ length: 24 }, (_, i) => i);

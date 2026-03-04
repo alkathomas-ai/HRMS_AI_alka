@@ -169,15 +169,22 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         console.error('Error fetching data:', error);
       }
     };
-    fetchData();
+    
+    // Fetch data when expanded or on initial mount if not explicitly minimized
+    if (isExpanded || isExpanded === null) {
+      fetchData();
+    }
 
     const updateWidth = () => {
       if (containerRef.current) {
         setContainerWidth(containerRef.current.offsetWidth);
       }
     };
-    updateWidth();
-    window.addEventListener('resize', updateWidth);
+    
+    if (isExpanded || isExpanded === null) {
+      updateWidth();
+      window.addEventListener('resize', updateWidth);
+    }
 
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -188,11 +195,12 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
+    
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       window.removeEventListener('resize', updateWidth);
     };
-  }, []);
+  }, [isExpanded]);
 
   const toggleWidget = (widgetId) => {
     if (selectedWidgets.includes(widgetId)) {

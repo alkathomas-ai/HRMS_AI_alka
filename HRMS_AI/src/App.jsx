@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import {  Route, Routes, Navigate, useOutletContext } from 'react-router-dom'
 import React from 'react' 
 import './App.css'
@@ -23,8 +23,21 @@ const DashboardWrapper = () => {
 const App = () => { 
   const [searchResult, setSearchResult] = useState({result: [], viewModeCard: null});
 
+  const contextValue = useMemo(() => ({
+    searchResult,
+    setSearchResult
+  }), [searchResult]);
+
+  // Global cleanup on unmount
+  useEffect(() => {
+    return () => {
+      // Clear search results to free memory
+      setSearchResult({result: [], viewModeCard: null});
+    };
+  }, []);
+
   return (
-    <EmployeeContext.Provider value={{searchResult, setSearchResult}}>
+    <EmployeeContext.Provider value={contextValue}>
       <ScheduleNotificationProvider>
        <Routes>
          <Route path="/login" element={<Login />} />

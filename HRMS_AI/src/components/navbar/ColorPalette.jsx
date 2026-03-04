@@ -167,7 +167,7 @@ const ColorPalette = () => {
       applyTheme(fullTheme);
     };
 
-    setTimeout(initTheme, 0);
+    const timeoutId = setTimeout(initTheme, 0);
 
     const observer = new MutationObserver(() => {
       const saved = localStorage.getItem('theme');
@@ -176,7 +176,11 @@ const ColorPalette = () => {
       applyTheme(fullTheme);
     });
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-    return () => observer.disconnect();
+    
+    return () => {
+      clearTimeout(timeoutId);
+      observer.disconnect();
+    };
   }, []);
 
   return (

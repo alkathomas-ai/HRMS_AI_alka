@@ -55,12 +55,12 @@ const NavbarSearchResults = ({ searchQuery }) => {
   const uniqueDepts = useMemo(() => {
     if (!searchResult?.result) return [];
     return [...new Set(searchResult.result.map(e => e.employee_department).filter(Boolean))];
-  }, [searchResult?.result]);
+  }, [searchResult]);
 
   const uniqueLocs = useMemo(() => {
     if (!searchResult?.result) return [];
     return [...new Set(searchResult.result.map(e => e.emp_location).filter(Boolean))];
-  }, [searchResult?.result]);
+  }, [searchResult]);
 
   const filteredResults = useMemo(() => {
     if (!searchResult?.result) return [];
@@ -126,7 +126,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
                 {showDeptDropdown && (
                   <div className="dropdown-menu" style={{ display: 'block' }}>
                     {uniqueDepts.map(dept => (
-                      <div key={dept} className="option" onClick={() => setDeptFilters({...deptFilters, [dept]: !deptFilters[dept]})}>
+                      <div key={dept} className="option" onClick={() => setDeptFilters(prev => ({...prev, [dept]: !prev[dept]}))}>
                         <input type="checkbox" checked={deptFilters[dept] || false} readOnly />
                         {dept}
                       </div>
@@ -159,7 +159,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
                 {showLocDropdown && (
                   <div className="dropdown-menu" style={{ display: 'block' }}>
                     {uniqueLocs.map(loc => (
-                      <div key={loc} className="option" onClick={() => setLocFilters({...locFilters, [loc]: !locFilters[loc]})}>
+                      <div key={loc} className="option" onClick={() => setLocFilters(prev => ({...prev, [loc]: !prev[loc]}))}>
                         <input type="checkbox" checked={locFilters[loc] || false} readOnly />
                         {loc}
                       </div>

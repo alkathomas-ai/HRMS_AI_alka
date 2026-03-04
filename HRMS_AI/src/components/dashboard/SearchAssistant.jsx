@@ -342,6 +342,15 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose, csvFile }) => {
     filterOnDepartment();
   }, [deptFilters]);
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      setHoveredIndex(null);
+      setAllCardEmployees(null);
+      setTableEmployees([]);
+    };
+  }, []);
+
 //   function filterOnSearch(skill) {
 //   let filtered;
 
@@ -360,6 +369,8 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose, csvFile }) => {
 // }
 
 function filterOnSearch(skill) {
+  if (!allCardEmployees) return;
+  
   let filtered;
 
   if (skill) {
@@ -482,8 +493,6 @@ function filterOnSearch(skill) {
   //     }
   //   }
   // };
-
-  // console.log(messages);
 
   console.log("Card", searchResult);
   

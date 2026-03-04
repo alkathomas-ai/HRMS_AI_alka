@@ -36,7 +36,7 @@ const Login = () => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 4000);
     return () => clearInterval(interval);
-  }, []);
+  }, [slides.length]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

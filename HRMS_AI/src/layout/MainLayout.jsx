@@ -31,7 +31,8 @@ const MainLayout = () => {
 
     const handleCSVUpload = (file) => {
       setCsvFile(file);
-      setTimeout(() => setCsvFile(null), 100);
+      const timeoutId = setTimeout(() => setCsvFile(null), 100);
+      return () => clearTimeout(timeoutId);
     };
 
   return (

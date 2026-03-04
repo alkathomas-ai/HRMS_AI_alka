@@ -25,7 +25,7 @@ const Dashboard = ({ csvFile }) => {
       { key: 'widgets', title: 'Widgets', Component: WidgetPanel, props: {} }
     ];
     return panels.filter(p => p.key !== expandedPanel);
-  }, [expandedPanel, csvFile]);
+  }, [expandedPanel]);
   // const [notifications, setNotifications] = useState([
   //   { id: 1, title: 'Interview Reminder', text: 'Interview with Habibur Rahman at 09:30 AM', time: '2h ago', read: false },
   //   { id: 2, title: 'Schedule Updated', text: "Willem van Helden's interview rescheduled", time: '5h ago', read: false },
