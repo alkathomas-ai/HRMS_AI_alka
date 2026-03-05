@@ -14,14 +14,27 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead, onCSVU
   const navigate = useNavigate();
   const location = useLocation();
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
+  const [showAvatarDropdown, setShowAvatarDropdown] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearchResults, setHasSearchResults] = useState(false);
+  const [username, setUsername] = useState('');
   const notifRef = useRef(null);
+  const avatarRef = useRef(null);
   const { setSearchResult } = useContext(EmployeeContext);
+
+  useEffect(() => {
+    const storedUsername = sessionStorage.getItem('username');
+    setUsername(storedUsername || 'User');
+  }, []);
+
+  const getAvatarUrl = () => {
+    if (!username) return 'https://i.pravatar.cc/32';
+    return `https://i.pravatar.cc/32?name=${encodeURIComponent(username)}`;
+  };
 
   const handleCloseSearch = () => {
     setIsClosing(true);
@@ -38,7 +51,8 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead, onCSVU
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
+    sessionStorage.removeItem('authToken');
+    sessionStorage.removeItem('username');
     navigate('/login');
   };
 
@@ -66,6 +80,9 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead, onCSVU
     const handleClickOutside = (e) => {
       if (notifRef.current && !notifRef.current.contains(e.target)) {
         setShowNotifDropdown(false);
+      }
+      if (avatarRef.current && !avatarRef.current.contains(e.target)) {
+        setShowAvatarDropdown(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -241,14 +258,23 @@ const Navbar = ({ notifications = [], onNotificationClick, onMarkAllRead, onCSVU
           )}
         </div>
 
-        <div className="avatar">
-          <img src="https://i.pravatar.cc/32" alt="User avatar" />
+        <div className="avatar-wrapper" ref={avatarRef}>
+          <button
+            className="avatar"
+            onClick={() => setShowAvatarDropdown(!showAvatarDropdown)}
+            aria-label="User menu"
+          >
+            <img src={getAvatarUrl()} alt="User avatar" />
+          </button>
+          {showAvatarDropdown && (
+            <div className="avatar-dropdown">
+              <button className="avatar-dropdown-item logout-btn" onClick={handleLogout}>
+                <span className="material-symbols-outlined">logout</span>
+                Logout
+              </button>
+            </div>
+          )}
         </div>
-      <div>
-        <button className="icon-btn" aria-label="Logout" onClick={handleLogout} style={{ cursor: 'pointer' }} title="Logout">
-          <span className="material-symbols-outlined">logout</span>
-        </button>
-      </div>
       </div>
 
       {/* Search Results Panel */}
