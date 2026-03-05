@@ -54,6 +54,7 @@ const Login = () => {
       const token = response.access_token || response.token;
       if (token) {
         sessionStorage.setItem("authToken", token);
+        sessionStorage.setItem("username", username);
       }
       navigate("/");
     } catch (error) {
