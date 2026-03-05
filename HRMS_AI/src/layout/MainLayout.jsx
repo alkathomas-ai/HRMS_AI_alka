@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import Navbar from '../components/navbar/Navbar'
+import Sidebar from '../components/sidebar/Sidebar'
 import { Outlet } from 'react-router-dom'
 import './MainLayout.css'
 
@@ -37,17 +38,16 @@ const MainLayout = () => {
 
   return (
     <>
-        {/* <Navbar /> */}
       <Navbar 
         notifications={notifications} 
         onNotificationClick={handleNotificationClick} 
         onMarkAllRead={handleMarkAllRead}
         onCSVUpload={handleCSVUpload}
       />
-
-        <div className="page-content">
-            <Outlet context={{ scheduleTab, setScheduleTab, csvFile }} />
-        </div>
+      <Sidebar />
+      <div className="page-content">
+        <Outlet context={{ scheduleTab, setScheduleTab, csvFile }} />
+      </div>
     </>
   )
 }

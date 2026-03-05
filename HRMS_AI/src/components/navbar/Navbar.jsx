@@ -114,39 +114,6 @@ const Navbar = ({ onCSVUpload }) => {
 
       {/* Center icons */}
       <div className="topbar-center">
-        <button
-          onClick={() => {
-            handleCloseSearch();
-            navigate("/");
-          }}
-          className={`icon-btn ${location.pathname === "/" ? "active" : ""}`}
-          aria-label="Home"
-        >
-          <span className="material-symbols-outlined">home</span>{" "}
-        </button>
-        <button
-          onClick={() => {
-            handleCloseSearch();
-            navigate("/user");
-          }}
-          className={`icon-btn ${location.pathname === "/user" ? "active" : ""}`}
-          aria-label="Users"
-        >
-          <span className="material-symbols-outlined">group</span>{" "}
-        </button>
-        <button
-          onClick={() => {
-            handleCloseSearch();
-            navigate("/d");
-          }}
-          className={`icon-btn ${location.pathname === "/d" ? "active" : ""}`}
-          aria-label="Documents"
-        >
-          <span className="material-symbols-outlined">stacks</span>{" "}
-        </button>
-        <button className="icon-btn" aria-label="Reports">
-          <span className="material-symbols-outlined">pie_chart</span>{" "}
-        </button>
         <div className="search-bar">
           <div className="search-icon-wrapper">
             <span className="material-symbols-outlined search-icon">search</span>
