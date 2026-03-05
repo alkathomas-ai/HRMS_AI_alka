@@ -9,6 +9,56 @@
   margin: 0 auto;
 }
 
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  gap: 24px;
+}
+
+.welcome-section {
+  flex: 1;
+}
+
+.welcome-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 8px 0;
+}
+
+.welcome-subtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.employee-count-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 32px;
+  background: var(--color-bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--color-bg-muted);
+  min-width: 180px;
+}
+
+.count-label {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.count-number {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
 .employee-matches-title {
   font-size: 28px;
   font-weight: 700;
@@ -451,4 +501,19 @@
 }
 .score-text span{
   font-size: 20px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .employee-count-card {
+    align-self: flex-start;
+  }
+
+  .welcome-title {
+    font-size: 24px;
+  }
 }
