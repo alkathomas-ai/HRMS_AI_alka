@@ -1,55 +1,28 @@
 import { useState, useMemo, useEffect } from "react";
 import { Icons } from "../../assets/icons";
+import { useLocation } from "react-router-dom";
 import "./Dashboard.css";
 import "./Schedule.css";
 import { useScheduleNotification } from "../../context/scheduleNotificationContext";
 
-const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTabChange }) => {
+const Schedule = () => {
   const { notifications, scheduleData, markAsRead, deleteNotifications, markMultipleAsRead } = useScheduleNotification();
+  const location = useLocation();
   
-  // --- STATE FOR COMPACT VIEW ---
-  const [activeTab, setActiveTab] = useState('schedule');
-  const [selectedDateIndex, setSelectedDateIndex] = useState(null);
-
   // --- STATE FOR EXPANDED VIEW ---
   const [currentDate, setCurrentDate] = useState(new Date());
   const [expandedTab, setExpandedTab] = useState('schedule');
   const [selectedNotifs, setSelectedNotifs] = useState([]);
 
-  // Sync with external tab
+  // Handle navigation state to switch to notification tab
   useEffect(() => {
-    if (externalTab) setExpandedTab(externalTab);
-  }, [externalTab]);
+    if (location.state?.scheduleTab === 'notification') {
+      setExpandedTab('notification');
+    }
+  }, [location.state]);
 
   // --- SHARED DATA ---
   const expandedScheduleData = scheduleData.schedule;
-
-  // --- LOGIC FOR COMPACT VIEW (Week Days) ---
-  const weekDays = useMemo(() => {
-    const today = new Date();
-    const currentDay = today.getDay();
-    const sunday = new Date(today);
-    sunday.setDate(today.getDate() - currentDay);
-    
-    return Array.from({ length: 7 }, (_, i) => {
-      const date = new Date(sunday);
-      date.setDate(sunday.getDate() + i);
-      const isToday = date.toDateString() === today.toDateString();
-      return {
-        day: ['S', 'M', 'T', 'W', 'T', 'F', 'S'][i],
-        date: date.getDate(),
-        isToday
-      };
-    });
-  }, []);
-
-  useEffect(() => {
-    if (selectedDateIndex === null) {
-      const today = new Date();
-      const currentDay = today.getDay();
-      setSelectedDateIndex(currentDay);
-    }
-  }, []);
 
   // --- LOGIC FOR EXPANDED VIEW (Calendar) ---
   const renderCalendarDays = () => {
@@ -116,7 +89,7 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
 
   useEffect(() => {
     // Only update time when in expanded schedule view
-    if (!isExpanded || expandedTab !== 'schedule') return;
+    if (expandedTab !== 'schedule') return;
 
     const interval = setInterval(() => {
       const now = new Date();
@@ -128,73 +101,10 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
     }, 60000);
     
     return () => clearInterval(interval);
-  }, [isExpanded, expandedTab]);
+  }, [expandedTab]);
 
   // Generate all 24 hours
   const allHours = Array.from({ length: 24 }, (_, i) => i);
-
-  // =========================================================
-  // RENDER: COMPACT VIEW (Original Design)
-  // =========================================================
-  if (!isExpanded) {
-    return (
-      <div className="schedule-card compact">
-        <div className="header">
-          <h3>Schedule</h3>
-          <span className="expand-icon" onClick={onExpand}>
-            <span className="material-symbols-outlined">arrow_outward</span>
-          </span>
-        </div>
-
-        <div className="dates">
-          {weekDays.map((day, idx) => (
-            <div 
-              key={idx} 
-              className={`${selectedDateIndex === idx ? 'active' : ''} ${day.isToday ? 'today' : ''}`}
-              onClick={() => setSelectedDateIndex(idx)}
-              style={{ cursor: 'pointer' }}
-            >
-              <span>{day.day}</span>
-              <p>{day.date}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="tabs">
-          <span 
-            className={activeTab === 'schedule' ? 'active' : ''}
-            onClick={() => setActiveTab('schedule')}
-          >
-            Schedule
-          </span>
-          <span 
-            className={activeTab === 'notification' ? 'active' : ''}
-            onClick={() => setActiveTab('notification')}
-          >
-            Notification
-          </span>
-        </div>
-
-        <div className="schedule-list">
-          {activeTab === 'schedule' ? (
-            expandedScheduleData.map((item, idx) => (
-              <div key={idx} className="item">
-                <span className="time">{item.time}</span>
-                <span className="text">{item.name} - {item.role}</span>
-              </div>
-            ))
-          ) : (
-            notifications.slice(0, 5).map((notif, idx) => (
-              <div key={idx} className="item">
-                <span className="time">{notif.time}</span>
-                <span className="text">{notif.title}</span>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-    );
-  }
 
   // =========================================================
   // RENDER: EXPANDED VIEW (Matching the Design)
@@ -205,19 +115,13 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
       <div className="expanded-tabs">
         <button 
           className={expandedTab === 'schedule' ? 'active' : ''}
-          onClick={() => {
-            setExpandedTab('schedule');
-            onTabChange?.('schedule');
-          }}
+          onClick={() => setExpandedTab('schedule')}
         >
           Schedule
         </button>
         <button 
           className={expandedTab === 'notification' ? 'active' : ''}
-          onClick={() => {
-            setExpandedTab('notification');
-            onTabChange?.('notification');
-          }}
+          onClick={() => setExpandedTab('notification')}
         >
           Notification
         </button>

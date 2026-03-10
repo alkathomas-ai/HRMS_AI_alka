@@ -44,7 +44,8 @@
 }
 
 .dashboard-grid {
-  display: grid;
+  /* display: grid; */
+  display: block;
   grid-template-columns: 370px 1fr;
   gap: 32px;
   height: calc(100vh - 72px);
@@ -53,7 +54,8 @@
 }
 
 .dashboard-left {
-  display: flex;
+  /* display: flex; */
+  display: none;
   flex-direction: column;
   gap: 24px;
   height: 100%;

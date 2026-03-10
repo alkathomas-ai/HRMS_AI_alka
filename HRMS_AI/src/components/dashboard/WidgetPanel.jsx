@@ -731,7 +731,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           <div className='d-flex justify-btwn align-center'>
             <h2>Welcome back!</h2>
           </div>
-          {/* <p>Great talent awaits. Let's hire smart!</p> */}
+          <p>Great talent awaits. Let's hire smart!</p>
         </div>
 
         <div className="stats">

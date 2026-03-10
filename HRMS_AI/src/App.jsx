@@ -11,6 +11,7 @@ import { EmployeeContext } from './context/employeeContext'
 import { ScheduleNotificationProvider } from './context/scheduleNotificationContext'
 import ErrorBoundary from './components/common/ErrorBoundary'
 import { setSessionExpiredCallback } from './services/api'
+import Schedule from './components/dashboard/Schedule'
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = sessionStorage.getItem('authToken');
@@ -54,6 +55,7 @@ const App = () => {
               <Route index element={<DashboardWrapper/>} />
               <Route path="dashboard" element={<DashboardWrapper />} />
               <Route path="user" element={<EditUser />} />
+              <Route path="schedule" element={<Schedule />} />
               <Route path="d" element={<D />} />
             </Route>
 
