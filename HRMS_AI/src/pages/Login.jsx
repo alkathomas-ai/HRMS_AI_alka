@@ -64,10 +64,10 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <div className="theme-controls">
+      {/* <div className="theme-controls">
         <ThemeToggle />
         <ColorPalette />
-      </div>
+      </div> */}
       <div className="login-wrapper">
         <div className="login-info">
           <div className="info-slides">

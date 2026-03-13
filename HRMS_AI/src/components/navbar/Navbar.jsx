@@ -108,12 +108,23 @@ const Navbar = ({ onCSVUpload }) => {
       <div className="topbar-left">
         <div className="logo">
           {/* <img src={Icons.logo} className="logo-icon" /> */}
-          <span className="logo-text">HRMS.AI</span>
+          <span className="logo-text">HRMS.<span className="logo-ai">AI</span></span>
         </div>
       </div>
 
       {/* Center icons */}
       <div className="topbar-center">
+          {/* {hasSearchResults && !showSearchResults && ( */}
+            <button
+              className="icon-btn history-btn"
+              aria-label="View Search Results"
+              onClick={handleReopenSearch}
+              title="View search previous results"
+              style={{ visibility: hasSearchResults && !showSearchResults ? "visible" : "hidden" }}
+            >
+              <span className="material-symbols-outlined">history</span>
+            </button>
+          {/* )} */}
         <div className="search-bar">
           <div className="search-icon-wrapper">
             <span className="material-symbols-outlined search-icon">search</span>
@@ -135,16 +146,6 @@ const Navbar = ({ onCSVUpload }) => {
               "Explore departments..."
             ]}
           />
-          {hasSearchResults && !showSearchResults && (
-            <button
-              className="icon-btn history-btn"
-              aria-label="View Search Results"
-              onClick={handleReopenSearch}
-              title="View search results"
-            >
-              <span className="material-symbols-outlined">history</span>
-            </button>
-          )}
         </div>
           <button
             className="icon-btn"
@@ -218,7 +219,7 @@ const Navbar = ({ onCSVUpload }) => {
                 className="notif-show-all"
                 onClick={() => {
                   setShowNotifDropdown(false);
-                  navigate('/', { state: { expandSchedule: true, scheduleTab: 'notification', timestamp: Date.now() } });
+                  navigate('schedule', { state: { expandSchedule: true, scheduleTab: 'notification', timestamp: Date.now() } });
                 }}
               >
                 Show all notifications
@@ -252,7 +253,9 @@ const Navbar = ({ onCSVUpload }) => {
           <div className="search-results-header">
             <h3>Search Results</h3>
             <button className="search-results-close-btn" onClick={handleCloseSearch}>
-              <span className="material-symbols-outlined">close</span>
+              <span class="material-symbols-outlined">
+              keyboard_return
+              </span>
             </button>
           </div>
           <div className="search-results-content">

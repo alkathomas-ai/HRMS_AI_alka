@@ -49,7 +49,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
   };
 
   if (!searchResult?.result || searchResult.result.length === 0) {
-    return <p>No results found for "{searchQuery}"</p>;
+    return <div class="no-search-results">No results found.</div>;
   }
 
   const uniqueDepts = useMemo(() => {
