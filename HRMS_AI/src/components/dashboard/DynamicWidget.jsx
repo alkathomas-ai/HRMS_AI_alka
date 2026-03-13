@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
-import { Pie } from 'react-chartjs-2';
+import { Pie, Doughnut } from 'react-chartjs-2';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, ArcElement, Tooltip } from 'chart.js';
 import GroupedBarChart from '../charts/GroupedBarChart';
@@ -48,7 +48,39 @@ const DynamicWidget = ({ widgetData }) => {
         return <Bar data={chartData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }} />;
       }
       
-      case 'doughnut':
+      case 'doughnut': {
+        const chartData = {
+          labels: data.map(item => item[xKey]),
+          datasets: [{ 
+            data: data.map(item => item[yKey]), 
+            backgroundColor: colors.slice(0, data.length),
+            borderWidth: 2,
+            borderColor: '#fff',
+            cutout: '60%'
+          }]
+        };
+        return <Doughnut data={chartData} options={{ 
+          responsive: true, 
+          maintainAspectRatio: false, 
+          plugins: { 
+            legend: { 
+              position: 'bottom',
+              labels: {
+                boxWidth: 12,
+                padding: 8,
+                font: { size: 10 }
+              }
+            },
+            tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              padding: 10,
+              titleFont: { size: 11 },
+              bodyFont: { size: 10 }
+            }
+          } 
+        }} />;
+      }
+      
       case 'pie': {
         const chartData = {
           labels: data.map(item => item[xKey]),

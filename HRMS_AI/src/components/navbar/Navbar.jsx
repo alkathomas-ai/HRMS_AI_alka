@@ -11,7 +11,7 @@ import { searchAPI } from "../../services/api";
 import { EmployeeContext } from "../../context/employeeContext";
 import { useScheduleNotification } from "../../context/scheduleNotificationContext";
 
-const Navbar = ({ onCSVUpload }) => {
+const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
   const { notifications, markAllAsRead } = useScheduleNotification();
   const navigate = useNavigate();
   const location = useLocation();
@@ -45,6 +45,13 @@ const Navbar = ({ onCSVUpload }) => {
       setIsClosing(false);
     }, 300);
   };
+
+  // Expose close function to parent
+  React.useEffect(() => {
+    if (onCloseSearchResults) {
+      onCloseSearchResults.current = handleCloseSearch;
+    }
+  }, [onCloseSearchResults]);
 
   const handleReopenSearch = () => {
     if (hasSearchResults) {

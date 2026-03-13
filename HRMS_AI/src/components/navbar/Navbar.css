@@ -461,9 +461,9 @@
 .search-results-panel {
   position: fixed;
   top: 72px;
-  width: 100%;
+  width: calc(100% - 80px);
   bottom: 0;
-  /* left: 80px; */
+  left: 80px;
   right: 0;
   background: var(--color-bg-card);
   box-shadow: 0 -4px 20px rgba(224, 224, 224, 0.15);

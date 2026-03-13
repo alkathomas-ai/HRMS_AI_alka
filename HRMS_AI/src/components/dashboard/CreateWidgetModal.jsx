@@ -32,6 +32,7 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate, editingWidget }) => {
     { value: 'scatter', label: 'Scatter', icon: 'fa-arrow-up-right-dots' },
     { value: 'radar', label: 'Radar', icon: 'fa-hexagon-nodes' },
     { value: 'pie', label: 'Pie', icon: 'fa-chart-pie' },
+    { value: 'doughnut', label: 'Doughnut', icon: 'fa-o' },
     { value: 'line', label: 'Line', icon: 'fa-chart-line' },
     { value: 'table', label: 'Table', icon: 'fa-table' },
     { value: 'card', label: 'Card', icon: 'fa-square' }
