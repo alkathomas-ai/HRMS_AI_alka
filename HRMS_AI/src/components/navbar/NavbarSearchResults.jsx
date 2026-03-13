@@ -15,13 +15,16 @@ const NavbarSearchResults = ({ searchQuery }) => {
   const [showDeptDropdown, setShowDeptDropdown] = useState(false);
   const [showExpDropdown, setShowExpDropdown] = useState(false);
   const [showLocDropdown, setShowLocDropdown] = useState(false);
+  const [showTechDropdown, setShowTechDropdown] = useState(false);
   const [deptFilters, setDeptFilters] = useState({});
   const [expFilter, setExpFilter] = useState("");
   const [locFilters, setLocFilters] = useState({});
+  const [techFilters, setTechFilters] = useState({});
   const dropdownRef = useRef(null);
   const deptDropdownRef = useRef(null);
   const expDropdownRef = useRef(null);
   const locDropdownRef = useRef(null);
+  const techDropdownRef = useRef(null);
   const [showReason, setShowReason] = useState(false);
 
 
@@ -35,6 +38,9 @@ const NavbarSearchResults = ({ searchQuery }) => {
       }
       if (expDropdownRef.current && !expDropdownRef.current.contains(e.target)) {
         setShowExpDropdown(false);
+      }
+      if (techDropdownRef.current && !techDropdownRef.current.contains(e.target)) {
+        setShowTechDropdown(false);
       }
       if (locDropdownRef.current && !locDropdownRef.current.contains(e.target)) {
         setShowLocDropdown(false);
@@ -62,6 +68,11 @@ const NavbarSearchResults = ({ searchQuery }) => {
     return [...new Set(searchResult.result.map(e => e.emp_location).filter(Boolean))];
   }, [searchResult]);
 
+  const uniqueTech = useMemo(() => {
+    if (!searchResult?.result) return [];
+    return [...new Set(searchResult.result.map(e => e.tech_group).filter(Boolean))];
+  }, [searchResult]);
+
   const filteredResults = useMemo(() => {
     if (!searchResult?.result) return [];
     
@@ -82,6 +93,11 @@ const NavbarSearchResults = ({ searchQuery }) => {
     if (selectedLocs.length > 0) {
       filtered = filtered.filter(e => selectedLocs.includes(e.emp_location));
     }
+
+    const selectedTech = Object.keys(techFilters).filter(k => techFilters[k]);
+    if (selectedTech.length > 0) {
+      filtered = filtered.filter(e => selectedTech.includes(e.tech_group));
+    }
     
     if (expFilter) {
       filtered = filtered.filter(e => {
@@ -95,11 +111,12 @@ const NavbarSearchResults = ({ searchQuery }) => {
     }
     
     return filtered;
-  }, [searchResult?.result, filterText, deptFilters, locFilters, expFilter]);
+  }, [searchResult?.result, filterText, deptFilters, locFilters, techFilters, expFilter]);
 
   const totalPages = Math.ceil(filteredResults.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
   const paginatedResults = filteredResults.slice(startIndex, startIndex + rowsPerPage);
+
 
   return (
     <>
@@ -167,6 +184,24 @@ const NavbarSearchResults = ({ searchQuery }) => {
                   </div>
                 )}
               </div>
+
+              <div className="custom-select-wrapper" ref={locDropdownRef}>
+                <div className="select-trigger search-result-filter" onClick={() => setShowTechDropdown(!showTechDropdown)}>
+                  <span>Tech Group</span>
+                  <i className="fa-solid fa-chevron-down"></i>
+                </div>
+                {showTechDropdown && (
+                  <div className="dropdown-menu" style={{ display: 'block' }}>
+                    {uniqueTech.map(loc => (
+                      <div key={loc} className="option" onClick={() => setTechFilters(prev => ({...prev, [loc]: !prev[loc]}))}>
+                        <input type="checkbox" checked={techFilters[loc] || false} readOnly />
+                        {loc}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
             </div>
           </div>
           {/* <div className="toolbar-right">
