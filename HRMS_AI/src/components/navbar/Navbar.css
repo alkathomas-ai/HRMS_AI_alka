@@ -68,6 +68,7 @@
   border-radius: 20px;
   padding: 8px 16px;
   width: 600px;
+  height: 45px;
   transition: all 0.2s ease;
   position: relative;
 }
@@ -457,7 +458,7 @@
   position: fixed;
   top: 72px;
   bottom: 0;
-  left: 0;
+  left: 80px;
   right: 0;
   background: var(--color-bg-card);
   box-shadow: 0 -4px 20px rgba(224, 224, 224, 0.15);
@@ -540,4 +541,77 @@
   .search-results-panel {
     top: 60px;
   }
+}
+
+
+/* Avatar Dropdown */
+.avatar-wrapper {
+  position: relative;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.avatar:hover {
+  transform: scale(1.1);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--color-bg-card);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 1000;
+  min-width: 150px;
+  overflow: hidden;
+}
+
+.avatar-dropdown-item {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.avatar-dropdown-item:hover {
+  background: var(--color-bg-muted);
+  color: var(--color-primary);
+}
+
+.avatar-dropdown-item span {
+  font-size: 18px;
+}
+
+.logout-btn {
+  color: var(--color-primary-hover);
+}
+
+.logout-btn:hover {
+  background: var(--color-bg-card);
+  color: var(--);
 }

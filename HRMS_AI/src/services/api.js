@@ -2,9 +2,15 @@ import axios from 'axios'
 import dummyUploadData from '../data/dummyUploadData';
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+let sessionExpiredCallback = null;
+
+export const setSessionExpiredCallback = (callback) => {
+  sessionExpiredCallback = callback;
+};
+
 // Add token to all axios requests
 axios.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken');
+  const token = sessionStorage.getItem('authToken');
   if (token) {
     config.headers = config.headers || {};
     config.headers.Authorization = `Bearer ${token}`;
@@ -14,9 +20,23 @@ axios.interceptors.request.use((config) => {
   return Promise.reject(error);
 });
 
+// Handle 401 responses (session expired)
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      sessionStorage.removeItem('authToken');
+      if (sessionExpiredCallback) {
+        sessionExpiredCallback();
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 
 export async function searchAPI(query) {
-    const token = localStorage.getItem('authToken');
+    const token = sessionStorage.getItem('authToken');
     const response = await fetch(`${BASE_URL}/search-rank-simplified-new`, 
     {
       method: 'POST',
@@ -38,7 +58,7 @@ export async function searchAPI(query) {
 export async function uploadAPI(formData) {
   try{
     console.log(formData)
-    const token = localStorage.getItem('authToken');
+    const token = sessionStorage.getItem('authToken');
     const headers = {};
     if (token) {
       headers.Authorization = `Bearer ${token}`;

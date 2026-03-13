@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
-import {  Route, Routes, Navigate, useOutletContext } from 'react-router-dom'
+import {  Route, Routes, Navigate, useOutletContext, useNavigate } from 'react-router-dom'
 import React from 'react' 
 import './App.css'
 import EditUser from './pages/edit-user/EditUser'
@@ -10,9 +10,10 @@ import Login from './pages/Login'
 import { EmployeeContext } from './context/employeeContext'
 import { ScheduleNotificationProvider } from './context/scheduleNotificationContext'
 import ErrorBoundary from './components/common/ErrorBoundary'
+import { setSessionExpiredCallback } from './services/api'
 
 const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem('isAuthenticated');
+  const isAuthenticated = sessionStorage.getItem('authToken');
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
@@ -28,6 +29,19 @@ const App = () => {
     searchResult,
     setSearchResult
   }), [searchResult]);
+  const [showSessionExpired, setShowSessionExpired] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setSessionExpiredCallback(() => {
+      setShowSessionExpired(true);
+    });
+  }, []);
+
+  const handleSessionExpiredClose = () => {
+    setShowSessionExpired(false);
+    navigate('/login');
+  };
 
   return (
     <ErrorBoundary>
