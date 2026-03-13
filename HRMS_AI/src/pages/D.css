@@ -252,18 +252,19 @@
 
 .skill-badge {
   padding: 4px 10px;
-  /* background: #dbeafe; */
-  /* color: #1e40af; */
   border: 1px solid var(--color-primary);
   color: var(--color-primary);
   font-size: 11px;
   border-radius: 20px;
   font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
-.active-skill-badge{
-  background: var(--background-light);
 
+.skill-badge.active-skill-badge {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
 }
 
 .skill-more-btn {

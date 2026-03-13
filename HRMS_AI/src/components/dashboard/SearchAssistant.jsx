@@ -100,7 +100,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                       .slice(0, showAllSkills ? undefined : 5)
                       .map((skill, skillIndex) => {
                           const trimmedSkill = skill.trim();
-                          const isActive = activeSkill && (trimmedSkill.toLowerCase().includes(activeSkill.toLowerCase()) || activeSkill.toLowerCase().includes(trimmedSkill.toLowerCase()));
+                          const isActive = activeSkill && trimmedSkill.toLowerCase() === activeSkill.toLowerCase();
 
                         return (
                           <span
@@ -228,7 +228,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                     .slice(0, showAllSkills ? undefined : 5)
                     .map((skill, skillIndex) => {
                       const trimmedSkill = skill.trim();
-                      const isActive = activeSkill && (trimmedSkill.toLowerCase().includes(activeSkill.toLowerCase()) || activeSkill.toLowerCase().includes(trimmedSkill.toLowerCase()));
+                      const isActive = activeSkill && trimmedSkill.toLowerCase() === activeSkill.toLowerCase();
 
                       return (
                         <span
@@ -384,7 +384,7 @@ function filterOnSearch(skill) {
         ?.toLowerCase()
         .split(",")
         .map((s) => s.trim())
-        .some((s) => s.includes(searchSkill) || searchSkill.includes(s))
+        .some((s) => s === searchSkill)
     );
   } else {
     filtered = allCardEmployees;
