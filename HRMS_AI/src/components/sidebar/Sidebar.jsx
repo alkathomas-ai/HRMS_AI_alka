@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Sidebar.css';
 
-const Sidebar = () => {
+const Sidebar = ({ onNavigate }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -20,7 +20,10 @@ const Sidebar = () => {
         {navItems.map((item) => (
           <button
             key={item.path}
-            onClick={() => navigate(item.path)}
+            onClick={() => {
+              if (onNavigate) onNavigate();
+              navigate(item.path);
+            }}
             className={`sidebar-btn ${location.pathname === item.path ? 'active' : ''}`}
             aria-label={item.label}
             title={item.label}

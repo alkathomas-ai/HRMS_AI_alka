@@ -11,9 +11,21 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [currentSlide, setCurrentSlide] = useState(0);
   const navigate = useNavigate();
+
+  // Load saved credentials on component mount
+  useEffect(() => {
+    const savedUsername = localStorage.getItem('rememberedUsername');
+    const savedPassword = localStorage.getItem('rememberedPassword');
+    if (savedUsername && savedPassword) {
+      setUsername(savedUsername);
+      setPassword(savedPassword);
+      setRememberMe(true);
+    }
+  }, []);
 
   const slides = [
     {
@@ -44,17 +56,32 @@ const Login = () => {
     e.preventDefault();
     setError("");
 
-    if (!username || !password) {
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedUsername || !trimmedPassword) {
       setError("Please fill in all fields");
       return;
     }
 
     try {
-      const response = await loginApi({ username, password });
+      const response = await loginApi({
+            username: trimmedUsername,
+            password: trimmedPassword
+          });
       const token = response.access_token || response.token;
       if (token) {
         sessionStorage.setItem("authToken", token);
         sessionStorage.setItem("username", username);
+        
+        // Handle remember me functionality
+        if (rememberMe) {
+          localStorage.setItem('rememberedUsername', trimmedUsername);
+          localStorage.setItem('rememberedPassword', trimmedPassword);
+        } else {
+          localStorage.removeItem('rememberedUsername');
+          localStorage.removeItem('rememberedPassword');
+        }
       }
       navigate("/");
     } catch (error) {
@@ -152,7 +179,11 @@ const Login = () => {
       
                 <div className="form-options">
                   <label className="remember-me">
-                    <input type="checkbox" />
+                    <input 
+                      type="checkbox" 
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                    />
                     <span>Remember me</span>
                   </label>
                   <a href="#" className="forgot-password">Forgot password?</a>

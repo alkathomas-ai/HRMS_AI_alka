@@ -9,8 +9,9 @@ import './MainLayout.css'
 
 const MainLayoutContent = () => {
   const { showSuccess, showError } = useToast();
-    const [scheduleTab, setScheduleTab] = useState('schedule');
-    const [csvFile, setCsvFile] = useState(null);
+  const [scheduleTab, setScheduleTab] = useState('schedule');
+  const [csvFile, setCsvFile] = useState(null);
+  const closeSearchResultsRef = React.useRef(null);
     const [notifications, setNotifications] = useState([
       { id: 1, title: 'Interview Reminder', text: 'Interview with Habibur Rahman at 09:30 AM', time: '2h ago', read: false },
       { id: 2, title: 'Schedule Updated', text: "Willem van Helden's interview rescheduled", time: '5h ago', read: false },
@@ -32,6 +33,12 @@ const MainLayoutContent = () => {
   
     const handleMarkAllRead = () => {
       setNotifications(notifications.map(n => ({ ...n, read: true })));
+    };
+
+    const handleSidebarNavigate = () => {
+      if (closeSearchResultsRef.current) {
+        closeSearchResultsRef.current();
+      }
     };
 
     const handleCSVUpload = async (file) => {
@@ -60,8 +67,9 @@ const MainLayoutContent = () => {
         onNotificationClick={handleNotificationClick} 
         onMarkAllRead={handleMarkAllRead}
         onCSVUpload={handleCSVUpload}
+        onCloseSearchResults={closeSearchResultsRef}
       />
-      <Sidebar />
+      <Sidebar onNavigate={handleSidebarNavigate} />
       <div className="page-content">
         <Outlet context={{ scheduleTab, setScheduleTab, csvFile }} />
       </div>

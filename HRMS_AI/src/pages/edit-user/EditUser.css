@@ -11,7 +11,8 @@
 }
 
 .edit-user-header {
-    display: flex;
+    /* display: flex; */
+    display: none;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
