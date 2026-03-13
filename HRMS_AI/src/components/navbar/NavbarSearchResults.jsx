@@ -50,9 +50,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const filterOnSearch = (skill) => {
-    // This would need to be implemented if filtering is needed
-  };
+
 
   if (!searchResult?.result || searchResult.result.length === 0) {
     return <div class="no-search-results">No results found.</div>;
@@ -110,8 +108,14 @@ const NavbarSearchResults = ({ searchQuery }) => {
       });
     }
     
+    if (activeSkill) {
+      filtered = filtered.filter(e => 
+        e.skill_set?.toLowerCase().split(',').map(s => s.trim()).includes(activeSkill.toLowerCase())
+      );
+    }
+    
     return filtered;
-  }, [searchResult?.result, filterText, deptFilters, locFilters, techFilters, expFilter]);
+  }, [searchResult?.result, filterText, deptFilters, locFilters, techFilters, expFilter, activeSkill]);
 
   const totalPages = Math.ceil(filteredResults.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
@@ -185,7 +189,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
                 )}
               </div>
 
-              <div className="custom-select-wrapper" ref={locDropdownRef}>
+              <div className="custom-select-wrapper" ref={techDropdownRef}>
                 <div className="select-trigger search-result-filter" onClick={() => setShowTechDropdown(!showTechDropdown)}>
                   <span>Tech Group</span>
                   <i className="fa-solid fa-chevron-down"></i>
@@ -448,7 +452,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
                                   ? null
                                   : trimmedSkill;
                               setActiveSkill(newSkill);
-                              filterFunction(newSkill);
+                              setCurrentPage(1);
                             }}
                             className={
                               activeSkill === trimmedSkill
