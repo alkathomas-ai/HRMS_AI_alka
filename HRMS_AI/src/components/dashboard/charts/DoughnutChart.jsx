@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pie } from 'react-chartjs-2';
+import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -19,6 +19,7 @@ const DoughnutChart = ({ data, total }) => {
       data: data.map(item => item.employee_count),
       backgroundColor: colors,
       borderWidth: 0,
+      cutout: '60%'
     }]
   };
 
@@ -36,7 +37,7 @@ const DoughnutChart = ({ data, total }) => {
 
   };
 
-  return <Pie data={chartData} options={options} />;
+  return <Doughnut data={chartData} options={options} />;
 };
 
 export default DoughnutChart;

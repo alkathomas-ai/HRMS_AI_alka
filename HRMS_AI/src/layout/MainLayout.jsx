@@ -2,9 +2,13 @@ import React, { useState } from 'react'
 import Navbar from '../components/navbar/Navbar'
 import Sidebar from '../components/sidebar/Sidebar'
 import { Outlet } from 'react-router-dom'
+import { uploadAPI } from '../services/api'
+import { ToastProvider, useToast } from '../context/ToastContext'
+import ToastContainer from '../components/toast/ToastContainer'
 import './MainLayout.css'
 
-const MainLayout = () => {
+const MainLayoutContent = () => {
+  const { showSuccess, showError } = useToast();
     const [scheduleTab, setScheduleTab] = useState('schedule');
     const [csvFile, setCsvFile] = useState(null);
     const [notifications, setNotifications] = useState([
@@ -30,8 +34,21 @@ const MainLayout = () => {
       setNotifications(notifications.map(n => ({ ...n, read: true })));
     };
 
-    const handleCSVUpload = (file) => {
+    const handleCSVUpload = async (file) => {
       setCsvFile(file);
+      console.log('Toast functions available:', { showSuccess, showError });
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const result = await uploadAPI(formData);
+        console.log('About to show success toast');
+        showSuccess('CSV file uploaded successfully!');
+        console.log('Upload successful:', result);
+      } catch (error) {
+        console.log('About to show error toast');
+        showError('Failed to upload CSV file. Please try again.');
+        console.error('Upload failed:', error);
+      }
       const timeoutId = setTimeout(() => setCsvFile(null), 100);
       return () => clearTimeout(timeoutId);
     };
@@ -50,6 +67,15 @@ const MainLayout = () => {
       </div>
     </>
   )
+}
+
+const MainLayout = () => {
+  return (
+    <ToastProvider>
+      <MainLayoutContent />
+      <ToastContainer />
+    </ToastProvider>
+  );
 }
 
 export default MainLayout

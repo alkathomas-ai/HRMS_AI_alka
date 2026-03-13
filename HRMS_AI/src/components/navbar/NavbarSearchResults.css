@@ -185,6 +185,16 @@
   transition: all 0.2s ease;
 }
 
+.no-search-results {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  font-size: 20px;
+}
+
 /* .project-badge:hover {
   background: var(--color-bg-card);
   border-color: var(--color-primary-soft);
