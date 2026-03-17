@@ -421,7 +421,8 @@
 }
 
 .masonry-item.pinned {
-  border: 1px solid var(--color-primary-soft);
+  /* border: 1px solid var(--color-primary-soft); */
+  box-shadow: 0px 0px 2px var(--color-primary-soft) inset,0px 0px 2px var(--color-primary-soft);
   /* box-shadow: none; */
 }
 
@@ -435,7 +436,8 @@
   transform: none;
 }
 .masonry-item:hover {
-  box-shadow: 1px 0px 8px rgba(0,0,0,0.12);
+  /* box-shadow: 1px 0px 8px rgba(0,0,0,0.12); */
+  transform: scale(1.005);
 }
 
 .grid-item-header {

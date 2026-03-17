@@ -64,7 +64,7 @@
   align-items: center;
   gap: 8px;
   /* background: var(--assistant-base-start); */
-  background-color: var(--color-bg-muted);
+  background-color: var(--color-bg-topbar);
   border-radius: 20px;
   padding: 8px 16px;
   width: 600px;
