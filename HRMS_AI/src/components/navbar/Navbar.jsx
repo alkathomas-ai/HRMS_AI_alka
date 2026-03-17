@@ -259,11 +259,11 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
         <div className={`search-results-panel ${isClosing ? 'closing' : ''}`}>
           <div className="search-results-header">
             <h3>Search Results</h3>
-            <button className="search-results-close-btn" onClick={handleCloseSearch}>
+            {/* <button className="search-results-close-btn" onClick={handleCloseSearch}>
               <span class="material-symbols-outlined">
               keyboard_return
               </span>
-            </button>
+            </button> */}
           </div>
           <div className="search-results-content">
             {isSearching ? (

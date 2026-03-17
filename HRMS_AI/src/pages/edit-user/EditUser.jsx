@@ -250,7 +250,7 @@ const EditUser = () => {
                           <td className="designation-cell">{employee.designation}</td>
                           <td className="skills-cell">
                             {editingEmployee === employee.employee_id ? (
-                              <input
+                              <textarea
                                 type="text"
                                 value={editingSkills}
                                 onChange={(e) => setEditingSkills(e.target.value)}

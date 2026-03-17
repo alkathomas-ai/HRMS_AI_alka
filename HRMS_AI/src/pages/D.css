@@ -89,7 +89,7 @@
   border-top: 1px solid var(--color-bg-muted);
   border-bottom: 1px solid var(--color-bg-muted);
   border-right: 1px solid var(--color-bg-muted);
-  border-left: 5px solid #94a3b8;
+  border-left: 5px solid var(--color-text-muted);
   position: relative;
 }
 .employee-card-list {
@@ -101,7 +101,7 @@
   border-top: 1px solid var(--color-bg-muted);
   border-bottom: 1px solid var(--color-bg-muted);
   border-right: 1px solid var(--color-bg-muted);
-  border-left: 5px solid #94a3b8;
+  border-left: 5px solid var(--color-text-muted);
   position: relative;
 }
 
@@ -211,7 +211,7 @@
   /* background: #dbeafe; */
   padding: 4px 12px;
   /* border-radius: 20px; */
-  border-left: 1px solid #c2c2c2;
+  border-left: 1px solid var(--color-bg-muted);
 }
 
 .employee-details-text {
@@ -306,7 +306,7 @@
 }
 
 .project-customer {
-  color: #64748b;
+  color: var(--color-text-muted);
 }
 
 .ai-reason-section {
