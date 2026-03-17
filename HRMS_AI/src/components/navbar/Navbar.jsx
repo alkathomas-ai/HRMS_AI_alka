@@ -7,6 +7,7 @@ import ThemeToggle from "./ThemeToggle";
 import AnimatedSearchInput from "../dashboard/AnimatedSearchInput";
 import UploadCSVModal from "../dashboard/UploadCSVModal";
 import NavbarSearchResults from "./NavbarSearchResults";
+import SearchLoadingAnimation from "./SearchLoadingAnimation";
 import { searchAPI } from "../../services/api";
 import { EmployeeContext } from "../../context/employeeContext";
 import { useScheduleNotification } from "../../context/scheduleNotificationContext";
@@ -258,7 +259,7 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
       {showSearchResults && (
         <div className={`search-results-panel ${isClosing ? 'closing' : ''}`}>
           <div className="search-results-header">
-            <h3>Search Results</h3>
+            {!isSearching && (<h3>Search Results</h3>)}
             {/* <button className="search-results-close-btn" onClick={handleCloseSearch}>
               <span class="material-symbols-outlined">
               keyboard_return
@@ -267,9 +268,7 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
           </div>
           <div className="search-results-content">
             {isSearching ? (
-              <div className="chat-loader">
-                <div className="spinner"></div>
-              </div>
+              <SearchLoadingAnimation />
             ) : (
               <NavbarSearchResults searchQuery={searchValue} />
             )}
