@@ -160,7 +160,7 @@ const DynamicWidget = ({ widgetData }) => {
                   className='dynamic-table-search'
                   placeholder="Search..."
                   value={search}
-                  onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+                  onChange={(e) => { setSearch(e.target.value.replace(/\s+/g, ' ').trimStart()); setPage(0); }}
                   // style={{ flex: 1, padding: '8px 12px', border: '1px solid #e0e0e0', borderRadius: '4px', fontSize: '14px' }}
                 />
                 <i className="fa-solid fa-search"></i>

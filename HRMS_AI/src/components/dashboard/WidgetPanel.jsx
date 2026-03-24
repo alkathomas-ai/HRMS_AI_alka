@@ -462,7 +462,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
               <div className="search-input">
                 <AnimatedSearchInput
                   value={employeeSearch}
-                  onChange={(e) => { setEmployeeSearch(e.target.value); setEmployeePage(0); }}
+                  onChange={(e) => { setEmployeeSearch(e.target.value.replace(/\s+/g, ' ').trimStart()); setEmployeePage(0); }}
                   onClick={(e) => e.stopPropagation()}
                   className="employee-search-input"
                   prompts={[
@@ -778,7 +778,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                 type="text"
                 placeholder="Search widgets..."
                 value={widgetSearch}
-                onChange={(e) => setWidgetSearch(e.target.value)}
+                onChange={(e) => setWidgetSearch(e.target.value.replace(/\s+/g, ' ').trimStart())}
               />
               <i className="fa-solid fa-search"></i>
             </div>

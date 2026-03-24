@@ -138,7 +138,7 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate, editingWidget }) => {
             <textarea
               placeholder="Describe what you want this widget to display..."
               value={prompt}
-              onChange={(e) => { setPrompt(e.target.value); setError(''); }}
+              onChange={(e) => { setPrompt(e.target.value.replace(/\s+/g, ' ').trimStart()); setError(''); }}
               rows={5}
               className={error ? 'error' : ''}
             />

@@ -166,7 +166,7 @@ const EditUser = () => {
                     type="text" 
                     placeholder="Search by name, ID, or designation..."
                     value={searchQuery}
-                    onChange={(e) => handleSearch(e.target.value)}
+                    onChange={(e) => handleSearch(e.target.value.replace(/\s+/g, ' ').trimStart())}
                   />
                 </div>
                 {!isSearching && (

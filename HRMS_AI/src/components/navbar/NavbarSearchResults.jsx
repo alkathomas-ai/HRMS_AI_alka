@@ -6,7 +6,7 @@ import "../../pages/D.css";
 
 const NavbarSearchResults = ({ searchQuery }) => {
   const { searchResult } = useContext(EmployeeContext);
-  const [activeSkill, setActiveSkill] = useState(null);
+  const [activeSkill, setActiveSkill] = useState([]);
   const [showAllSkills, setShowAllSkills] = useState({});
   const [filterText, setFilterText] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -110,7 +110,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
     
     if (activeSkill) {
       filtered = filtered.filter(e => 
-        e.skill_set?.toLowerCase().split(',').map(s => s.trim()).includes(activeSkill.toLowerCase())
+        e.skill_set?.toLowerCase().split(',').map(s => s.trim()).filter(item=>activeSkill.includes(item))
       );
     }
     
@@ -133,7 +133,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
                 placeholder="Filter search results..."
                 value={filterText}
                 onChange={(e) => {
-                  setFilterText(e.target.value);
+                  setFilterText(e.target.value.replace(/\s+/g, ' ').trimStart());
                   setCurrentPage(1);
                 }}
               />
@@ -448,14 +448,14 @@ const NavbarSearchResults = ({ searchQuery }) => {
                             key={skillIndex}
                             onClick={() => {
                               const newSkill =
-                                activeSkill === trimmedSkill
+                                activeSkill.includes(trimmedSkill)
                                   ? null
                                   : trimmedSkill;
                               setActiveSkill(newSkill);
                               setCurrentPage(1);
                             }}
                             className={
-                              activeSkill === trimmedSkill
+                              activeSkill.includes(trimmedSkill)
                                 ? "skill-badge active-skill-badge"
                                 : "skill-badge"
                             }

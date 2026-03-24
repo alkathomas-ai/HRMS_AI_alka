@@ -597,8 +597,8 @@
 }
 
 .search-results-header h3 {
-  margin: 0;
-  font-size: 18px;
+  margin-bottom: 5px;
+  font-size: 20px;
   font-weight: 500;
   color: var(--color-text-primary);
 }
@@ -656,7 +656,7 @@
 .search-results-content {
   /* padding: 0 24px; */
   overflow-y: auto;
-  height: calc(100% - 73px);
+  height: calc(100% - 53px);
   color: var(--color-text-secondary);
 }
 

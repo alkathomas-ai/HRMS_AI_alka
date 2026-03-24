@@ -25,9 +25,6 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearchResults, setHasSearchResults] = useState(false);
   const [username, setUsername] = useState('');
-  const [searchHistory, setSearchHistory] = useState([]);
-  const [showHistory, setShowHistory] = useState(false);
-  const [filteredHistory, setFilteredHistory] = useState([]);
   const notifRef = useRef(null);
   const avatarRef = useRef(null);
   const searchRef = useRef(null);
@@ -36,35 +33,9 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
   useEffect(() => {
     const storedUsername = sessionStorage.getItem('username');
     setUsername(storedUsername || 'User');
-    
-    // Load search history from localStorage
-    const savedHistory = localStorage.getItem('searchHistory');
-    if (savedHistory) {
-      setSearchHistory(JSON.parse(savedHistory));
-    }
-    
-    // For testing - add some sample history if none exists
-    // Remove this after testing
-    if (!savedHistory) {
-      const sampleHistory = ['John Doe', 'Software Engineer', 'Marketing Department'];
-      setSearchHistory(sampleHistory);
-      localStorage.setItem('searchHistory', JSON.stringify(sampleHistory));
-    }
   }, []);
 
-  // Filter history based on search input
-  useEffect(() => {
-    if (searchValue.trim()) {
-      const filtered = searchHistory.filter(item => 
-        item.toLowerCase().includes(searchValue.toLowerCase())
-      );
-      setFilteredHistory(filtered);
-      setShowHistory(filtered.length > 0);
-    } else {
-      setFilteredHistory(searchHistory);
-      setShowHistory(false);
-    }
-  }, [searchValue, searchHistory]);
+
 
   const getAvatarUrl = () => {
     if (!username) return 'https://i.pravatar.cc/32';
@@ -98,37 +69,19 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
     navigate('/login');
   };
 
-  const saveToHistory = (query) => {
-    const newHistory = [query, ...searchHistory.filter(item => item !== query)].slice(0, 6);
-    setSearchHistory(newHistory);
-    localStorage.setItem('searchHistory', JSON.stringify(newHistory));
-  };
 
-  const removeFromHistory = (query) => {
-    const newHistory = searchHistory.filter(item => item !== query);
-    setSearchHistory(newHistory);
-    localStorage.setItem('searchHistory', JSON.stringify(newHistory));
-  };
-
-  const handleHistoryClick = (query) => {
-    setSearchValue(query);
-    setShowHistory(false);
-    handleSearchWithQuery(query);
-  };
 
   const handleSearchWithQuery = async (query) => {
     if (!query.trim()) return;
     
     setIsSearching(true);
     setShowSearchResults(true);
-    setShowHistory(false);
     
     try {
       const response = await searchAPI(query);
       const employees = response?.data || response?.employee || [];
       setSearchResult({ result: employees, viewModeCard: "card" });
       setHasSearchResults(employees.length > 0);
-      saveToHistory(query);
     } catch (error) {
       console.error(error);
       setSearchResult({ result: [], viewModeCard: "card" });
@@ -147,9 +100,6 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
       }
       if (avatarRef.current && !avatarRef.current.contains(e.target)) {
         setShowAvatarDropdown(false);
-      }
-      if (searchRef.current && !searchRef.current.contains(e.target)) {
-        setShowHistory(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -198,14 +148,7 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
             </div>
             <AnimatedSearchInput
               value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onFocus={() => {
-                console.log('Search focused, history length:', searchHistory.length);
-                if (searchHistory.length > 0 && !searchValue.trim()) {
-                  setShowHistory(true);
-                  setFilteredHistory(searchHistory);
-                }
-              }}
+              onChange={(e) => setSearchValue(e.target.value.replace(/\s+/g, ' ').trimStart())}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && searchValue.trim()) {
                   handleSearch();
@@ -220,33 +163,6 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
               ]}
             />
           </div>
-          {showHistory && filteredHistory.length > 0 && (
-            <div className="recent-history">
-              <div style={{padding: '8px 12px', fontSize: '12px', color: 'var(--color-text-secondary)', borderBottom: '1px solid var(--color-bg-muted)'}}>Recent Searches</div>
-              {filteredHistory.map((query, index) => (
-                <div key={index} className="history-item">
-                  <button 
-                    className="history-query" 
-                    onClick={() => handleHistoryClick(query)}
-                    title={query}
-                  >
-                    <span className="material-symbols-outlined">history</span>
-                    <span className="query-text">{query}</span>
-                  </button>
-                  <button 
-                    className="history-remove" 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeFromHistory(query);
-                    }}
-                    title="Remove from history"
-                  >
-                    <span className="material-symbols-outlined">close</span>
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
           <button
             className="icon-btn"
