@@ -12,7 +12,8 @@ const EditUser = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [editingEmployee, setEditingEmployee] = useState(null);
-  const [editingSkills, setEditingSkills] = useState('');
+  const [editingSkills, setEditingSkills] = useState([]);
+  const [newSkillInput, setNewSkillInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -95,36 +96,39 @@ const EditUser = () => {
 
   const handleStartEdit = (employee) => {
     setEditingEmployee(employee.employee_id);
-    setEditingSkills(employee.skill_set || '');
+    const skillsArray = employee.skill_set ? employee.skill_set.split(',').map(s => s.trim()).filter(s => s) : [];
+    setEditingSkills(skillsArray);
+    setNewSkillInput('');
   };
 
   const handleSaveEdit = async (employee) => {
     try {
-      const skillsArray = editingSkills.split(',').map(s => s.trim()).filter(s => s);
-      await updateEmployeeSkills(employee.employee_id, skillsArray);
+      await updateEmployeeSkills(employee.employee_id, editingSkills);
       
+      const skillsString = editingSkills.join(', ');
       // Update local state
       if (isSearching) {
         setFilteredEmployees(prev => prev.map(emp => 
           emp.employee_id === employee.employee_id 
-            ? { ...emp, skill_set: editingSkills } 
+            ? { ...emp, skill_set: skillsString } 
             : emp
         ));
       } else {
         setEmployees(prev => prev.map(emp => 
           emp.employee_id === employee.employee_id 
-            ? { ...emp, skill_set: editingSkills } 
+            ? { ...emp, skill_set: skillsString } 
             : emp
         ));
       }
       setAllEmployees(prev => prev.map(emp => 
         emp.employee_id === employee.employee_id 
-          ? { ...emp, skill_set: editingSkills } 
+          ? { ...emp, skill_set: skillsString } 
           : emp
       ));
       
       setEditingEmployee(null);
-      setEditingSkills('');
+      setEditingSkills([]);
+      setNewSkillInput('');
     } catch (error) {
       alert(`Failed to update skills: ${error.message}`);
     }
@@ -140,7 +144,27 @@ const EditUser = () => {
 
   const handleCancelEdit = () => {
     setEditingEmployee(null);
-    setEditingSkills('');
+    setEditingSkills([]);
+    setNewSkillInput('');
+  };
+
+  const handleRemoveSkill = (skillIndex) => {
+    setEditingSkills(prev => prev.filter((_, index) => index !== skillIndex));
+  };
+
+  const handleAddSkill = () => {
+    const trimmedSkill = newSkillInput.trim();
+    if (trimmedSkill && !editingSkills.includes(trimmedSkill)) {
+      setEditingSkills(prev => [...prev, trimmedSkill]);
+      setNewSkillInput('');
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddSkill();
+    }
   };
 
   
@@ -250,19 +274,54 @@ const EditUser = () => {
                           <td className="designation-cell">{employee.designation}</td>
                           <td className="skills-cell">
                             {editingEmployee === employee.employee_id ? (
-                              <textarea
-                                type="text"
-                                value={editingSkills}
-                                onChange={(e) => setEditingSkills(e.target.value)}
-                                onBlur={() => handleSaveEdit(employee)}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') handleSaveEdit(employee);
-                                  if (e.key === 'Escape') handleCancelEdit();
-                                }}
-                                className="skills-input"
-                                placeholder="Enter skills separated by commas"
-                                autoFocus
-                              />
+                              <div className="skills-edit-container">
+                                <div className="skills-badges-container">
+                                  {editingSkills.map((skill, index) => (
+                                    <div key={index} className="skill-badge-edit">
+                                      <span>{skill}</span>
+                                      <button
+                                        type="button"
+                                        className="remove-skill-btn"
+                                        onClick={() => handleRemoveSkill(index)}
+                                        title="Remove skill"
+                                      >
+                                        ×
+                                      </button>
+                                    </div>
+                                  ))}
+                                  <input
+                                    type="text"
+                                    value={newSkillInput}
+                                    onChange={(e) => setNewSkillInput(e.target.value)}
+                                    onKeyPress={handleKeyPress}
+                                    onBlur={(e) => {
+                                      // Only save if clicking outside the skills container
+                                      if (!e.relatedTarget || !e.relatedTarget.closest('.skills-edit-container')) {
+                                        handleSaveEdit(employee);
+                                      }
+                                    }}
+                                    className="add-skill-input"
+                                    placeholder="Add new skill..."
+                                    autoFocus
+                                  />
+                                </div>
+                                <div className="skills-edit-actions">
+                                  <button
+                                    type="button"
+                                    className="save-skills-btn"
+                                    onClick={() => handleSaveEdit(employee)}
+                                  >
+                                    Save
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="cancel-skills-btn"
+                                    onClick={handleCancelEdit}
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
                             ) : (
                               <div 
                                 className='skills-container'

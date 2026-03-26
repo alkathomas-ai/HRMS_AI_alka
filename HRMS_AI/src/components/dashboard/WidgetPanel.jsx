@@ -12,6 +12,7 @@ import CreateWidgetModal from './CreateWidgetModal';
 import DynamicWidget from './DynamicWidget';
 import AnimatedSearchInput from './AnimatedSearchInput';
 import StatsWidget from './StatsWidget';
+import useConfirmation from '../common/useConfirmation';
 
 
 const SortableWidget = ({ id, children, isPinned, widgetSize }) => {
@@ -35,6 +36,7 @@ const SortableWidget = ({ id, children, isPinned, widgetSize }) => {
 };
 
 const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
+  const { confirm, ConfirmationModal } = useConfirmation();
   const [selectedWidgets, setSelectedWidgets] = useState(() => {
     const saved = localStorage.getItem('selectedWidgets');
     return saved ? JSON.parse(saved) : ['project-distribution', 'department-overview', 'employee-directory', 'available-employees'];
@@ -232,7 +234,17 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     }
   };
 
-  const removeWidget = (id) => {
+  const removeWidget = async (id) => {
+    // Check if it's a dynamic widget
+    if (id.startsWith('dynamic-')) {
+      const confirmed = await confirm({
+        title: 'Remove Widget',
+        message: 'Are you sure you want to remove this widget? This action cannot be undone.'
+      });
+      
+      if (!confirmed) return;
+    }
+    
     setSelectedWidgets(prev => prev.filter(widgetId => widgetId !== id));
     setPinnedWidgets(prev => prev.filter(widgetId => widgetId !== id));
     if (id.startsWith('dynamic-')) {
@@ -906,6 +918,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         }}
       />
 
+      <ConfirmationModal />
     </div>
   );
 };
