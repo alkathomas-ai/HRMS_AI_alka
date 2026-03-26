@@ -7,6 +7,7 @@ import D from './pages/D'
 import Dashboard from './components/dashboard/Dashboard'
 import MainLayout from './layout/MainLayout'
 import Login from './pages/Login'
+import Projects from './pages/Projects'
 import { EmployeeContext } from './context/employeeContext'
 import { ScheduleNotificationProvider } from './context/scheduleNotificationContext'
 import ErrorBoundary from './components/common/ErrorBoundary'
@@ -55,6 +56,7 @@ const App = () => {
               <Route index element={<DashboardWrapper/>} />
               <Route path="dashboard" element={<DashboardWrapper />} />
               <Route path="user" element={<EditUser />} />
+              <Route path="projects" element={<Projects />} />
               <Route path="schedule" element={<Schedule />} />
               <Route path="d" element={<D />} />
             </Route>

@@ -9,6 +9,7 @@ const Sidebar = ({ onNavigate }) => {
   const navItems = [
     { icon: 'home', label: 'Home', path: '/' },
     { icon: 'group', label: 'Users', path: '/user' },
+    { icon: 'work', label: 'Projects', path: '/projects' },
     { icon: 'event', label: 'Schedule', path: '/schedule' },
     // { icon: 'stacks', label: 'Documents', path: '/d' },
     // { icon: 'pie_chart', label: 'Reports', path: '#' },
