@@ -177,11 +177,11 @@
 .project-badge {
   display: inline-block;
   padding: 2px 6px;
-  background: var(--color-primary-soft);
+  background: var(--assistant-base-end);
+  color: var(--color-primary);
   border: 1px solid var(--color-border);
   border-radius: 6px;
   font-size: 13px;
-  color: white;
   transition: all 0.2s ease;
 }
 

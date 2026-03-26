@@ -27,6 +27,8 @@ const NavbarSearchResults = ({ searchQuery }) => {
   const techDropdownRef = useRef(null);
   const [showReason, setShowReason] = useState(false);
 
+  console.log("activeSkill", typeof activeSkill,activeSkill)
+
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -108,10 +110,14 @@ const NavbarSearchResults = ({ searchQuery }) => {
       });
     }
     
-    if (activeSkill) {
-      filtered = filtered.filter(e => 
-        e.skill_set?.toLowerCase().split(',').map(s => s.trim()).filter(item=>activeSkill.includes(item))
-      );
+    if (activeSkill.length > 0) {
+      filtered = filtered.filter(e => {
+        if (!e.skill_set) return false;
+        const empSkills = e.skill_set.toLowerCase().split(',').map(s => s.trim());
+        return activeSkill.every(selectedSkill => 
+          empSkills.includes(selectedSkill.toLowerCase().trim())
+        );
+      });
     }
     
     return filtered;
@@ -447,11 +453,11 @@ const NavbarSearchResults = ({ searchQuery }) => {
                           <span
                             key={skillIndex}
                             onClick={() => {
-                              const newSkill =
-                                activeSkill.includes(trimmedSkill)
-                                  ? null
-                                  : trimmedSkill;
-                              setActiveSkill(newSkill);
+                              setActiveSkill(prev => 
+                                prev.includes(trimmedSkill)
+                                  ? prev.filter(skill => skill !== trimmedSkill)
+                                  : [...prev, trimmedSkill]
+                              );
                               setCurrentPage(1);
                             }}
                             className={
@@ -570,11 +576,14 @@ const NavbarSearchResults = ({ searchQuery }) => {
                       <span
                         key={skillIndex}
                         onClick={() => {
-                          const newSkill = activeSkill === trimmedSkill ? null : trimmedSkill;
-                          setActiveSkill(newSkill);
+                          setActiveSkill(prev => 
+                            prev.includes(trimmedSkill)
+                              ? prev.filter(skill => skill !== trimmedSkill)
+                              : [...prev, trimmedSkill]
+                          );
                           setCurrentPage(1);
                         }}
-                        className={activeSkill === trimmedSkill ? "skill-badge active-skill-badge" : "skill-badge"}
+                        className={activeSkill.includes(trimmedSkill) ? "skill-badge active-skill-badge" : "skill-badge"}
                       >
                         {trimmedSkill}
                       </span>

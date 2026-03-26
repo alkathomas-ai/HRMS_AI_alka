@@ -557,7 +557,7 @@
 }
 
 .skills-container:hover {
-    background-color: rgba(25, 118, 210, 0.05);
+    /* background-color: rgba(25, 118, 210, 0.05); */
     border-radius: 4px;
     padding: 4px;
     margin: -4px;
