@@ -70,7 +70,7 @@
   display: flex;
   flex-direction: column;
   /* gap: 36px; */
-  padding: 12px 60px;
+  padding: 12px 30px;
 }
 .employee-cards-list:has(.employee-card) {
     gap: 36px;
@@ -89,7 +89,7 @@
   border-top: 1px solid var(--color-bg-muted);
   border-bottom: 1px solid var(--color-bg-muted);
   border-right: 1px solid var(--color-bg-muted);
-  border-left: 5px solid #94a3b8;
+  border-left: 5px solid var(--color-text-muted);
   position: relative;
 }
 .employee-card-list {
@@ -101,7 +101,7 @@
   border-top: 1px solid var(--color-bg-muted);
   border-bottom: 1px solid var(--color-bg-muted);
   border-right: 1px solid var(--color-bg-muted);
-  border-left: 5px solid #94a3b8;
+  border-left: 5px solid var(--color-text-muted);
   position: relative;
 }
 
@@ -211,7 +211,7 @@
   /* background: #dbeafe; */
   padding: 4px 12px;
   /* border-radius: 20px; */
-  border-left: 1px solid #c2c2c2;
+  border-left: 1px solid var(--color-bg-muted);
 }
 
 .employee-details-text {
@@ -247,7 +247,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 4px;
+  /* margin-top: 4px; */
 }
 
 .skill-badge {
@@ -306,7 +306,7 @@
 }
 
 .project-customer {
-  color: #64748b;
+  color: var(--color-text-muted);
 }
 
 .ai-reason-section {
@@ -438,12 +438,12 @@
 .criteria-bar-bg {
   background: var(--color-bg-muted);
   border-radius: 10px;
-  height: 8px;
+  height: 12px;
   overflow: hidden;
 }
 
 .criteria-bar-fill {
-  height: 8px;
+  height: 100%;
   border-radius: 10px;
   transition: width 0.3s ease;
   /* background: var(--color-primary); */

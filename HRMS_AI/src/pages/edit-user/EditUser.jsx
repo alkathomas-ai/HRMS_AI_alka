@@ -166,7 +166,7 @@ const EditUser = () => {
                     type="text" 
                     placeholder="Search by name, ID, or designation..."
                     value={searchQuery}
-                    onChange={(e) => handleSearch(e.target.value)}
+                    onChange={(e) => handleSearch(e.target.value.replace(/\s+/g, ' ').trimStart())}
                   />
                 </div>
                 {!isSearching && (
@@ -250,7 +250,7 @@ const EditUser = () => {
                           <td className="designation-cell">{employee.designation}</td>
                           <td className="skills-cell">
                             {editingEmployee === employee.employee_id ? (
-                              <input
+                              <textarea
                                 type="text"
                                 value={editingSkills}
                                 onChange={(e) => setEditingSkills(e.target.value)}

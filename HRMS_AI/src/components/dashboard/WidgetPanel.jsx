@@ -249,6 +249,17 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         setTimeout(() => setShowAlert(false), 3000);
         return prev;
       } else {
+        // Auto-center the widget when pinned
+        setTimeout(() => {
+          const widgetElement = document.querySelector(`[data-widget-id="${id}"]`);
+          if (widgetElement) {
+            widgetElement.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center',
+              inline: 'center'
+            });
+          }
+        }, 100);
         return [...prev, id];
       }
     });
@@ -451,7 +462,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
               <div className="search-input">
                 <AnimatedSearchInput
                   value={employeeSearch}
-                  onChange={(e) => { setEmployeeSearch(e.target.value); setEmployeePage(0); }}
+                  onChange={(e) => { setEmployeeSearch(e.target.value.replace(/\s+/g, ' ').trimStart()); setEmployeePage(0); }}
                   onClick={(e) => e.stopPropagation()}
                   className="employee-search-input"
                   prompts={[
@@ -767,7 +778,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                 type="text"
                 placeholder="Search widgets..."
                 value={widgetSearch}
-                onChange={(e) => setWidgetSearch(e.target.value)}
+                onChange={(e) => setWidgetSearch(e.target.value.replace(/\s+/g, ' ').trimStart())}
               />
               <i className="fa-solid fa-search"></i>
             </div>
@@ -860,12 +871,35 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         onGenerate={(widgetData, prompt) => {
           if (editingWidget) {
             setDynamicWidgets(prev => prev.map(w => w.id === editingWidget.id ? { ...w, ...widgetData, prompt } : w));
+            // Center the edited widget
+            setTimeout(() => {
+              const widgetElement = document.querySelector(`[data-widget-id="${editingWidget.id}"]`);
+              if (widgetElement) {
+                widgetElement.scrollIntoView({ 
+                  behavior: 'smooth', 
+                  block: 'center',
+                  inline: 'center'
+                });
+              }
+            }, 200);
           } else {
             const newWidget = { id: `dynamic-${Date.now()}`, ...widgetData, prompt };
             const defaultRows = widgetData.chartType === 'card' ? 1 : 2;
             setDynamicWidgets(prev => [newWidget, ...prev]);
             setSelectedWidgets(prev => [newWidget.id, ...prev]);
             setWidgetSizes(prev => ({ ...prev, [newWidget.id]: { cols: 1, rows: defaultRows } }));
+            
+            // Auto-center the newly created widget
+            setTimeout(() => {
+              const widgetElement = document.querySelector(`[data-widget-id="${newWidget.id}"]`);
+              if (widgetElement) {
+                widgetElement.scrollIntoView({ 
+                  behavior: 'smooth', 
+                  block: 'center',
+                  inline: 'center'
+                });
+              }
+            }, 200);
           }
           setIsModalOpen(false);
           setEditingWidget(null);

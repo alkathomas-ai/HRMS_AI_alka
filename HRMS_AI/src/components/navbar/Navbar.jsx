@@ -7,6 +7,7 @@ import ThemeToggle from "./ThemeToggle";
 import AnimatedSearchInput from "../dashboard/AnimatedSearchInput";
 import UploadCSVModal from "../dashboard/UploadCSVModal";
 import NavbarSearchResults from "./NavbarSearchResults";
+import SearchLoadingAnimation from "./SearchLoadingAnimation";
 import { searchAPI } from "../../services/api";
 import { EmployeeContext } from "../../context/employeeContext";
 import { useScheduleNotification } from "../../context/scheduleNotificationContext";
@@ -26,12 +27,15 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
   const [username, setUsername] = useState('');
   const notifRef = useRef(null);
   const avatarRef = useRef(null);
+  const searchRef = useRef(null);
   const { setSearchResult } = useContext(EmployeeContext);
 
   useEffect(() => {
     const storedUsername = sessionStorage.getItem('username');
     setUsername(storedUsername || 'User');
   }, []);
+
+
 
   const getAvatarUrl = () => {
     if (!username) return 'https://i.pravatar.cc/32';
@@ -65,14 +69,16 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
     navigate('/login');
   };
 
-  const handleSearch = async () => {
-    if (!searchValue.trim()) return;
+
+
+  const handleSearchWithQuery = async (query) => {
+    if (!query.trim()) return;
     
     setIsSearching(true);
     setShowSearchResults(true);
     
     try {
-      const response = await searchAPI(searchValue);
+      const response = await searchAPI(query);
       const employees = response?.data || response?.employee || [];
       setSearchResult({ result: employees, viewModeCard: "card" });
       setHasSearchResults(employees.length > 0);
@@ -84,6 +90,8 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
       setIsSearching(false);
     }
   };
+
+  const handleSearch = () => handleSearchWithQuery(searchValue);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -132,27 +140,29 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
               <span className="material-symbols-outlined">history</span>
             </button>
           {/* )} */}
-        <div className="search-bar">
-          <div className="search-icon-wrapper">
-            <span className="material-symbols-outlined search-icon">search</span>
-            <span className="material-symbols-outlined spark-icon">auto_awesome</span>
+        <div className="search-input-container" ref={searchRef}>
+          <div className="search-bar">
+            <div className="search-icon-wrapper">
+              <span className="material-symbols-outlined search-icon">search</span>
+              <span className="material-symbols-outlined spark-icon">auto_awesome</span>
+            </div>
+            <AnimatedSearchInput
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value.replace(/\s+/g, ' ').trimStart())}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && searchValue.trim()) {
+                  handleSearch();
+                }
+              }}
+              className="search-input"
+              prompts={[
+                "Ask me anything...",
+                "Search employees...",
+                "Find projects...",
+                "Explore departments..."
+              ]}
+            />
           </div>
-          <AnimatedSearchInput
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && searchValue.trim()) {
-                handleSearch();
-              }
-            }}
-            className="search-input"
-            prompts={[
-              "Ask me anything...",
-              "Search employees...",
-              "Find projects...",
-              "Explore departments..."
-            ]}
-          />
         </div>
           <button
             className="icon-btn"
@@ -258,18 +268,16 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
       {showSearchResults && (
         <div className={`search-results-panel ${isClosing ? 'closing' : ''}`}>
           <div className="search-results-header">
-            <h3>Search Results</h3>
-            <button className="search-results-close-btn" onClick={handleCloseSearch}>
+            {!isSearching && (<h3>Search Results</h3>)}
+            {/* <button className="search-results-close-btn" onClick={handleCloseSearch}>
               <span class="material-symbols-outlined">
               keyboard_return
               </span>
-            </button>
+            </button> */}
           </div>
           <div className="search-results-content">
             {isSearching ? (
-              <div className="chat-loader">
-                <div className="spinner"></div>
-              </div>
+              <SearchLoadingAnimation />
             ) : (
               <NavbarSearchResults searchQuery={searchValue} />
             )}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const AnimatedSearchInput = ({ value, onChange, onClick, onKeyDown, className, prompts }) => {
+const AnimatedSearchInput = ({ value, onChange, onClick, onKeyDown, onFocus, className, prompts }) => {
   const [displayText, setDisplayText] = useState('');
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -66,7 +66,10 @@ const AnimatedSearchInput = ({ value, onChange, onClick, onKeyDown, className, p
       onChange={onChange}
       onClick={onClick}
       onKeyDown={onKeyDown}
-      onFocus={() => setIsFocused(true)}
+      onFocus={(e) => {
+        setIsFocused(true);
+        onFocus?.(e);
+      }}
       onBlur={() => setIsFocused(false)}
       className={className}
     />
