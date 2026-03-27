@@ -54,10 +54,6 @@ const NavbarSearchResults = ({ searchQuery }) => {
 
 
 
-  if (!searchResult?.result || searchResult.result.length === 0) {
-    return <div class="no-search-results">No results found.</div>;
-  }
-
   const uniqueDepts = useMemo(() => {
     if (!searchResult?.result) return [];
     return [...new Set(searchResult.result.map(e => e.employee_department).filter(Boolean))];
@@ -127,6 +123,9 @@ const NavbarSearchResults = ({ searchQuery }) => {
   const startIndex = (currentPage - 1) * rowsPerPage;
   const paginatedResults = filteredResults.slice(startIndex, startIndex + rowsPerPage);
 
+  if (!searchResult?.result || searchResult.result.length === 0) {
+    return <div className="no-search-results">No results found.</div>;
+  }
 
   return (
     <>
