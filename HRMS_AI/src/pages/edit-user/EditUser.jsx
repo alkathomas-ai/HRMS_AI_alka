@@ -305,7 +305,7 @@ const EditUser = () => {
                                     autoFocus
                                   />
                                 </div>
-                                <div className="skills-edit-actions">
+                                {/* <div className="skills-edit-actions">
                                   <button
                                     type="button"
                                     className="save-skills-btn"
@@ -320,7 +320,7 @@ const EditUser = () => {
                                   >
                                     Cancel
                                   </button>
-                                </div>
+                                </div> */}
                               </div>
                             ) : (
                               <div 

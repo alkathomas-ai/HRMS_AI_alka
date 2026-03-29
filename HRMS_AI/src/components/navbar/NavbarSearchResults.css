@@ -44,6 +44,7 @@
     font-size: 14px;
     color: var(--color-text-primary);
     transition: background 0.2s;
+    word-break: break-word;
 }
 
 .custom-select-wrapper .option:hover {
@@ -200,7 +201,7 @@
   border-color: var(--color-primary-soft);
 } */
 
-.projects-container {
+.result-projects-container {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;

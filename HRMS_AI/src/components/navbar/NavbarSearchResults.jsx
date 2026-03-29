@@ -430,7 +430,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
               {employee.projects && employee.projects.length > 0 && (
                 <div className="employee-projects-section">
                   {/* <span className="projects-label">Projects:</span> */}
-                  <div className="projects-container">
+                  <div className="results-projects-container">
                     {employee.projects.map((project, projectIndex) => (
                       <span key={projectIndex} className="project-badge">
                         <span className="project-name">{project.project_name}</span> ({project.customer}) - {project.occupancy}%
@@ -557,7 +557,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
           <div className="employee-skill-description">
             {employee.projects && employee.projects.length > 0 && (
               <div className="employee-projects-section">
-                <div className="projects-container">
+                <div className="result-projects-container">
                   {employee.projects.map((project, projectIndex) => (
                     <span key={projectIndex} className="project-badge">
                       {project.project_name} ({project.customer}) - {project.occupancy}%
