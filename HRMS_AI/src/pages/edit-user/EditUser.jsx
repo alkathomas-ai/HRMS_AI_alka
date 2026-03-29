@@ -160,10 +160,14 @@ const EditUser = () => {
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e, employee) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      handleAddSkill();
+      if (newSkillInput.trim()) {
+        handleAddSkill();
+      } else {
+        handleSaveEdit(employee);
+      }
     }
   };
 
@@ -282,7 +286,10 @@ const EditUser = () => {
                                       <button
                                         type="button"
                                         className="remove-skill-btn"
-                                        onClick={() => handleRemoveSkill(index)}
+                                        onMouseDown={(e) => {
+                                          e.preventDefault();
+                                          handleRemoveSkill(index);
+                                        }}
                                         title="Remove skill"
                                       >
                                         ×
@@ -293,12 +300,11 @@ const EditUser = () => {
                                     type="text"
                                     value={newSkillInput}
                                     onChange={(e) => setNewSkillInput(e.target.value)}
-                                    onKeyPress={handleKeyPress}
-                                    onBlur={(e) => {
-                                      // Only save if clicking outside the skills container
-                                      if (!e.relatedTarget || !e.relatedTarget.closest('.skills-edit-container')) {
+                                    onKeyPress={(e) => handleKeyPress(e, employee)}
+                                    onBlur={() => {
+                                      setTimeout(() => {
                                         handleSaveEdit(employee);
-                                      }
+                                      }, 100);
                                     }}
                                     className="add-skill-input"
                                     placeholder="Add new skill..."
