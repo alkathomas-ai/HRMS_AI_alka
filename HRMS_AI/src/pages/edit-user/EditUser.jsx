@@ -19,7 +19,7 @@ const EditUser = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalEmployees, setTotalEmployees] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
   const [isRowsDropdownOpen, setIsRowsDropdownOpen] = useState(false);
 
 
