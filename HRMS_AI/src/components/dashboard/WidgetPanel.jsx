@@ -53,6 +53,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const [showAlert, setShowAlert] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingWidget, setEditingWidget] = useState(null);
+  const [isLoading, setIsLoading] = useState(true)
   const dropdownRef = useRef(null);
 
   const [projectDistribution, setProjectDistribution] = useState({ projects: [], total_employees: 0 });
@@ -140,6 +141,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true);
         const [projects, departments, employees, counts, availableEmployees] = await Promise.all([
           getProjectDistributions(),
           getDepartment(),
@@ -147,6 +149,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           getEmployeeCount(),
           getSoonAvailableEmployees()
         ]);
+        setIsLoading(false);
         setProjectDistribution({ projects: projects.projects, total_employees: projects.total_employees });
         setDepartmentData({ departments: departments.departments });
         setEmployeeDirectory({ employees: employees.employees });
@@ -749,132 +752,142 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   return (
     <div className={`grid-container`} data-expanded={isExpanded}>
       <Alert message="Maximum 5 widgets can be pinned" show={showAlert} type="warning" />
-      <div className="dashboard-header">
-        <div className='welcome'>
-          <div className='d-flex justify-btwn align-center'>
-            <h2>Welcome back!</h2>
-          </div>
-          <p>Great talent awaits. Let's hire smart!</p>
-        </div>
-
-        <div className="stats">
-          <div className="stat">
-            <h3>{employeeCount.employeeCount || 0}</h3>
-            <span>
-              {/* <i className="fa-regular fa-user"></i> */}
-              Total Employees
-            </span>
-          </div>
-          <div className="stat">
-            <h3>{employeeCount.projectCount || 0}</h3>
-            <span>
-              {/* <i className="fa-regular fa-eye"></i>  */}
-              Projects
-            </span>
-          </div>
-          <div className="stat">
-            <h3>{employeeCount.freepoolCount || 0}</h3>
-            <span>
-              {/* <i className="fa-regular fa-circle-check"></i> */}
-              Freepool
-            </span>
-          </div>
-        </div>
+      {isLoading ? 
+      (    
+        <div className="loader" id="theme-loader">
+        <div className="justify-content-center jimu-primary-loading"></div>
       </div>
-
-      <div className="dashboard-content" ref={containerRef}>
-        <div className="filter-bar">
-          <div className="filter-controls">
-            <div className="search-input">
-              <input
-                type="text"
-                placeholder="Search widgets..."
-                value={widgetSearch}
-                onChange={(e) => setWidgetSearch(e.target.value.replace(/\s+/g, ' ').trimStart())}
-              />
-              <i className="fa-solid fa-search"></i>
+      ) : (
+       <>
+        <div className="dashboard-header">
+          <div className='welcome'>
+            <div className='d-flex justify-btwn align-center'>
+              <h2>Welcome back!</h2>
             </div>
-
-            <div className="multi-select" ref={dropdownRef}>
-              <div className="select-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-                <span className="placeholder">Select Widgets</span>
-                <i className="fa-solid fa-chevron-down"></i>
-              </div>
-
-              {isDropdownOpen && (
-                <div className="dropdown-menu show">
-                  {availableWidgets.map(widget => (
-                    <div key={widget.id} className="option">
-                      <input
-                        type="checkbox"
-                        id={widget.id}
-                        checked={selectedWidgets.includes(widget.id)}
-                        onChange={() => toggleWidget(widget.id)}
-                      />
-                      <label htmlFor={widget.id}>{widget.label}</label>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <p>Great talent awaits. Let's hire smart!</p>
           </div>
 
-          <div className="actions">
-            <button className="primary-btn" onClick={() => setIsModalOpen(true)}>
-              <span className='btn-content'>Create a Widget</span>                 
-              <i className="fa-solid fa-wand-magic-sparkles"></i>            
-            </button>
+          <div className="stats">
+            <div className="stat">
+              <h3>{employeeCount.employeeCount || 0}</h3>
+              <span>
+                {/* <i className="fa-regular fa-user"></i> */}
+                Total Employees
+              </span>
+            </div>
+            <div className="stat">
+              <h3>{employeeCount.projectCount || 0}</h3>
+              <span>
+                {/* <i className="fa-regular fa-eye"></i>  */}
+                Projects
+              </span>
+            </div>
+            <div className="stat">
+              <h3>{employeeCount.freepoolCount || 0}</h3>
+              <span>
+                {/* <i className="fa-regular fa-circle-check"></i> */}
+                Freepool
+              </span>
+            </div>
           </div>
         </div>
-
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={selectedWidgets} strategy={rectSortingStrategy}>
-            {selectedWidgets.length === 0 ? (
-              <div className="no-widgets-message">
-                <i className="fa-solid fa-chart-line"></i>
-                <h3>No Widgets Selected</h3>
-                <p>Select widgets from the dropdown above or create a new custom widget to get started</p>
+          
+        <div className="dashboard-content" ref={containerRef}>
+          <div className="filter-bar">
+            <div className="filter-controls">
+              <div className="search-input">
+                <input
+                  type="text"
+                  placeholder="Search widgets..."
+                  value={widgetSearch}
+                  onChange={(e) => setWidgetSearch(e.target.value.replace(/\s+/g, ' ').trimStart())}
+                />
+                <i className="fa-solid fa-search"></i>
               </div>
-            ) : (
-              <>
-                {/* Pinned Widgets Row */}
-                {pinnedWidgets.length > 0 && (
+
+              <div className="multi-select" ref={dropdownRef}>
+                <div className="select-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                  <span className="placeholder">Select Widgets</span>
+                  <i className="fa-solid fa-chevron-down"></i>
+                </div>
+
+                {isDropdownOpen && (
+                  <div className="dropdown-menu show">
+                    {availableWidgets.map(widget => (
+                      <div key={widget.id} className="option">
+                        <input
+                          type="checkbox"
+                          id={widget.id}
+                          checked={selectedWidgets.includes(widget.id)}
+                          onChange={() => toggleWidget(widget.id)}
+                        />
+                        <label htmlFor={widget.id}>{widget.label}</label>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="actions">
+              <button className="primary-btn" onClick={() => setIsModalOpen(true)}>
+                <span className='btn-content'>Create a Widget</span>                 
+                <i className="fa-solid fa-wand-magic-sparkles"></i>            
+              </button>
+            </div>
+          </div>
+          
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={selectedWidgets} strategy={rectSortingStrategy}>
+              {selectedWidgets.length === 0 ? (
+                <div className="no-widgets-message">
+                  <i className="fa-solid fa-chart-line"></i>
+                  <h3>No Widgets Selected</h3>
+                  <p>Select widgets from the dropdown above or create a new custom widget to get started</p>
+                </div>
+              ) : (
+                <>
+                  {/* Pinned Widgets Row */}
+                  {pinnedWidgets.length > 0 && (
+                    <div className="widgets-grid">
+                      {selectedWidgets
+                        .filter(widgetId => {
+                          const widget = availableWidgets.find(w => w.id === widgetId);
+                          const dynamicWidget = dynamicWidgets.find(w => w.id === widgetId);
+                          const label = widget?.label || dynamicWidget?.title || '';
+                          return pinnedWidgets.includes(widgetId) && label.toLowerCase().includes(widgetSearch.toLowerCase());
+                        })
+                        .map(widgetId => (
+                          <SortableWidget key={widgetId} id={widgetId} isPinned={true} widgetSize={widgetSizes[widgetId]}>
+                            {renderWidget(widgetId)}
+                          </SortableWidget>
+                        ))}
+                    </div>
+                  )}
+
+                  {/* Unpinned Widgets Grid */}
                   <div className="widgets-grid">
                     {selectedWidgets
                       .filter(widgetId => {
                         const widget = availableWidgets.find(w => w.id === widgetId);
                         const dynamicWidget = dynamicWidgets.find(w => w.id === widgetId);
                         const label = widget?.label || dynamicWidget?.title || '';
-                        return pinnedWidgets.includes(widgetId) && label.toLowerCase().includes(widgetSearch.toLowerCase());
+                        return !pinnedWidgets.includes(widgetId) && label.toLowerCase().includes(widgetSearch.toLowerCase());
                       })
                       .map(widgetId => (
-                        <SortableWidget key={widgetId} id={widgetId} isPinned={true} widgetSize={widgetSizes[widgetId]}>
+                        <SortableWidget key={widgetId} id={widgetId} isPinned={false} widgetSize={widgetSizes[widgetId]}>
                           {renderWidget(widgetId)}
                         </SortableWidget>
                       ))}
                   </div>
-                )}
-
-                {/* Unpinned Widgets Grid */}
-                <div className="widgets-grid">
-                  {selectedWidgets
-                    .filter(widgetId => {
-                      const widget = availableWidgets.find(w => w.id === widgetId);
-                      const dynamicWidget = dynamicWidgets.find(w => w.id === widgetId);
-                      const label = widget?.label || dynamicWidget?.title || '';
-                      return !pinnedWidgets.includes(widgetId) && label.toLowerCase().includes(widgetSearch.toLowerCase());
-                    })
-                    .map(widgetId => (
-                      <SortableWidget key={widgetId} id={widgetId} isPinned={false} widgetSize={widgetSizes[widgetId]}>
-                        {renderWidget(widgetId)}
-                      </SortableWidget>
-                    ))}
-                </div>
-              </>
-            )}
-          </SortableContext>
-        </DndContext>
-      </div>
+                </>
+              )}
+            </SortableContext>
+          </DndContext>
+        </div>
+       </>
+      )
+    }
 
       <CreateWidgetModal
         isOpen={isModalOpen}

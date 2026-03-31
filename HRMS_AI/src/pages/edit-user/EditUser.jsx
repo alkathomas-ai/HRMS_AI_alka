@@ -182,8 +182,8 @@ const EditUser = () => {
           </div>
 
           {isLoading ? (
-            <div className="loader-container">
-              <div className="spinner"></div>
+            <div class="loader">
+              <div class="justify-content-center jimu-primary-loading"></div>
             </div>
           ) : (
             <>

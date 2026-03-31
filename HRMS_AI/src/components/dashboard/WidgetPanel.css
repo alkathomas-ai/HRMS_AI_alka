@@ -899,6 +899,7 @@
 }
 
 .dashboard-content {
+  position: relative;
   height: 100%;
   overflow: auto;
   /* min-height: calc(100% - 90px); */
