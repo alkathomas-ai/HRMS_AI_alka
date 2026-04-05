@@ -128,6 +128,17 @@ export async function getSoonAvailableEmployees() {
   }
 }
 
+export async function getEmployeeDetails(employeeId) {
+  try {
+    const stripedId = employeeId.slice(5)
+    const response = await axios.get(`${BASE_URL}/employees/${stripedId}`);
+    console.log(response.data)
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export async function getEmployeesPaginated(page, pageSize) {
   try {
     const response = await axios.get(`${BASE_URL}/employees?page=${page}&page_size=${pageSize}`);
@@ -136,14 +147,6 @@ export async function getEmployeesPaginated(page, pageSize) {
   } catch (error) {
     console.log(error);
   }
-  // return new Promise((resolve) => {
-  //   const response ={
-  //     total_employees : testData.all_employees
-  //   }
-  //   setTimeout(() => {
-  //     resolve(response);
-  //   }, 1000);
-  // });
 }
 
 export async function generateWidgetFromPrompt(payload) {

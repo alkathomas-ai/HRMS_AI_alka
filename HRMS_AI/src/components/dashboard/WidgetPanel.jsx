@@ -13,6 +13,8 @@ import DynamicWidget from './DynamicWidget';
 import AnimatedSearchInput from './AnimatedSearchInput';
 import StatsWidget from './StatsWidget';
 import useConfirmation from '../common/useConfirmation';
+import CandidateProfileModal from '../CandidateProfileModal';
+import { useCandidateProfileModal } from '../../hooks/useCandidateProfileModal';
 
 
 const SortableWidget = ({ id, children, isPinned, widgetSize }) => {
@@ -37,6 +39,7 @@ const SortableWidget = ({ id, children, isPinned, widgetSize }) => {
 
 const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const { confirm, ConfirmationModal } = useConfirmation();
+  const { isOpen, employee, loading, error, openModal, closeModal } = useCandidateProfileModal();
   const [selectedWidgets, setSelectedWidgets] = useState(() => {
     const saved = localStorage.getItem('selectedWidgets');
     return saved ? JSON.parse(saved) : ['project-distribution', 'department-overview', 'employee-directory', 'available-employees'];
@@ -475,25 +478,26 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             </div>
             <div style={{ marginBottom: '12px' }}>
               <div className="search-input">
-                <AnimatedSearchInput
+                {/* <AnimatedSearchInput */}
+                <input
                   value={employeeSearch}
                   onChange={(e) => { setEmployeeSearch(e.target.value.replace(/\s+/g, ' ').trimStart()); setEmployeePage(0); }}
                   onClick={(e) => e.stopPropagation()}
                   className="employee-search-input"
-                  prompts={[
-                    "Search by name...",
-                    "Find by department...",
-                    "Search by designation...",
-                    "Type to filter employees..."
-                  ]}
-                />
+                  />
+                {/* /> */}
                 <i className="fa-solid fa-search"></i>
               </div>
             </div>
             <span className="widget-subtitle">{filteredEmployees.length} Employees</span>
             <div className="employee-directory-container">
               {currentEmployees.map((employee) => (
-                <div key={employee.employee_id} className="employee-item">
+                <div 
+                  key={employee.employee_id} 
+                  className="employee-item"
+                  onClick={() => openModal(employee.employee_id)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div className="employee-avatar">{employee.display_name.charAt(0).toUpperCase()}</div>
                   <div className="employee-info">
                     <div className="employee-name">{employee.display_name}</div>
@@ -616,7 +620,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                     : null;
 
                   return (
-                    <div key={emp.employee_id} className="timeline-employee-card">
+                    <div key={emp.employee_id} className="timeline-employee-card" onClick={() => openModal(emp.employee_id)} style={{ cursor: 'pointer' }}>
                       <div className="timeline-employee-name">
                         {emp.display_name}
                       </div>
@@ -932,6 +936,14 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
       />
 
       <ConfirmationModal />
+      
+      <CandidateProfileModal
+        isOpen={isOpen}
+        onClose={closeModal}
+        employee={employee}
+        loading={loading}
+        error={error}
+      />
     </div>
   );
 };
