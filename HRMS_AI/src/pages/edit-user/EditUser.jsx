@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import './EditUser.css'
 import { Icons } from '../../assets/icons'
 import { getEmployeeDirectory, getEmployeesPaginated, updateEmployeeSkills } from '../../services/api'
+import CandidateProfileModal from '../../components/CandidateProfileModal'
+import { useCandidateProfileModal } from '../../hooks/useCandidateProfileModal'
 
 const EditUser = () => {
   const [employees, setEmployees] = useState([]);
@@ -21,6 +23,16 @@ const EditUser = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [itemsPerPage, setItemsPerPage] = useState(25);
   const [isRowsDropdownOpen, setIsRowsDropdownOpen] = useState(false);
+
+  // Candidate Profile Modal
+  const {
+    isOpen: isModalOpen,
+    employee: selectedEmployee,
+    loading: modalLoading,
+    error: modalError,
+    openModal,
+    closeModal
+  } = useCandidateProfileModal();
 
 
   useEffect(() => {
@@ -271,7 +283,13 @@ const EditUser = () => {
                               <div className="employee-avatar">
                                 {employee.display_name?.charAt(0).toUpperCase()}
                               </div>
-                              <span className="employee-name">{employee.display_name}</span>
+                              <span 
+                                className="employee-name clickable-employee"
+                                onClick={() => openModal(employee.employee_id)}
+                                title="Click to view employee profile"
+                              >
+                                {employee.display_name}
+                              </span>
                             </div>
                           </td>
                           <td className="id-cell">{employee.employee_id}</td>
@@ -381,6 +399,15 @@ const EditUser = () => {
           )}
         </div>
       </div>
+      
+      {/* Candidate Profile Modal */}
+      <CandidateProfileModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        employee={selectedEmployee}
+        loading={modalLoading}
+        error={modalError}
+      />
     </>
   )
 }

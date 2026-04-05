@@ -98,12 +98,12 @@ const CandidateProfileModal = ({ isOpen, onClose, employee, loading, error }) =>
           <div className="header-left">
             {navigationHistory.length > 0 ? (
               <button onClick={handleBackNavigation} className="back-button">
-                <ArrowLeft size={16} />
+                <ArrowLeft size={18} />
                 <span>Back</span>
               </button>
             ) : (
               <button onClick={handleClose} className="back-button">
-                <ArrowLeft size={16} />
+                <X size={18} />
                 <span>Close</span>
               </button>
             )}
