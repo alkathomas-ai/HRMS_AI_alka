@@ -434,6 +434,7 @@
   font-size: 11px;
   border-radius: 16px;
   font-weight: 500;
+  box-shadow: 1px 2px 3px var(--color-primary-light);
 }
 
 .skill-tag:hover {
@@ -450,6 +451,7 @@
   background-color: var(--color-primary-light);
   border-radius: 8px;
   border: 1px solid var(--color-border);
+  box-shadow: 1px 2px 7px var(--color-primary-light);
 }
 
 .project-header {

@@ -98,7 +98,11 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
       
       availableWidgets.forEach(widget => {
         if (!updatedSizes[widget.id]) {
-          updatedSizes[widget.id] = { cols: 1, rows: widget.id === 'stats-overview' ? 1 : 2 };
+          let defaultRows = 2;
+          if (widget.id === 'stats-overview') defaultRows = 1;
+          if (widget.id === 'employee-directory' || widget.id === 'available-employees') defaultRows = 3;
+          
+          updatedSizes[widget.id] = { cols: 1, rows: defaultRows };
           hasChanges = true;
         }
       });
