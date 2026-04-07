@@ -32,7 +32,9 @@ const CandidateProfileModal = ({ isOpen, onClose, employee, loading, error }) =>
     
     setIsLoadingManager(true);
     try {
-      managerId = managerId.split(" -")[0].trim();
+      if (managerId && managerId.includes(' -')) {
+        managerId = managerId.split(" -")[0].trim();
+      }
       const response = await getEmployeeDetails(managerId);
       if (response?.status === 'success' && response?.employee) {
         // Add current employee to navigation history
@@ -94,7 +96,7 @@ const CandidateProfileModal = ({ isOpen, onClose, employee, loading, error }) =>
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="modal-header">
+        <div className="profile-modal-header">
           <div className="header-left">
             {navigationHistory.length > 0 ? (
               <button onClick={handleBackNavigation} className="back-button">
@@ -326,7 +328,7 @@ id_card
                           className={`info-value ${displayEmployee.pm && displayEmployee.pm !== 'N/A' ? 'clickable-manager' : ''}`}
                           onClick={() => displayEmployee.pm && displayEmployee.pm !== 'N/A' && handleManagerClick(displayEmployee.pm)}
                         >
-                          {displayEmployee.pm.split(" -")[1] || 'N/A'}
+                          {displayEmployee.pm && displayEmployee.pm.includes('-') ? displayEmployee.pm.split("-")[1] : displayEmployee.pm || 'N/A'}
                         </span>
                       </div>
                       <div className="info-row">
@@ -350,6 +352,7 @@ id_card
                               )}
                             </div>
                             <div className="project-details">
+                              <span>PM: <span className={`info-value ${project.pm && project.pm !== 'N/A' ? 'clickable-manager' : ''}`} onClick={() => project.pm && project.pm !== 'N/A' && handleManagerClick(project.pm)}>{project.pm && project.pm.includes('-') ? project.pm.split("-")[1] : project.pm || 'N/A'}</span></span>
                               <span>Customer: {project.customer}</span>
                               <span>Role: {project.role}</span>
                               <span>Occupancy: {project.occupancy}%</span>

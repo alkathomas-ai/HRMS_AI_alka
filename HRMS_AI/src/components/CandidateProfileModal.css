@@ -32,11 +32,11 @@
 }
 
 /* Header */
-.modal-header {
+.profile-modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 16px;
+  padding: 16px 14px;
   border-bottom: 1px solid var(--color-border);
   background-color: var(--color-background);
   border-radius: 12px 0 0 0;
@@ -510,7 +510,7 @@
     border-radius: 0;
   }
   
-  .modal-header {
+  .profile-modal-header {
     border-radius: 0;
   }
   

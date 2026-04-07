@@ -226,6 +226,7 @@
   border-radius: 6px;
   font-size: 13px;
   transition: all 0.2s ease;
+  margin-right: 3px;
 }
 
 .no-search-results {
