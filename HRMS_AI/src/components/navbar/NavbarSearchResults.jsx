@@ -9,7 +9,8 @@ const NavbarSearchResults = ({ searchQuery }) => {
   const [activeSkill, setActiveSkill] = useState([]);
   const [showAllSkills, setShowAllSkills] = useState({});
   const [filterText, setFilterText] = useState('');
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [viewMode, setViewMode] = useState('scroll'); // 'scroll' or 'pagination'
+  const [rowsPerPage, setRowsPerPage] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showDeptDropdown, setShowDeptDropdown] = useState(false);
@@ -55,7 +56,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
 
 
   if (!searchResult?.result || searchResult.result.length === 0) {
-    return <div class="no-search-results">No results found.</div>;
+    return <div className="no-search-results">No results found.</div>;
   }
 
   const uniqueDepts = useMemo(() => {
@@ -123,9 +124,15 @@ const NavbarSearchResults = ({ searchQuery }) => {
     return filtered;
   }, [searchResult?.result, filterText, deptFilters, locFilters, techFilters, expFilter, activeSkill]);
 
+  // Pagination calculations (only used when viewMode is 'pagination')
   const totalPages = Math.ceil(filteredResults.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
   const paginatedResults = filteredResults.slice(startIndex, startIndex + rowsPerPage);
+  
+  // Choose which results to display based on view mode
+  const displayResults = viewMode === 'scroll' ? filteredResults : paginatedResults;
+
+
 
 
   return (
@@ -140,11 +147,27 @@ const NavbarSearchResults = ({ searchQuery }) => {
                 value={filterText}
                 onChange={(e) => {
                   setFilterText(e.target.value.replace(/\s+/g, ' ').trimStart());
-                  setCurrentPage(1);
+                  if (viewMode === 'pagination') setCurrentPage(1);
                 }}
               />
             </div>
-                        <div className="quick-filters">
+            <div className="view-mode-toggle">
+              <button 
+                className={`view-btn ${viewMode === 'scroll' ? 'active' : ''}`}
+                onClick={() => setViewMode('scroll')}
+                title="Scroll view"
+              >
+                <i className="fa-solid fa-list"></i>
+              </button>
+              <button 
+                className={`view-btn ${viewMode === 'pagination' ? 'active' : ''}`}
+                onClick={() => setViewMode('pagination')}
+                title="Pagination view"
+              >
+                <i className="fa-solid fa-table-list"></i>
+              </button>
+            </div>
+            <div className="quick-filters">
               <div className="custom-select-wrapper" ref={deptDropdownRef}>
                 <div className="select-trigger search-result-filter" onClick={() => setShowDeptDropdown(!showDeptDropdown)}>
                   <span>Department</span>
@@ -315,59 +338,65 @@ const NavbarSearchResults = ({ searchQuery }) => {
             </div>
           </div> */}
 
-          <div className="search-results-pagination">
-            <div className="rows-selector">
-              <span>Rows per page:</span>
-              <div className="custom-select-wrapper" ref={dropdownRef}>
-                <div className="select-trigger" onClick={() => {
-                  console.log('Dropdown clicked, current state:', isDropdownOpen);
-                  setIsDropdownOpen(!isDropdownOpen);
-                }}>
-                  <span>{rowsPerPage}</span>
-                  <i className="fa-solid fa-chevron-down"></i>
-                </div>
-                {isDropdownOpen && (
-                  <div className="dropdown-menu" style={{ display: 'block' }}>
-                    {[5, 10, 20, 50].map(num => (
-                      <div 
-                        key={num} 
-                        className="option" 
-                        onClick={() => { 
-                          setRowsPerPage(num); 
-                          setCurrentPage(1); 
-                          setIsDropdownOpen(false); 
-                        }}
-                      >
-                        {num}
-                      </div>
-                    ))}
-                  </div>
-                )}
+          <div className="view-controls">
+            
+            {viewMode === 'scroll' ? (
+              <div className="search-results-info">
+                <span className="results-count">{filteredResults.length} results found</span>
               </div>
-            </div>
-            <div className="pagination-info">
-              {startIndex + 1}-{Math.min(startIndex + rowsPerPage, filteredResults.length)} of {filteredResults.length}
-            </div>
-            <div className="pagination-controls">
-              <button
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                disabled={currentPage === 1}
-                className="page-btn"
-              >
-                <span className="material-symbols-outlined">chevron_left</span>
-              </button>
-              <button
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                disabled={currentPage === totalPages}
-                className="page-btn"
-              >
-                <span className="material-symbols-outlined">chevron_right</span>
-              </button>
-            </div>
+            ) : (
+              <div className="search-results-pagination">
+                <div className="rows-selector">
+                  <span>Rows per page:</span>
+                  <div className="custom-select-wrapper" ref={dropdownRef}>
+                    <div className="select-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                      <span>{rowsPerPage}</span>
+                      <i className="fa-solid fa-chevron-down"></i>
+                    </div>
+                    {isDropdownOpen && (
+                      <div className="dropdown-menu" style={{ display: 'block' }}>
+                        {[5, 10, 20, 50].map(num => (
+                          <div 
+                            key={num} 
+                            className="option" 
+                            onClick={() => { 
+                              setRowsPerPage(num); 
+                              setCurrentPage(1); 
+                              setIsDropdownOpen(false); 
+                            }}
+                          >
+                            {num}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="pagination-info">
+                  {startIndex + 1}-{Math.min(startIndex + rowsPerPage, filteredResults.length)} of {filteredResults.length}
+                </div>
+                <div className="pagination-controls">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    className="page-btn"
+                  >
+                    <span className="material-symbols-outlined">chevron_left</span>
+                  </button>
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    className="page-btn"
+                  >
+                    <span className="material-symbols-outlined">chevron_right</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
       </div>
-      <div className="employee-cards-list">
-      {paginatedResults.map((employee) => {
+      <div className={`employee-cards-list ${viewMode === 'scroll' ? 'scrollable-results' : ''}`}>
+      {displayResults.map((employee) => {
         const {
           display_name,
           designation,
@@ -430,7 +459,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
               {employee.projects && employee.projects.length > 0 && (
                 <div className="employee-projects-section">
                   {/* <span className="projects-label">Projects:</span> */}
-                  <div className="projects-container">
+                  <div className="results-projects-container">
                     {employee.projects.map((project, projectIndex) => (
                       <span key={projectIndex} className="project-badge">
                         <span className="project-name">{project.project_name}</span> ({project.customer}) - {project.occupancy}%
@@ -458,7 +487,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
                                   ? prev.filter(skill => skill !== trimmedSkill)
                                   : [...prev, trimmedSkill]
                               );
-                              setCurrentPage(1);
+                              if (viewMode === 'pagination') setCurrentPage(1);
                             }}
                             className={
                               activeSkill.includes(trimmedSkill)
@@ -557,7 +586,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
           <div className="employee-skill-description">
             {employee.projects && employee.projects.length > 0 && (
               <div className="employee-projects-section">
-                <div className="projects-container">
+                <div className="result-projects-container">
                   {employee.projects.map((project, projectIndex) => (
                     <span key={projectIndex} className="project-badge">
                       {project.project_name} ({project.customer}) - {project.occupancy}%
@@ -581,7 +610,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
                               ? prev.filter(skill => skill !== trimmedSkill)
                               : [...prev, trimmedSkill]
                           );
-                          setCurrentPage(1);
+                          if (viewMode === 'pagination') setCurrentPage(1);
                         }}
                         className={activeSkill.includes(trimmedSkill) ? "skill-badge active-skill-badge" : "skill-badge"}
                       >

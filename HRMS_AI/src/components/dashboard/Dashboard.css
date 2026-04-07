@@ -519,9 +519,10 @@
 .search-input input {
   padding: 10px 13px;
   border: 1px solid var(--color-bg-muted);
-  border-radius: 6px;
+  /* border-radius: 6px; */
   font-size: 14px;
   outline: none;
+  border-width: 0 0 1px 0;
   background: var(--color-bg-topbar);
   color: var(--color-text-primary);
 }
@@ -559,7 +560,7 @@
 }
 
 .select-trigger:hover, .select-trigger.active {
-  box-shadow: 0 0 2px 1px var(--color-primary-soft);
+  box-shadow: 0 0 1px 1px var(--color-primary-soft);
 }
 
 .select-trigger i {
@@ -663,8 +664,8 @@
 }
 
 .search-input input:hover, .search-input input:focus {
-  /* border-color: var(--color-primary); */
-  box-shadow: 0 0 2px 1px var(--color-primary-soft);
+  border-color: var(--color-primary);
+box-shadow: 0 1px 1px -2px var(--color-primary-soft);
 }
 
 .icon {

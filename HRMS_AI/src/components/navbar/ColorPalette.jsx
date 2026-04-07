@@ -86,21 +86,6 @@ const themes = [
       textSecondary: '#5A3E85'
     }
   },
-  // {
-  //   name: 'Amber',
-  //   primary: '#C2410C',
-  //   soft: '#F97316',
-  //   hover: '#9A3412',
-  //   light: 'rgba(249, 115, 22, 0.23)',
-  //   assistant: {
-  //     baseStart: '#FFF7ED',
-  //     baseEnd: '#FFE4CC',
-  //     glowPrimary: 'rgba(255, 205, 170, 0.6)',
-  //     glowSecondary: 'rgba(255, 235, 210, 0.45)',
-  //     textPrimary: '#4A260F',
-  //     textSecondary: '#7A4A2D'
-  //   }
-  // }
 ];
 
 const ColorPalette = () => {
