@@ -257,7 +257,7 @@ const ProjectCarousel = () => {
                               {employee.display_name.charAt(0).toUpperCase()}
                             </div>
                             <div className="carousel-employee-header">
-                              <div className="employee-name">{employee.display_name}</div>
+                              <div className="carousel-employee-name">{employee.display_name}</div>
                               <div className="carousel-employee-id">{employee.employee_id}</div>
                             </div>
                           </div>
@@ -310,7 +310,7 @@ const ProjectCarousel = () => {
         </div>
         
         <button onClick={nextSlide} className="carousel-nav-btn next-btn">
-          <ChevronRight size={20} />
+          <ChevronRight size={16} />
         </button>
       </div>
       

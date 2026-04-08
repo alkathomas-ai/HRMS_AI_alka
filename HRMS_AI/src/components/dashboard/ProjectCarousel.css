@@ -88,7 +88,7 @@
 
 .carousel-nav-btn:hover {
   background: #fff;
-  color: #4f46e5;
+  color: var(--color-primary);
   transform: translateY(-50%) scale(1.05);
   box-shadow: 0 8px 25px rgba(79, 70, 229, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -363,7 +363,7 @@
   padding-left: 10px;
 }
 
-.employee-name {
+.carousel-employee-name {
   color: #111827;
   font-weight: 600;
   font-size: 13px;
@@ -433,7 +433,7 @@
   gap: 3px;
 }
 
-.skills-section {
+.carousel-skills-section {
   display: flex;
   align-items: flex-start;
   gap: 6px;
@@ -456,7 +456,7 @@
   flex: 1;
 }
 
-.skill-tag {
+.carousel-skill-tag {
   padding: 1px 4px;
   border-radius: 3px;
   font-size: 9px;
@@ -464,12 +464,12 @@
   white-space: nowrap;
 }
 
-.skill-tag.primary {
+.carousel-skill-tag.primary {
   background: #f3f4f6;
   color: #374151;
 }
 
-.skill-tag.secondary {
+.carousel-skill-tag.secondary {
   background: #f9fafb;
   color: #6b7280;
 }
@@ -528,12 +528,12 @@
 }
 
 .c-project-indicator:hover {
-  background: #94a3b8;
+  background: var(--color-primary);
   transform: scale(1.2);
 }
 
 .c-project-indicator.active {
-  background: #4f46e5;
+  background: var(--color-primary-soft);
   width: 40px;
   border-radius: 10px;
   transform: scale(1);
@@ -699,7 +699,7 @@
   min-width: 0;
 }
 
-.employee-name-small {
+.carousel-employee-name-small {
   color: #1e293b;
   font-weight: 600;
   font-size: 14px;
@@ -721,7 +721,7 @@
   align-items: center;
 }
 
-.skill-tag-tiny {
+.carousel-skill-tag-tiny {
   background: #dcfce7;
   color: #166534;
   padding: 2px 6px;
