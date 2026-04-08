@@ -42,7 +42,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const { isOpen, employee, loading, error, openModal, closeModal } = useCandidateProfileModal();
   const [selectedWidgets, setSelectedWidgets] = useState(() => {
     const saved = localStorage.getItem('selectedWidgets');
-    return saved ? JSON.parse(saved) : ['project-distribution', 'department-overview', 'employee-directory', 'available-employees'];
+    return saved ? JSON.parse(saved) : ['project-distribution', 'department-overview', 'employee-directory', 'available-employees', 'upskill-suggestions'];
   });
   const [pinnedWidgets, setPinnedWidgets] = useState(() => {
     const saved = localStorage.getItem('pinnedWidgets');
@@ -82,12 +82,81 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const containerRef = useRef(null);
   const employeesPerPage = 5;
 
+  // Static upskill suggestions data
+  const upskillData = [
+    {
+      "domain": "dotnet",
+      "seniority": "senior",
+      "tech_group": "Backend - Dot Net",
+      "designation": "Sr Engineer (Software)",
+      "employee_id": "VVDN/13288",
+      "display_name": "Neeraj Jain",
+      "primary_skills": ["sql", "dotnet", "c#"],
+      "secondary_skills": ["agile scrum on jira", "client data security training", "jira certification level 1: jira basics"],
+      "upskill_suggestions": [
+        {
+          "skill": "Advanced SQL Performance Tuning and Optimization",
+          "reason": "Deepens expertise in a primary skill (SQL) at a senior level, crucial for efficient database operations in cloud/web projects.",
+          "learning_path": "Online courses on SQL tuning, performance analysis tools, hands-on exercises with large datasets, studying indexing strategies and query execution plans.",
+          "estimated_weeks": 6,
+          "relevance_to_company": "Essential for optimizing database performance in all cloud and web projects, reducing latency and operational costs."
+        },
+        {
+          "skill": "Cloud-Native Database Services (e.g., AWS RDS, Azure SQL Database, Google Cloud SQL)",
+          "reason": "Extends primary domain (SQL, .NET) into cloud infrastructure, a key area for product engineering companies.",
+          "learning_path": "Certifications or guided learning paths for cloud provider database services, understanding managed database features, scaling, and security.",
+          "estimated_weeks": 7,
+          "relevance_to_company": "Enables engineers to design and implement more robust and scalable database solutions on cloud platforms."
+        }
+      ]
+    },
+    {
+      "domain": "react",
+      "seniority": "lead",
+      "tech_group": "Frontend - ReactJS",
+      "designation": "Principal Engineer (Software)",
+      "employee_id": "VVDN/1571",
+      "display_name": "Muhammed Aslam K V",
+      "primary_skills": ["css", "javascript", "reactjs", "html"],
+      "secondary_skills": ["lua scripting 3", "client data security training", "rm excellence"],
+      "upskill_suggestions": [
+        {
+          "skill": "React Architectural Patterns and Best Practices",
+          "reason": "Leverages lead seniority and primary React skills to focus on scalable and maintainable application architecture.",
+          "learning_path": "Courses and books on React patterns (e.g., Render Props, Higher-Order Components, Hooks), context API, and performance optimization techniques.",
+          "estimated_weeks": 7,
+          "relevance_to_company": "Ensures the development of robust, scalable, and performant React-based web applications, crucial for complex projects."
+        }
+      ]
+    },
+    {
+      "domain": "angular",
+      "seniority": "senior",
+      "tech_group": "Frontend - Angular",
+      "designation": "Sr Engineer (Software)",
+      "employee_id": "VVDN/21574",
+      "display_name": "Mayur Balkrishna Amritkar",
+      "primary_skills": ["angular"],
+      "secondary_skills": ["client data security training", "python"],
+      "upskill_suggestions": [
+        {
+          "skill": "Angular Advanced State Management (NgRx)",
+          "reason": "Deepens primary skill (Angular) by mastering a robust solution for managing complex application state, essential for large-scale web applications.",
+          "learning_path": "NgRx official documentation, tutorials on Redux patterns, implementing stores, actions, and reducers, building complex features with NgRx.",
+          "estimated_weeks": 6,
+          "relevance_to_company": "Critical for building scalable and maintainable enterprise-level Angular applications, improving user experience and code organization."
+        }
+      ]
+    }
+  ];
+
   const availableWidgets = [
     { id: 'stats-overview', label: 'Stats Overview' },
     { id: 'project-distribution', label: 'Project Distribution' },
     { id: 'department-overview', label: 'Department Overview' },
     { id: 'employee-directory', label: 'Employee Directory' },
     { id: 'available-employees', label: 'Available Employees' },
+    { id: 'upskill-suggestions', label: 'Upskill Suggestions' },
   ];
 
   
@@ -100,7 +169,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         if (!updatedSizes[widget.id]) {
           let defaultRows = 2;
           if (widget.id === 'stats-overview') defaultRows = 1;
-          if (widget.id === 'employee-directory' || widget.id === 'available-employees') defaultRows = 3;
+          if (widget.id === 'employee-directory' || widget.id === 'available-employees' || widget.id === 'upskill-suggestions') defaultRows = 3;
           
           updatedSizes[widget.id] = { cols: 1, rows: defaultRows };
           hasChanges = true;
@@ -663,6 +732,55 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           </>
         );
       }
+
+      case 'upskill-suggestions':
+        return (
+          <>
+            <div className="grid-item-header">
+              <h4 title="Upskill Suggestions">Upskill Suggestions</h4>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <SizeSelector />
+                <button
+                  onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
+                  className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
+                >
+                  <img src={Icons.pin} alt="" />
+                </button>
+                <span className='widget-close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+              </div>
+            </div>
+            <div className="upskill-container">
+              {upskillData.map((employee) => (
+                <div key={employee.employee_id} className="upskill-employee-card">
+                  <div className="upskill-employee-header">
+                    <div className="upskill-employee-avatar">
+                      {employee.display_name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="upskill-employee-info">
+                      <div className="upskill-employee-name">{employee.display_name}</div>
+                      <div className="upskill-employee-meta">
+                        <span className="upskill-tech-group">{employee.tech_group}</span>
+                        <span className="upskill-dot">•</span>
+                        <span className="upskill-seniority">{employee.seniority}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="upskill-suggestions">
+                    {employee.upskill_suggestions.slice(0, 2).map((suggestion, index) => (
+                      <div key={index} className="upskill-suggestion-item">
+                        <div className="d-flex align-start justify-btwn">
+                          <div className="upskill-skill-name">{suggestion.skill}</div>
+                          <div className="upskill-duration">{suggestion.estimated_weeks} w</div>
+                        </div>
+                        <div className="upskill-reason">{suggestion.reason}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        );
 
 
 
