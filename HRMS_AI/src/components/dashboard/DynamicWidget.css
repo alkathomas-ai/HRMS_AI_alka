@@ -1,5 +1,5 @@
 .dynmaic-table thead {
-    background: var(--assistant-base-end) !important;
+    background: var(--color-primary-soft) !important;
     border: 1px solid var(--color-bg-page);
 }
 
@@ -112,7 +112,7 @@
 .dynamic-table-search {
     padding: 10px 13px;
     border: 1px solid var(--color-bg-muted);
-    border-radius: 6px;
+    /* border-radius: 6px; */
     font-size: 14px;
     width: 100%;
     outline: none;

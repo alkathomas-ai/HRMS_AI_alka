@@ -237,7 +237,8 @@ const AISuggestions = () => {
                 <tr>
                   <th>Project</th>
                   <th>Client</th>
-                  <th>Required Skills</th>
+                  {/* <th>Required Skills</th> */}
+                  <th>Requirements</th>
                   <th>Experience</th>
                   <th>Start Date</th>
                   <th>Suggestions</th>
@@ -377,7 +378,8 @@ const AISuggestions = () => {
                 </div>
               </div>
               <div className="form-group">
-                <label>Required Skills <span className="required">*</span></label>
+                {/* <label>Required Skills <span className="required">*</span></label> */}
+                <label>Requirements <span className="required">*</span></label>
                 <input name="required_skills" value={form.required_skills} onChange={handleFormChange} placeholder="React, Node.js, AWS" required />
                 <span className="form-hint">Comma-separated</span>
               </div>

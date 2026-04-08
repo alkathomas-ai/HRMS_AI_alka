@@ -899,6 +899,7 @@
 }
 
 .dashboard-content {
+  position: relative;
   height: 100%;
   overflow: auto;
   /* min-height: calc(100% - 90px); */
@@ -993,6 +994,12 @@
   border: 1px solid var(--color-border);
   border-radius: 8px;
   background: var(--color-bg-muted);
+  transition: all 0.2s ease;
+}
+
+.timeline-employee-card:hover {
+  background: var(--color-bg-muted);
+  border-color: var(--color-primary-soft);
 }
 
 .timeline-employee-name {
