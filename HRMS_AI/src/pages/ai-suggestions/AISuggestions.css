@@ -426,7 +426,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 16px 20px 30px 20px;
   border-bottom: 1px solid var(--color-bg-muted);
   position: sticky;
   top: 0;
@@ -479,6 +479,53 @@
 .form-group textarea { resize: vertical; min-height: 80px; }
 
 .form-hint { font-size: 11px; color: var(--color-text-secondary); }
+.readonly-input{
+  cursor: not-allowed;
+  border: none;
+}
+
+/* Autocomplete */
+.autocomplete-wrapper {
+  position: relative;
+}
+
+.autocomplete-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-bg-muted);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  z-index: 100;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.autocomplete-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+  gap: 8px;
+}
+
+.autocomplete-option:hover { background: var(--color-secondary-hover); }
+
+.autocomplete-project-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.autocomplete-customer {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
 
 .form-row {
   display: grid;

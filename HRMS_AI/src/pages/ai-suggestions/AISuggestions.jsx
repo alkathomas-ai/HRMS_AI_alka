@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { requirementAPI, getProjectRequirements, addProjectRequirement, editProjectRequirement } from "../../services/api";
+import { requirementAPI, getProjectRequirements, addProjectRequirement, editProjectRequirement, getProjects, deleteProjectRequirement, showResourceSuggestion } from "../../services/api";
 import dummySuggestions from "../../data/dummySuggestions";
 import "../D.css";
 import "./AISuggestions.css";
@@ -246,6 +246,16 @@ const AISuggestions = () => {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(EMPTY_PROJECT);
   const [editingId, setEditingId] = useState(null);
+  const [projectsList, setProjectsList] = useState([]);
+  const [projectSearch, setProjectSearch] = useState('');
+  const [showProjectDropdown, setShowProjectDropdown] = useState(false);
+
+  const filteredProjectsList = projectSearch
+    ? projectsList.filter((p) =>
+        p.project_name?.toLowerCase().includes(projectSearch.toLowerCase()) ||
+        p.customer?.toLowerCase().includes(projectSearch.toLowerCase())
+      )
+    : projectsList;
 
   const handleRowClick = (project) => {
     if (selectedProject?.id === project.id) {
@@ -260,25 +270,58 @@ const AISuggestions = () => {
   const handleFormChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
+  const fetchProjectsList = async () => {
+    try {
+      const data = await getProjects();
+      console.log('Projects API raw response:', data);
+      const list = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.response) ? data.response
+        : Array.isArray(data?.data) ? data.data
+        : Array.isArray(data?.projects) ? data.projects
+        : Array.isArray(data?.results) ? data.results
+        : [];
+      console.log('Projects list parsed:', list);
+      setProjectsList(list);
+    } catch (err) {
+      console.error('Failed to fetch projects list', err);
+    }
+  };
+
   const handleAddNew = () => {
     setForm(EMPTY_PROJECT);
     setEditingId(null);
+    setProjectSearch('');
     setShowForm(true);
     setSelectedProject(null);
+    fetchProjectsList();
   };
 
   const handleEdit = (project, e) => {
     e.stopPropagation();
     setForm({ ...project });
     setEditingId(project.id);
+    setProjectSearch(project.project_name || '');
     setShowForm(true);
     setSelectedProject(null);
+    fetchProjectsList();
   };
 
-  const handleDelete = (id, e) => {
+  const handleDelete = async (id, e) => {
     e.stopPropagation();
-    setProjects(projects.filter((p) => p.id !== id));
-    if (selectedProject?.id === id) setSelectedProject(null);
+    if (!window.confirm('Delete this requirement?')) return;
+    try {
+      await deleteProjectRequirement(id);
+      setProjects(projects.filter((p) => p.id !== id));
+      if (selectedProject?.id === id) setSelectedProject(null);
+    } catch (err) {
+      const msg = err.response?.data?.detail || '';
+      if (msg.includes('ForeignKeyViolation') || msg.includes('still referenced')) {
+        alert('Cannot delete this requirement because it has linked suggestions. Please delete the suggestions first.');
+      } else {
+        alert('Failed to delete. Please try again.');
+      }
+    }
   };
 
   const handleFormSubmit = async (e) => {
@@ -316,8 +359,13 @@ const AISuggestions = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await requirementAPI(project);
-      const result = response?.data || response?.employees || [];
+      const response = await showResourceSuggestion(project.id);
+      console.log('Suggestions response:', response);
+      const result = Array.isArray(response) ? response
+        : Array.isArray(response?.data) ? response.data
+        : Array.isArray(response?.response) ? response.response
+        : Array.isArray(response?.employees) ? response.employees
+        : [];
       if (result.length > 0) {
         const updated = projects.map((p) =>
           p.id === project.id ? { ...p, employees: result } : p,
@@ -328,7 +376,6 @@ const AISuggestions = () => {
         setSelectedProject(latest);
       }
     } catch (err) {
-      // keep existing employees on error
       setSelectedProject(latest);
     } finally {
       setLoading(false);
@@ -492,7 +539,7 @@ const AISuggestions = () => {
               <div className="panel-header">
                 <div className="panel-header-info">
                   <h3>{selectedProject.project_name}</h3>
-                  <span>{selectedProject.client}</span>
+                  <span>{selectedProject.customer}</span>
                 </div>
                 <button
                   className="panel-close-btn"
@@ -578,16 +625,41 @@ const AISuggestions = () => {
             <form onSubmit={handleFormSubmit} className="requirement-form">
               <div className="form-row">
                 <div className="form-group">
-                  <label>
-                    Project Name <span className="required">*</span>
-                  </label>
-                  <input
-                    name="project_name"
-                    value={form.project_name}
-                    onChange={handleFormChange}
-                    placeholder="Eg: BPLU_DCMA"
-                    required
-                  />
+                  <label>Project Name <span className="required">*</span></label>
+                  <div className="autocomplete-wrapper">
+                    <input
+                      name="project_name"
+                      value={projectSearch}
+                      onChange={(e) => {
+                        setProjectSearch(e.target.value);
+                        setForm({ ...form, project_name: e.target.value, customer: form.customer });
+                        setShowProjectDropdown(true);
+                      }}
+                      onFocus={() => setShowProjectDropdown(true)}
+                      onBlur={() => setTimeout(() => setShowProjectDropdown(false), 150)}
+                      placeholder="Eg: BPLU_DCMA"
+                      required
+                      autoComplete="off"
+                    />
+                    {showProjectDropdown && filteredProjectsList.length > 0 && (
+                      <div className="autocomplete-dropdown">
+                        {filteredProjectsList.map((p, i) => (
+                          <div
+                            key={i}
+                            className="autocomplete-option"
+                            onMouseDown={() => {
+                              setForm({ ...form, project_name: p.project_name, customer: p.customer || form.customer });
+                              setProjectSearch(p.project_name);
+                              setShowProjectDropdown(false);
+                            }}
+                          >
+                            <span className="autocomplete-project-name">{p.project_name}</span>
+                            {p.customer && <span className="autocomplete-customer">{p.customer}</span>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="form-group">
                   <label>Client</label>
@@ -596,6 +668,8 @@ const AISuggestions = () => {
                     value={form.customer}
                     onChange={handleFormChange}
                     placeholder="Eg: Buspatrol"
+                    readOnly
+                    className="readonly-input"
                   />
                 </div>
               </div>
@@ -604,11 +678,12 @@ const AISuggestions = () => {
                 <label>
                   Requirements <span className="required">*</span>
                 </label>
-                <input
+                <textarea
                   name="requirements"
                   value={form.requirements}
                   onChange={handleFormChange}
                   placeholder="React employee with 3 years experience"
+                  rows={3}
                   required
                 />
                 <span className="form-hint">Comma-separated</span>
