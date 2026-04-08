@@ -197,6 +197,45 @@ export async function requirementAPI(requirement) {
   return response.json();
 }
 
+export async function getProjectRequirements() {
+  try {
+    const response = await axios.get(`${BASE_URL}/project_requirements`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function addProjectRequirement(data) {
+  try {
+    const response = await axios.post(`${BASE_URL}/project_requirements`, data);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function editProjectRequirement(id, data) {
+  try {
+    const response = await axios.put(`${BASE_URL}/project_requirements/${id}`, data);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+export async function editProjectRequirements() {
+  try {
+    const response = await axios.put(`${BASE_URL}/project_requirements/{id}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
 export async function loginApi(credentials) {
   const response = await axios.post(`${BASE_URL}/login`, credentials);
   return response.data;

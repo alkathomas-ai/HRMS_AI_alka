@@ -133,6 +133,20 @@
   font-size: 13px;
 }
 
+.table-loader {
+  text-align: center;
+  padding: 48px !important;
+}
+
+.table-loader-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
 .suggestions-count {
   display: flex;
   align-items: center;

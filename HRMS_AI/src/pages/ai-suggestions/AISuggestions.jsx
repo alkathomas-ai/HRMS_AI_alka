@@ -1,18 +1,37 @@
-import { useState } from "react";
-import { requirementAPI } from "../../services/api";
+import { useState, useEffect } from "react";
+import { requirementAPI, getProjectRequirements, addProjectRequirement, editProjectRequirement } from "../../services/api";
 import dummySuggestions from "../../data/dummySuggestions";
 import "../D.css";
 import "./AISuggestions.css";
 
-const SuggestionCard = ({ employee, activeSkill, setActiveSkill, onSkillClick }) => {
+const SuggestionCard = ({
+  employee,
+  activeSkill,
+  setActiveSkill,
+  onSkillClick,
+}) => {
   const [expanded, setExpanded] = useState(false);
   const [showAllSkills, setShowAllSkills] = useState(false);
 
-  const { display_name, designation, employee_id, employee_department, emp_location, tech_group, total_exp, ai_score, skill_set, ai_reason } = employee;
-  const scoreClass = ai_score >= 70 ? "high" : ai_score >= 50 ? "medium" : "low";
+  const {
+    display_name,
+    designation,
+    employee_id,
+    employee_department,
+    emp_location,
+    tech_group,
+    total_exp,
+    ai_score,
+    skill_set,
+    ai_reason,
+  } = employee;
+  const scoreClass =
+    ai_score >= 70 ? "high" : ai_score >= 50 ? "medium" : "low";
 
   return (
-    <div className={`suggestion-card ${scoreClass}-score ${expanded ? "expanded" : ""}`}>
+    <div
+      className={`suggestion-card ${scoreClass}-score ${expanded ? "expanded" : ""}`}
+    >
       <div className="suggestion-row" onClick={() => setExpanded(!expanded)}>
         <div className="suggestion-score-pill">
           <span className={`score-dot ${scoreClass}`}></span>
@@ -23,16 +42,29 @@ const SuggestionCard = ({ employee, activeSkill, setActiveSkill, onSkillClick })
           <span className="suggestion-designation">{designation}</span>
         </div>
         <div className="suggestion-meta">
-          <span><i className="fa-solid fa-location-dot"></i> {emp_location}</span>
-          <span><i className="fa-solid fa-laptop-code"></i> {tech_group}</span>
-          <span><i className="fa-solid fa-business-time"></i> {total_exp}</span>
+          <span>
+            <i className="fa-solid fa-location-dot"></i> {emp_location}
+          </span>
+          <span>
+            <i className="fa-solid fa-laptop-code"></i> {tech_group}
+          </span>
+          <span>
+            <i className="fa-solid fa-business-time"></i> {total_exp}
+          </span>
         </div>
         <div className="suggestion-skills-preview">
-          {skill_set?.split(",").slice(0, 3).map((s, i) => (
-            <span key={i} className="skill-badge">{s.trim()}</span>
-          ))}
+          {skill_set
+            ?.split(",")
+            .slice(0, 3)
+            .map((s, i) => (
+              <span key={i} className="skill-badge">
+                {s.trim()}
+              </span>
+            ))}
           {skill_set?.split(",").length > 3 && (
-            <span className="skill-badge">+{skill_set.split(",").length - 3}</span>
+            <span className="skill-badge">
+              +{skill_set.split(",").length - 3}
+            </span>
           )}
         </div>
         <span className="expand-chevron material-symbols-outlined">
@@ -45,20 +77,36 @@ const SuggestionCard = ({ employee, activeSkill, setActiveSkill, onSkillClick })
           <div className="suggestion-details-grid">
             <div className="suggestion-details-left">
               <div className="employee-details-text">
-                <p><i className="fa-regular fa-id-card"></i> {employee_id}</p>
-                <p><i className="fa-solid fa-building"></i> {employee_department}</p>
-                <p><i className="fa-solid fa-location-dot"></i> {emp_location}</p>
-                <p><i className="fa-solid fa-laptop-code"></i> {tech_group}</p>
-                <p><i className="fa-solid fa-business-time"></i> {total_exp}</p>
+                <p>
+                  <i className="fa-regular fa-id-card"></i> {employee_id}
+                </p>
+                <p>
+                  <i className="fa-solid fa-building"></i> {employee_department}
+                </p>
+                <p>
+                  <i className="fa-solid fa-location-dot"></i> {emp_location}
+                </p>
+                <p>
+                  <i className="fa-solid fa-laptop-code"></i> {tech_group}
+                </p>
+                <p>
+                  <i className="fa-solid fa-business-time"></i> {total_exp}
+                </p>
               </div>
               {employee.projects?.length > 0 && (
-                <div className="employee-projects-section" style={{ marginTop: 10 }}>
+                <div
+                  className="employee-projects-section"
+                  style={{ marginTop: 10 }}
+                >
                   <span className="projects-label">Projects: </span>
                   <span className="projects-text">
                     {employee.projects.map((p, i) => (
                       <span key={i}>
                         <span className="project-name">{p.project_name}</span>
-                        <span className="project-customer"> ({p.customer})</span>
+                        <span className="project-customer">
+                          {" "}
+                          ({p.customer})
+                        </span>
                         {i < employee.projects.length - 1 && ", "}
                       </span>
                     ))}
@@ -66,22 +114,48 @@ const SuggestionCard = ({ employee, activeSkill, setActiveSkill, onSkillClick })
                 </div>
               )}
               {skill_set && (
-                <div className="employee-skills-section" style={{ marginTop: 10 }}>
+                <div
+                  className="employee-skills-section"
+                  style={{ marginTop: 10 }}
+                >
                   <span className="skills-label">Skills:</span>
                   <div className="skills-container">
-                    {skill_set.split(",").slice(0, showAllSkills ? undefined : 6).map((skill, i) => {
-                      const trimmed = skill.trim();
-                      const isActive = activeSkill === trimmed;
-                      return (
-                        <span key={i}
-                          onClick={(e) => { e.stopPropagation(); const next = isActive ? null : trimmed; setActiveSkill(next); onSkillClick(next); }}
-                          className={isActive ? "skill-badge active-skill-badge" : "skill-badge"}
-                        >{trimmed}</span>
-                      );
-                    })}
+                    {skill_set
+                      .split(",")
+                      .slice(0, showAllSkills ? undefined : 6)
+                      .map((skill, i) => {
+                        const trimmed = skill.trim();
+                        const isActive = activeSkill === trimmed;
+                        return (
+                          <span
+                            key={i}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const next = isActive ? null : trimmed;
+                              setActiveSkill(next);
+                              onSkillClick(next);
+                            }}
+                            className={
+                              isActive
+                                ? "skill-badge active-skill-badge"
+                                : "skill-badge"
+                            }
+                          >
+                            {trimmed}
+                          </span>
+                        );
+                      })}
                     {skill_set.split(",").length > 6 && (
-                      <button onClick={(e) => { e.stopPropagation(); setShowAllSkills(!showAllSkills); }} className="skill-more-btn">
-                        {showAllSkills ? "Show Less" : `+${skill_set.split(",").length - 6} More`}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowAllSkills(!showAllSkills);
+                        }}
+                        className="skill-more-btn"
+                      >
+                        {showAllSkills
+                          ? "Show Less"
+                          : `+${skill_set.split(",").length - 6} More`}
                       </button>
                     )}
                   </div>
@@ -96,20 +170,26 @@ const SuggestionCard = ({ employee, activeSkill, setActiveSkill, onSkillClick })
             </div>
             {employee.ai_criteria && (
               <div className="suggestion-criteria">
-                {Object.entries(employee.ai_criteria).map(([criteria, score]) => {
-                  const cls = score >= 70 ? "high" : score >= 50 ? "medium" : "low";
-                  return (
-                    <div key={criteria} className="criteria-item">
-                      <div className="criteria-header">
-                        <span className="criteria-name">{criteria}</span>
-                        <span className="criteria-score">{score}%</span>
+                {Object.entries(employee.ai_criteria).map(
+                  ([criteria, score]) => {
+                    const cls =
+                      score >= 70 ? "high" : score >= 50 ? "medium" : "low";
+                    return (
+                      <div key={criteria} className="criteria-item">
+                        <div className="criteria-header">
+                          <span className="criteria-name">{criteria}</span>
+                          <span className="criteria-score">{score}%</span>
+                        </div>
+                        <div className="criteria-bar-bg">
+                          <div
+                            className={`criteria-bar-fill ${cls}`}
+                            style={{ width: `${score}%` }}
+                          />
+                        </div>
                       </div>
-                      <div className="criteria-bar-bg">
-                        <div className={`criteria-bar-fill ${cls}`} style={{ width: `${score}%` }} />
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  },
+                )}
               </div>
             )}
           </div>
@@ -120,12 +200,45 @@ const SuggestionCard = ({ employee, activeSkill, setActiveSkill, onSkillClick })
 };
 
 const EMPTY_PROJECT = {
-  project_name: "", client: "", required_skills: "",
-  experience_min: "", experience_max: "", start_date: "", description: "", employees: [],
+  project_name: "",
+  client: "",
+  required_skills: "",
+  experience_min: "",
+  experience_max: "",
+  start_date: "",
+  description: "",
+  employees: [],
 };
 
 const AISuggestions = () => {
-  const [projects, setProjects] = useState(dummySuggestions);
+  const [projects, setProjects] = useState([]);
+  const [projectsLoading, setProjectsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const data = await getProjectRequirements();
+        const result = Array.isArray(data)
+          ? data
+          : data?.data || data?.projects || [];
+        setProjects(
+          result.map((p) => ({ ...p, employees: p.employees || [] })),
+        );
+        setSelectedProject(
+          result[0]
+            ? { ...result[0], employees: result[0].employees || [] }
+            : null,
+        );
+      } catch (err) {
+        console.error("Failed to fetch projects, using dummy data", err);
+        setProjects(dummySuggestions);
+        setSelectedProject(dummySuggestions[0]);
+      } finally {
+        setProjectsLoading(false);
+      }
+    };
+    fetchProjects();
+  }, []);
   const [selectedProject, setSelectedProject] = useState(dummySuggestions[0]);
   const [activeSkill, setActiveSkill] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -144,7 +257,8 @@ const AISuggestions = () => {
     }
   };
 
-  const handleFormChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleFormChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleAddNew = () => {
     setForm(EMPTY_PROJECT);
@@ -167,14 +281,27 @@ const AISuggestions = () => {
     if (selectedProject?.id === id) setSelectedProject(null);
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (editingId) {
       const original = projects.find((p) => p.id === editingId);
-      setProjects(projects.map((p) => p.id === editingId ? { ...original, ...form, id: editingId } : p));
+      try {
+        await editProjectRequirement(editingId, form);
+      } catch (err) {
+        console.error('Edit failed, updating locally', err);
+      }
+      setProjects(projects.map((p) =>
+        p.id === editingId ? { ...original, ...form, id: editingId } : p
+      ));
     } else {
-      const newProject = { ...form, id: Date.now(), employees: [] };
-      setProjects([...projects, newProject]);
+      let newId = Date.now();
+      try {
+        const res = await addProjectRequirement(form);
+        newId = res?.id || res?.data?.id || newId;
+      } catch (err) {
+        console.error('Add failed, adding locally', err);
+      }
+      setProjects([...projects, { ...form, id: newId, employees: [] }]);
     }
     setShowForm(false);
     setForm(EMPTY_PROJECT);
@@ -192,7 +319,9 @@ const AISuggestions = () => {
       const response = await requirementAPI(project);
       const result = response?.data || response?.employees || [];
       if (result.length > 0) {
-        const updated = projects.map((p) => p.id === project.id ? { ...p, employees: result } : p);
+        const updated = projects.map((p) =>
+          p.id === project.id ? { ...p, employees: result } : p,
+        );
         setProjects(updated);
         setSelectedProject({ ...latest, employees: result });
       } else {
@@ -210,7 +339,10 @@ const AISuggestions = () => {
 
   const displayedEmployees = activeSkill
     ? selectedProject?.employees?.filter((e) =>
-        e.skill_set?.split(",").map((s) => s.trim().toLowerCase()).includes(activeSkill.toLowerCase())
+        e.skill_set
+          ?.split(",")
+          .map((s) => s.trim().toLowerCase())
+          .includes(activeSkill.toLowerCase()),
       )
     : selectedProject?.employees;
 
@@ -219,7 +351,6 @@ const AISuggestions = () => {
   return (
     <div className="ai-suggestions-page">
       <div className={`ais-container ${panelOpen ? "panel-open" : ""}`}>
-
         {/* Main Table Area */}
         <div className="ais-main">
           <div className="ais-toolbar">
@@ -227,7 +358,8 @@ const AISuggestions = () => {
               <h1 className="welcome-title">AI Resource Suggestions</h1>
             </div>
             <button className="btn-primary" onClick={handleAddNew}>
-              <span className="material-symbols-outlined">add</span> Add Requirement
+              <span className="material-symbols-outlined">add</span> Add
+              Requirement
             </button>
           </div>
 
@@ -239,62 +371,115 @@ const AISuggestions = () => {
                   <th>Client</th>
                   {/* <th>Required Skills</th> */}
                   <th>Requirements</th>
-                  <th>Experience</th>
+                  {/* <th>Experience</th>
                   <th>Start Date</th>
-                  <th>Suggestions</th>
+                  <th>Suggestions</th> */}
+                  <th>Updated At</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
-                {projects.length === 0 && (
+                {projectsLoading ? (
                   <tr>
-                    <td colSpan={7} className="table-empty">No requirements added yet. Click "Add Requirement" to get started.</td>
-                  </tr>
-                )}
-                {projects.map((p) => (
-                  <tr
-                    key={p.id}
-                    className={`project-row ${selectedProject?.id === p.id ? "active-row" : ""}`}
-                    onClick={() => handleRowClick(p)}
-                  >
-                    <td>
-                      <div className="project-name-cell">
-                        <span className="material-symbols-outlined project-row-icon">folder</span>
-                        <span>{p.project_name || "—"}</span>
+                    <td colSpan={7} className="table-loader">
+                      <div className="table-loader-inner">
+                        <div className="spinner"></div>
+                        <span>Fetching projects...</span>
                       </div>
                     </td>
-                    <td>{p.client || "—"}</td>
-                    <td>
-                      <div className="table-skills">
+                  </tr>
+                ) : projects.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="table-empty">
+                      No requirements added yet. Click "Add Requirement" to get
+                      started.
+                    </td>
+                  </tr>
+                ) : null}
+                {!projectsLoading &&
+                  projects.map((p) => (
+                    <tr
+                      key={p.id}
+                      className={`project-row ${selectedProject?.id === p.id ? "active-row" : ""}`}
+                      onClick={() => handleRowClick(p)}
+                    >
+                      <td>
+                        <div className="project-name-cell">
+                          <span className="material-symbols-outlined project-row-icon">
+                            folder
+                          </span>
+                          <span>{p.project_name || "—"}</span>
+                        </div>
+                      </td>
+                      <td>{p.customer || "—"}</td>
+                      <td>
+                        {/* <div className="table-skills">
                         {p.required_skills?.split(",").slice(0, 3).map((s, i) => (
                           <span key={i} className="skill-badge">{s.trim()}</span>
                         ))}
                         {p.required_skills?.split(",").length > 3 && (
                           <span className="skill-badge">+{p.required_skills.split(",").length - 3}</span>
                         )}
-                      </div>
-                    </td>
-                    <td>{p.experience_min || "—"}{p.experience_max ? `–${p.experience_max} yrs` : p.experience_min ? " yrs" : ""}</td>
-                    <td>{p.start_date || "—"}</td>
-                    <td>
-                      {p.employees?.length > 0
-                        ? <span className="suggestions-count"><span className="material-symbols-outlined">group</span>{p.employees.length} found</span>
-                        : <span className="no-suggestions">—</span>
-                      }
-                    </td>
-                    <td className="row-actions" onClick={(e) => e.stopPropagation()}>
-                      <button className="icon-action-btn" title="Get AI Suggestions" onClick={(e) => handleGetSuggestions(p, e)}>
-                        <span className="material-symbols-outlined">auto_awesome</span>
-                      </button>
-                      <button className="icon-action-btn" title="Edit" onClick={(e) => handleEdit(p, e)}>
-                        <span className="material-symbols-outlined">edit</span>
-                      </button>
-                      <button className="icon-action-btn danger" title="Delete" onClick={(e) => handleDelete(p.id, e)}>
-                        <span className="material-symbols-outlined">delete</span>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                      </div> */}
+                        {p.requirements}
+                      </td>
+                      {/* <td>{p.experience_min || "—"}{p.experience_max ? `–${p.experience_max} yrs` : p.experience_min ? " yrs" : ""}</td> */}
+                      {/* <td>{p.start_date || "—"}</td> */}
+                      <td>
+                        {p.updated_at
+                          ? new Date(p.updated_at).toLocaleString("en-IN", {
+                              dateStyle: "medium",
+                              timeStyle: "short",
+                            })
+                          : "—"}
+                      </td>
+                      {/* <td>{p.updated_at ? timeAgo(p.updated_at) : "—"}</td> */}
+                      {/* <td>
+                        {p.employees?.length > 0 ? (
+                          <span className="suggestions-count">
+                            <span className="material-symbols-outlined">
+                              group
+                            </span>
+                            {p.employees.length} found
+                          </span>
+                        ) : (
+                          <span className="no-suggestions">—</span>
+                        )}
+                      </td> */}
+                      <td
+                        className="row-actions"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <button
+                          className="icon-action-btn"
+                          title="Get AI Suggestions"
+                          onClick={(e) => handleGetSuggestions(p, e)}
+                        >
+                          <span className="material-symbols-outlined">
+                            auto_awesome
+                          </span>
+                        </button>
+                        <button
+                          className="icon-action-btn"
+                          title="Edit"
+                          onClick={(e) => handleEdit(p, e)}
+                        >
+                          <span className="material-symbols-outlined">
+                            edit
+                          </span>
+                        </button>
+                        <button
+                          className="icon-action-btn danger"
+                          title="Delete"
+                          onClick={(e) => handleDelete(p.id, e)}
+                        >
+                          <span className="material-symbols-outlined">
+                            delete
+                          </span>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
@@ -309,31 +494,52 @@ const AISuggestions = () => {
                   <h3>{selectedProject.project_name}</h3>
                   <span>{selectedProject.client}</span>
                 </div>
-                <button className="panel-close-btn" onClick={() => setSelectedProject(null)}>
+                <button
+                  className="panel-close-btn"
+                  onClick={() => setSelectedProject(null)}
+                >
                   <span className="material-symbols-outlined">close</span>
                 </button>
               </div>
 
               <div className="panel-body">
                 {loading ? (
-                  <div className="chat-loader-new"><div className="spinner"></div></div>
+                  <div className="chat-loader-new">
+                    <div className="spinner"></div>
+                  </div>
                 ) : error ? (
                   <div className="suggestions-empty">
-                    <span className="material-symbols-outlined">error_outline</span>
+                    <span className="material-symbols-outlined">
+                      error_outline
+                    </span>
                     <p>{error}</p>
                   </div>
                 ) : !selectedProject.employees?.length ? (
                   <div className="suggestions-empty">
-                    <span className="material-symbols-outlined">auto_awesome</span>
-                    <p>Click the <strong>✨</strong> button on the row to get AI suggestions for this project.</p>
+                    <span className="material-symbols-outlined">
+                      auto_awesome
+                    </span>
+                    <p>
+                      Click the <strong>✨</strong> button on the row to get AI
+                      suggestions for this project.
+                    </p>
                   </div>
                 ) : (
                   <>
                     <div className="results-header">
-                      <h4>{displayedEmployees.length} Resource{displayedEmployees.length !== 1 ? "s" : ""} Found</h4>
+                      <h4>
+                        {displayedEmployees.length} Resource
+                        {displayedEmployees.length !== 1 ? "s" : ""} Found
+                      </h4>
                       {activeSkill && (
-                        <button className="clear-filter-btn" onClick={() => setActiveSkill(null)}>
-                          <span className="material-symbols-outlined">close</span> {activeSkill}
+                        <button
+                          className="clear-filter-btn"
+                          onClick={() => setActiveSkill(null)}
+                        >
+                          <span className="material-symbols-outlined">
+                            close
+                          </span>{" "}
+                          {activeSkill}
                         </button>
                       )}
                     </div>
@@ -362,49 +568,106 @@ const AISuggestions = () => {
           <div className="form-modal" onClick={(e) => e.stopPropagation()}>
             <div className="form-modal-header">
               <h3>{editingId ? "Edit Requirement" : "New Requirement"}</h3>
-              <button className="panel-close-btn" onClick={() => setShowForm(false)}>
+              <button
+                className="panel-close-btn"
+                onClick={() => setShowForm(false)}
+              >
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
             <form onSubmit={handleFormSubmit} className="requirement-form">
               <div className="form-row">
                 <div className="form-group">
-                  <label>Project Name <span className="required">*</span></label>
-                  <input name="project_name" value={form.project_name} onChange={handleFormChange} placeholder="E-Commerce Platform" required />
+                  <label>
+                    Project Name <span className="required">*</span>
+                  </label>
+                  <input
+                    name="project_name"
+                    value={form.project_name}
+                    onChange={handleFormChange}
+                    placeholder="Eg: BPLU_DCMA"
+                    required
+                  />
                 </div>
                 <div className="form-group">
                   <label>Client</label>
-                  <input name="client" value={form.client} onChange={handleFormChange} placeholder="Acme Corp" />
+                  <input
+                    name="customer"
+                    value={form.customer}
+                    onChange={handleFormChange}
+                    placeholder="Eg: Buspatrol"
+                  />
                 </div>
               </div>
               <div className="form-group">
                 {/* <label>Required Skills <span className="required">*</span></label> */}
-                <label>Requirements <span className="required">*</span></label>
-                <input name="required_skills" value={form.required_skills} onChange={handleFormChange} placeholder="React, Node.js, AWS" required />
+                <label>
+                  Requirements <span className="required">*</span>
+                </label>
+                <input
+                  name="requirements"
+                  value={form.requirements}
+                  onChange={handleFormChange}
+                  placeholder="React employee with 3 years experience"
+                  required
+                />
                 <span className="form-hint">Comma-separated</span>
               </div>
-              <div className="form-row">
+              {/* <div className="form-row">
                 <div className="form-group">
                   <label>Min Exp (yrs)</label>
-                  <input type="number" name="experience_min" value={form.experience_min} onChange={handleFormChange} placeholder="3" min="0" />
+                  <input
+                    type="number"
+                    name="experience_min"
+                    value={form.experience_min}
+                    onChange={handleFormChange}
+                    placeholder="3"
+                    min="0"
+                  />
                 </div>
                 <div className="form-group">
                   <label>Max Exp (yrs)</label>
-                  <input type="number" name="experience_max" value={form.experience_max} onChange={handleFormChange} placeholder="8" min="0" />
+                  <input
+                    type="number"
+                    name="experience_max"
+                    value={form.experience_max}
+                    onChange={handleFormChange}
+                    placeholder="8"
+                    min="0"
+                  />
                 </div>
               </div>
               <div className="form-group">
                 <label>Start Date</label>
-                <input type="date" name="start_date" value={form.start_date} onChange={handleFormChange} />
+                <input
+                  type="date"
+                  name="start_date"
+                  value={form.start_date}
+                  onChange={handleFormChange}
+                />
               </div>
               <div className="form-group">
                 <label>Description</label>
-                <textarea name="description" value={form.description} onChange={handleFormChange} placeholder="Project details, responsibilities..." rows={3} />
-              </div>
+                <textarea
+                  name="description"
+                  value={form.description}
+                  onChange={handleFormChange}
+                  placeholder="Project details, responsibilities..."
+                  rows={3}
+                />
+              </div> */}
               <div className="form-actions">
-                <button type="button" className="btn-outline" onClick={() => setShowForm(false)}>Cancel</button>
+                <button
+                  type="button"
+                  className="btn-outline"
+                  onClick={() => setShowForm(false)}
+                >
+                  Cancel
+                </button>
                 <button type="submit" className="btn-primary">
-                  <span className="material-symbols-outlined">{editingId ? "save" : "add"}</span>
+                  <span className="material-symbols-outlined">
+                    {editingId ? "save" : "add"}
+                  </span>
                   {editingId ? "Save Changes" : "Add Project"}
                 </button>
               </div>
