@@ -401,9 +401,9 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                 <span className='widget-close-btn' onClick={() => removeWidget(widgetId)}>×</span>
               </div>
             </div>
-            <span className="widget-subtitle">{projectDistribution.total_employees} Total employees</span>
+            {/* <span className="widget-subtitle">{projectDistribution.total_employees} Total employees</span> */}
             <div className="pie-chart-container">
-              <div style={{ height: '180px', width: '100%', display: 'flex', justifyContent: 'center' }}>
+              <div style={{ height: 'calc( 100% - 70px )', width: '100%', display: 'flex', justifyContent: 'center' }}>
                 <DoughnutChart data={projectDistribution.projects} total={projectDistribution.total_employees} />
               </div>
               <div className="chart-legend">
@@ -418,7 +418,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                   ];
                   return (
                     <div key={project.project} className="modern-legend-item">
-                      <div className="modern-legend-color" style={{ background: `linear-gradient(135deg, ${gradientColors[index].start}, ${gradientColors[index].end})` }} />
+                      <div className="modern-legend-color" style={{ backgroundColor: gradientColors[index % gradientColors.length].start }} />
                       <span className="legend-text">{project.project}</span>
                       <span className="legend-percentage">{percentage}%</span>
                     </div>
@@ -663,6 +663,8 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           </>
         );
       }
+
+
 
 
 

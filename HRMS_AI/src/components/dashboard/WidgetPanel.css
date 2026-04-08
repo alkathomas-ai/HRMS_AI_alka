@@ -490,6 +490,7 @@
   flex-direction: column;
   gap: 20px;
   flex: 1;
+  height: 100%;
 }
 
 .modern-pie-chart {
@@ -551,18 +552,24 @@
 }
 
 .chart-legend {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
   gap: 10px;
   font-size: 11px;
   width: 100%;
+  height: 40px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
 }
 
 .modern-legend-item {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   padding: 0;
+  max-width: min-content;
+  min-width: 110px;
 }
 
 .modern-legend-color {
