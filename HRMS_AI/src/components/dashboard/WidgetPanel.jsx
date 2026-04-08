@@ -15,6 +15,7 @@ import StatsWidget from './StatsWidget';
 import useConfirmation from '../common/useConfirmation';
 import CandidateProfileModal from '../CandidateProfileModal';
 import { useCandidateProfileModal } from '../../hooks/useCandidateProfileModal';
+import ProjectCarousel from './ProjectCarousel';
 
 
 const SortableWidget = ({ id, children, isPinned, widgetSize }) => {
@@ -42,7 +43,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const { isOpen, employee, loading, error, openModal, closeModal } = useCandidateProfileModal();
   const [selectedWidgets, setSelectedWidgets] = useState(() => {
     const saved = localStorage.getItem('selectedWidgets');
-    return saved ? JSON.parse(saved) : ['project-distribution', 'department-overview', 'employee-directory', 'available-employees', 'upskill-suggestions'];
+    return saved ? JSON.parse(saved) : ['project-carousel', 'project-distribution', 'department-overview', 'employee-directory', 'available-employees', 'upskill-suggestions'];
   });
   const [pinnedWidgets, setPinnedWidgets] = useState(() => {
     const saved = localStorage.getItem('pinnedWidgets');
@@ -152,6 +153,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
 
   const availableWidgets = [
     { id: 'stats-overview', label: 'Stats Overview' },
+    { id: 'project-carousel', label: 'Freepool Project Recommendations' },
     { id: 'project-distribution', label: 'Project Distribution' },
     { id: 'department-overview', label: 'Department Overview' },
     { id: 'employee-directory', label: 'Employee Directory' },
@@ -168,10 +170,12 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
       availableWidgets.forEach(widget => {
         if (!updatedSizes[widget.id]) {
           let defaultRows = 2;
+          let defaultCols = 1;
           if (widget.id === 'stats-overview') defaultRows = 1;
+          if (widget.id === 'project-carousel') {defaultRows = 3; defaultCols = 2;}
           if (widget.id === 'employee-directory' || widget.id === 'available-employees' || widget.id === 'upskill-suggestions') defaultRows = 3;
           
-          updatedSizes[widget.id] = { cols: 1, rows: defaultRows };
+          updatedSizes[widget.id] = { cols: defaultCols, rows: defaultRows };
           hasChanges = true;
         }
       });
@@ -430,6 +434,28 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     }
 
     switch (widgetId) {
+      case 'project-carousel':
+        return (
+          <>
+            <div className="grid-item-header">
+              <h4 title="Project Recommendations">Freepool Project Recommendations</h4>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'center' }}>
+                <SizeSelector />
+                <button
+                  onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
+                  className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
+                >
+                  <img src={Icons.pin} alt="" />
+                </button>
+                <span className='widget-close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+              </div>
+            </div>
+            <div style={{ height: 'calc(100% - 60px)', overflow: 'none', position: 'relative' }}>
+              <ProjectCarousel />
+            </div>
+          </>
+        );
+
       case 'stats-overview':
         return (
           <>

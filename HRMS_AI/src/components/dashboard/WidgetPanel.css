@@ -432,7 +432,7 @@
 
 .masonry-item:focus-within {
   /* border: 1px solid var(--assistant-glow-primary); */
-  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  /* box-shadow: 0 1px 4px rgba(0,0,0,0.12); */
   transform: none;
 }
 .masonry-item:hover {
