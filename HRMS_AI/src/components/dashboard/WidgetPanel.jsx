@@ -81,7 +81,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const [openSizePopup, setOpenSizePopup] = useState(null);
   const timelineRef = useRef(null);
   const containerRef = useRef(null);
-  const employeesPerPage = 5;
+  const employeesPerPage = 10;
 
   // Static upskill suggestions data
   const upskillData = [
@@ -588,7 +588,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                 <i className="fa-solid fa-search"></i>
               </div>
             </div>
-            <span className="widget-subtitle">{filteredEmployees.length} Employees</span>
+            {/* <span className="widget-subtitle">{filteredEmployees.length} Employees</span> */}
             <div className="employee-directory-container">
               {currentEmployees.map((employee) => (
                 <div 
@@ -778,7 +778,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             <div className="upskill-container">
               {upskillData.map((employee) => (
                 <div key={employee.employee_id} className="upskill-employee-card">
-                  <div className="upskill-employee-header">
+                  <div className="upskill-employee-header" onClick={() => openModal(employee.employee_id)}>
                     <div className="upskill-employee-avatar">
                       {employee.display_name.charAt(0).toUpperCase()}
                     </div>
@@ -792,7 +792,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                     </div>
                   </div>
                   <div className="upskill-suggestions">
-                    {employee.upskill_suggestions.slice(0, 2).map((suggestion, index) => (
+                    {employee.upskill_suggestions.map((suggestion, index) => (
                       <div key={index} className="upskill-suggestion-item">
                         <div className="d-flex align-start justify-btwn">
                           <div className="upskill-skill-name">{suggestion.skill}</div>

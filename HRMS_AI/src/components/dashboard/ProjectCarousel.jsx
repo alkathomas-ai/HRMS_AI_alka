@@ -258,11 +258,11 @@ const ProjectCarousel = () => {
                             </div>
                             <div className="carousel-employee-header">
                               <div className="employee-name">{employee.display_name}</div>
-                              <div className="employee-id">{employee.employee_id}</div>
+                              <div className="carousel-employee-id">{employee.employee_id}</div>
                             </div>
                           </div>
                           <div className="employee-details">
-                            <div className="employee-designation">{employee.designation}</div>
+                            <div className="carousel-employee-designation">{employee.designation}</div>
                             <div className="employee-role">{employee.assigned_role}</div>
                             <div className="employee-tech-group">
                               <span className="tech-group-badge">{employee.tech_group}</span>
