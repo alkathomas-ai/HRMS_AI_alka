@@ -554,7 +554,8 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         const filteredEmployees = employeeDirectory.employees.filter(emp =>
           emp.display_name.toLowerCase().includes(employeeSearch.toLowerCase()) ||
           emp.employee_department.toLowerCase().includes(employeeSearch.toLowerCase()) ||
-          emp.designation.toLowerCase().includes(employeeSearch.toLowerCase())
+          emp.designation.toLowerCase().includes(employeeSearch.toLowerCase()) ||
+          emp.employee_id.toLowerCase().includes(employeeSearch.toLowerCase())
         );
         const startIndex = employeePage * employeesPerPage;
         const currentEmployees = filteredEmployees.slice(startIndex, startIndex + employeesPerPage);

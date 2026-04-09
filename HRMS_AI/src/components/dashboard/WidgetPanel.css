@@ -226,6 +226,7 @@
 
 .pin-btn.pinned img {
   filter: brightness(0) saturate(100%) invert(100%);
+  rotate: 40deg;
 }
 
 .pin-btn.pinned {
