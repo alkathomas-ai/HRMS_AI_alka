@@ -865,13 +865,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding-top: 12px;
-  margin-top: auto;
+  gap: 8px;
 }
 
 .widget-page-btn {
-  background: var(--color-bg-card);
+  background: var(--color-bg-dashboard);
   border: 1px solid var(--color-border);
   border-radius: 8px;
   width: 32px;
