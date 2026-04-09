@@ -453,10 +453,10 @@
 
 .grid-item-header h4 {
   margin: 0;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 500;
   color: var(--color-text-primary);
-  margin-top: 5px;
+  /* margin-top: 5px; */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -997,11 +997,14 @@
   color: var(--color-text-secondary);
   position: relative;
   padding-left: 10px;
+  border: solid var(--color-bg-dashboard);
+  border-width: 1px 0;
 }
 
 .timeline-date-item.active {
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-text-primary);
+  background-color: var(--assistant-base-start);
 }
 
 .timeline-content {
