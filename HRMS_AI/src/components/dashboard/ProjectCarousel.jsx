@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X, Users, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import './ProjectCarousel.css';
 
-const ProjectCarousel = () => {
+const ProjectCarousel = ({ openModal }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const projectsData = [
@@ -784,7 +784,13 @@ const ProjectCarousel = () => {
                               {employee.display_name.charAt(0).toUpperCase()}
                             </div>
                             <div className="carousel-employee-header">
-                              <div className="carousel-employee-name">{employee.display_name}</div>
+                              <div 
+                                className="carousel-employee-name clickable-employee-name" 
+                                onClick={() => openModal && openModal(employee.employee_id)}
+                                style={{ cursor: openModal ? 'pointer' : 'default' }}
+                              >
+                                {employee.display_name}
+                              </div>
                               <div className="carousel-employee-id">{employee.employee_id}</div>
                             </div>
                           </div>

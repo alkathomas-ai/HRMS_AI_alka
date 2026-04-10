@@ -952,7 +952,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
               </div>
             </div>
             <div style={{ height: 'calc(100% - 60px)', overflow: 'none', position: 'relative' }}>
-              <ProjectCarousel />
+              <ProjectCarousel openModal={openModal} />
             </div>
           </>
         );

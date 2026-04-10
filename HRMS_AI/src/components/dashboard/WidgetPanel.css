@@ -1262,11 +1262,29 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
+.clickable-employee-name {
+  transition: color 0.2s ease;
+}
+
+.clickable-employee-name:hover {
+  color: var(--color-primary) !important;
+  text-decoration: underline;
+}
+
 .upskill-employee-header {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upskill-employee-header:hover {
+  background: var(--color-bg-card);
+  border-radius: 6px;
+  padding: 8px;
+  margin: -8px -8px 4px -8px;
 }
 
 .upskill-employee-avatar {
