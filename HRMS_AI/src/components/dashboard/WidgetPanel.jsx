@@ -16,6 +16,7 @@ import useConfirmation from '../common/useConfirmation';
 import CandidateProfileModal from '../CandidateProfileModal';
 import { useCandidateProfileModal } from '../../hooks/useCandidateProfileModal';
 import ProjectCarousel from './ProjectCarousel';
+import WorldMapWidget from './WorldMapWidget';
 
 
 const SortableWidget = ({ id, children, isPinned, widgetSize }) => {
@@ -43,7 +44,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const { isOpen, employee, loading, error, openModal, closeModal } = useCandidateProfileModal();
   const [selectedWidgets, setSelectedWidgets] = useState(() => {
     const saved = localStorage.getItem('selectedWidgets');
-    return saved ? JSON.parse(saved) : ['project-carousel', 'project-distribution', 'department-overview', 'employee-directory', 'available-employees', 'upskill-suggestions'];
+    return saved ? JSON.parse(saved) : ['project-carousel', 'project-distribution', 'department-overview', 'employee-directory', 'available-employees', 'world-map'];
   });
   const [pinnedWidgets, setPinnedWidgets] = useState(() => {
     const saved = localStorage.getItem('pinnedWidgets');
@@ -660,6 +661,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     { id: 'employee-directory', label: 'Employee Directory' },
     { id: 'available-employees', label: 'Available Employees' },
     { id: 'upskill-suggestions', label: 'Upskill Suggestions' },
+    { id: 'world-map', label: 'Global Employee Distribution' },
   ];
 
   
@@ -675,6 +677,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           if (widget.id === 'stats-overview') defaultRows = 1;
           if (widget.id === 'project-carousel') {defaultRows = 3; defaultCols = 2;}
           if (widget.id === 'employee-directory' || widget.id === 'available-employees' || widget.id === 'upskill-suggestions') defaultRows = 3;
+          if (widget.id === 'world-map') {defaultRows = 3; defaultCols = 2;}
           
           updatedSizes[widget.id] = { cols: defaultCols, rows: defaultRows };
           hasChanges = true;
@@ -1306,6 +1309,30 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                   </div>
                 </div>
               ))}
+            </div>
+          </>
+        );
+
+      case 'world-map':
+        return (
+          <>
+            <div className="grid-item-header">
+              <h4 title="Global Employee Distribution">Global Employee Distribution</h4>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <SizeSelector />
+                <button
+                  onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
+                  className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
+                >
+                  <img src={Icons.pin} alt="" />
+                </button>
+                <span className='widget-close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+              </div>
+            </div>
+            <div style={{ height: 'calc(100% - 45px)', overflow: 'hidden', backgroundColor: 'var(--color-bg-dashboard)' }}  onPointerDown={(e) => e.stopPropagation()}
+  onMouseDown={(e) => e.stopPropagation()}
+  onTouchStart={(e) => e.stopPropagation()}>
+              <WorldMapWidget />
             </div>
           </>
         );
