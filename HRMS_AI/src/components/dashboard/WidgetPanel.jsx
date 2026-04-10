@@ -107,13 +107,6 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         const container = upskillScrollRef.current;
         const cards = container.querySelectorAll('.upskill-employee-card');
         
-        console.log('Auto-scroll triggered:', {
-          container: !!container,
-          cardsCount: cards.length,
-          isHovered: isUpskillHovered,
-          hasWidget: selectedWidgets.includes('upskill-suggestions')
-        });
-        
         if (cards.length > 0) {
           const currentScroll = container.scrollTop;
           const containerHeight = container.clientHeight;

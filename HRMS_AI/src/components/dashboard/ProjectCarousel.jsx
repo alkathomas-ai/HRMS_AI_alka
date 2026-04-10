@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Users, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import './ProjectCarousel.css';
 
 const ProjectCarousel = ({ openModal, projectsData }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const intervalRef = useRef(null);
 
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % projectsData.length);
@@ -13,8 +15,47 @@ const ProjectCarousel = ({ openModal, projectsData }) => {
     setCurrentIndex((prev) => (prev - 1 + projectsData.length) % projectsData.length);
   };
 
+  // Auto-slide functionality
+  useEffect(() => {
+    if (projectsData && projectsData.length > 1 && !isHovered) {
+      intervalRef.current = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % projectsData.length);
+      }, 8000); // 5 seconds
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [projectsData, isHovered]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
+
+  // Don't render if no data
+  if (!projectsData || projectsData.length === 0) {
+    return (
+      <div className="project-carousel">
+        <div className="carousel-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200px' }}>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '14px' }}>No project recommendations available</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="project-carousel">
+    <div 
+      className="project-carousel"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="carousel-container">
         <button onClick={prevSlide} className="carousel-nav-btn prev-btn">
           <ChevronLeft size={20} />
