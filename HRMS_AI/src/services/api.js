@@ -128,6 +128,17 @@ export async function getSoonAvailableEmployees() {
   }
 }
 
+export async function getFreepoolProjectSuggestions() {
+  try {
+    const response = await axios.get(`${BASE_URL}/freepool_suggestions`);
+    console.log(response.data.response[0])
+    return response.data.response[0] || [];
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
 export async function getEmployeeDetails(employeeId) {
   try {
     const stripedId = employeeId.slice(5)

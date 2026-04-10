@@ -1247,6 +1247,25 @@
   gap: 12px;
   height: calc(100% - 45px);
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary-soft) transparent;
+}
+
+.upskill-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.upskill-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.upskill-container::-webkit-scrollbar-thumb {
+  background: var(--color-primary-soft);
+  border-radius: 3px;
+}
+
+.upskill-container::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-hover);
 }
 
 .upskill-employee-card {
