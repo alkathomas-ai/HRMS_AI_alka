@@ -274,13 +274,7 @@ const AISuggestions = () => {
     try {
       const data = await getProjects();
       console.log('Projects API raw response:', data);
-      const list = Array.isArray(data)
-        ? data
-        : Array.isArray(data?.response) ? data.response
-        : Array.isArray(data?.data) ? data.data
-        : Array.isArray(data?.projects) ? data.projects
-        : Array.isArray(data?.results) ? data.results
-        : [];
+      const list = data?.response ?? [];
       console.log('Projects list parsed:', list);
       setProjectsList(list);
     } catch (err) {
@@ -337,14 +331,37 @@ const AISuggestions = () => {
         p.id === editingId ? { ...original, ...form, id: editingId } : p
       ));
     } else {
-      let newId = Date.now();
+      let newId = null;
       try {
         const res = await addProjectRequirement(form);
-        newId = res?.id || res?.data?.id || newId;
+        newId = res?.id || res?.data?.id || null;
+        const newProject = { ...form, id: newId, employees: [] };
+        setProjects((prev) => [...prev, newProject]);
+        setShowForm(false);
+        setForm(EMPTY_PROJECT);
+        setEditingId(null);
+        // fetch suggestions for the new requirement
+        if (newId) {
+          setSelectedProject(newProject);
+          setActiveSkill(null);
+          setLoading(true);
+          try {
+            const suggestions = await showResourceSuggestion(newId);
+            const employees = suggestions?.response?.[0]?.response ?? [];
+            const updated = { ...newProject, employees };
+            setProjects((prev) => prev.map((p) => p.id === newId ? updated : p));
+            setSelectedProject(updated);
+          } catch (err) {
+            console.error('Failed to fetch suggestions', err);
+          } finally {
+            setLoading(false);
+          }
+        }
+        return;
       } catch (err) {
         console.error('Add failed, adding locally', err);
+        setProjects((prev) => [...prev, { ...form, id: Date.now(), employees: [] }]);
       }
-      setProjects([...projects, { ...form, id: newId, employees: [] }]);
     }
     setShowForm(false);
     setForm(EMPTY_PROJECT);
@@ -361,11 +378,7 @@ const AISuggestions = () => {
     try {
       const response = await showResourceSuggestion(project.id);
       console.log('Suggestions response:', response);
-      const result = Array.isArray(response) ? response
-        : Array.isArray(response?.data) ? response.data
-        : Array.isArray(response?.response) ? response.response
-        : Array.isArray(response?.employees) ? response.employees
-        : [];
+      const result = response?.response?.[0]?.response ?? [];
       if (result.length > 0) {
         const updated = projects.map((p) =>
           p.id === project.id ? { ...p, employees: result } : p,

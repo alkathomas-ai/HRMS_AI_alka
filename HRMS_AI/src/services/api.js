@@ -183,19 +183,19 @@ export async function updateEmployeeSkills(employeeId, skills) {
   }
 }
 
-export async function requirementAPI(requirement) {
-  const token = sessionStorage.getItem('authToken');
-  const response = await fetch(`${BASE_URL}/search-rank-simplified-new`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` })
-    },
-    body: JSON.stringify({ query: requirement }),
-  });
-  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-  return response.json();
-}
+// export async function requirementAPI(requirement) {
+//   const token = sessionStorage.getItem('authToken');
+//   const response = await fetch(`${BASE_URL}/search-rank-simplified-new`, {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       ...(token && { 'Authorization': `Bearer ${token}` })
+//     },
+//     body: JSON.stringify({ query: requirement }),
+//   });
+//   if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+//   return response.json();
+// }
 
 export async function getProjects() {
   try {
@@ -220,7 +220,10 @@ export async function getProjectRequirements() {
 export async function addProjectRequirement(data) {
   try {
     const response = await axios.post(`${BASE_URL}/project_requirements`, data);
-    return response.data;
+    if(response.status === 200){
+      const responseFinal = await updateResourceSuggestion(data.id);
+      return responseFinal.data;
+    }
   } catch (error) {
     console.error(error);
     throw error;
@@ -230,7 +233,10 @@ export async function addProjectRequirement(data) {
 export async function editProjectRequirement(id, data) {
   try {
     const response = await axios.put(`${BASE_URL}/project_requirements/${id}`, data);
-    return response.data;
+    if(response.status === 200){
+      const responseFinal = await updateResourceSuggestion(data.id);
+      return responseFinal.data;
+    }
   } catch (error) {
     console.error(error);
     throw error;
@@ -247,9 +253,19 @@ export async function deleteProjectRequirement(id) {
   }
 }
 
-export async function showResourceSuggestion(id) {
+export async function updateResourceSuggestion(id) {
   try {
     const response = await axios.get(`${BASE_URL}/project_requirement_suggestion?project_requirement_id=${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function showResourceSuggestion(id) {
+  try {
+    const response = await axios.get(`${BASE_URL}/suggested_requirements?project_requirement_id=${id}`);
     return response.data;
   } catch (error) {
     console.error(error);
