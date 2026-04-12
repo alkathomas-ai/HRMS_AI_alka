@@ -73,7 +73,7 @@ const ProjectCarousel = ({ openModal, projectsData }) => {
                   <div className="project-details-side">
                     <div className="card-image">
                       <img 
-                        src={"src/assets/carousel" + (index%3 + 1) + ".jpg"}
+                        src={"/carousel" + (index%3 + 1) + ".jpg"}
                         alt={project.project_title}
                       />
                       <div className="card-overlay">
