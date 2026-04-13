@@ -183,19 +183,19 @@ export async function updateEmployeeSkills(employeeId, skills) {
   }
 }
 
-// export async function requirementAPI(requirement) {
-//   const token = sessionStorage.getItem('authToken');
-//   const response = await fetch(`${BASE_URL}/search-rank-simplified-new`, {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json',
-//       ...(token && { 'Authorization': `Bearer ${token}` })
-//     },
-//     body: JSON.stringify({ query: requirement }),
-//   });
-//   if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-//   return response.json();
-// }
+export async function requirementAPI(requirement) {
+  const token = sessionStorage.getItem('authToken');
+  const response = await fetch(`${BASE_URL}/search-rank-simplified-new`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token && { 'Authorization': `Bearer ${token}` })
+    },
+    body: JSON.stringify({ query: requirement }),
+  });
+  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+  return response.json();
+}
 
 export async function getProjects() {
   try {
@@ -220,10 +220,11 @@ export async function getProjectRequirements() {
 export async function addProjectRequirement(data) {
   try {
     const response = await axios.post(`${BASE_URL}/project_requirements`, data);
-    if(response.status === 200){
-      const responseFinal = await updateResourceSuggestion(data.id);
-      return responseFinal.data;
-    }
+    // if(response.status === 200){
+    //   const responseFinal = await updateResourceSuggestion(data.id);
+    //   return responseFinal.data;
+    // }
+    return response.data;
   } catch (error) {
     console.error(error);
     throw error;
@@ -233,10 +234,11 @@ export async function addProjectRequirement(data) {
 export async function editProjectRequirement(id, data) {
   try {
     const response = await axios.put(`${BASE_URL}/project_requirements/${id}`, data);
-    if(response.status === 200){
-      const responseFinal = await updateResourceSuggestion(data.id);
-      return responseFinal.data;
-    }
+    // if(response.status === 200){
+    //   const responseFinal = await updateResourceSuggestion(data.id);
+    //   return responseFinal.data;
+    // }
+    return response.data;
   } catch (error) {
     console.error(error);
     throw error;
@@ -253,7 +255,7 @@ export async function deleteProjectRequirement(id) {
   }
 }
 
-export async function updateResourceSuggestion(id) {
+export async function showResourceSuggestion(id) {
   try {
     const response = await axios.get(`${BASE_URL}/project_requirement_suggestion?project_requirement_id=${id}`);
     return response.data;
@@ -263,15 +265,15 @@ export async function updateResourceSuggestion(id) {
   }
 }
 
-export async function showResourceSuggestion(id) {
-  try {
-    const response = await axios.get(`${BASE_URL}/suggested_requirements?project_requirement_id=${id}`);
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-}
+// export async function showResourceSuggestion(id) {
+//   try {
+//     const response = await axios.get(`${BASE_URL}/suggested_requirements?project_requirement_id=${id}`);
+//     return response.data;
+//   } catch (error) {
+//     console.error(error);
+//     throw error;
+//   }
+// }
 
 // http://172.25.247.7:8000/api/project_requirement_suggestion?project_requirement_id=2
 

@@ -334,7 +334,9 @@ const AISuggestions = () => {
       let newId = null;
       try {
         const res = await addProjectRequirement(form);
-        newId = res?.id || res?.data?.id || null;
+        newId = res?.id || res?.project_requirement_id || null; 
+        //const status = res.status; 
+        //const detail = res.detail; 
         const newProject = { ...form, id: newId, employees: [] };
         setProjects((prev) => [...prev, newProject]);
         setShowForm(false);
