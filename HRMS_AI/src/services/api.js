@@ -242,7 +242,7 @@ export async function deleteProjectRequirement(id) {
   }
 }
 
-export async function showResourceSuggestion(id) {
+export async function generateResourceSuggestion(id) {
   try {
     const response = await axios.get(`${BASE_URL}/project_requirement_suggestion?project_requirement_id=${id}`);
     return response.data;
@@ -252,15 +252,15 @@ export async function showResourceSuggestion(id) {
   }
 }
 
-// export async function showResourceSuggestion(id) {
-//   try {
-//     const response = await axios.get(`${BASE_URL}/suggested_requirements?project_requirement_id=${id}`);
-//     return response.data;
-//   } catch (error) {
-//     console.error(error);
-//     throw error;
-//   }
-// }
+export async function showResourceSuggestion(id) {
+  try {
+    const response = await axios.get(`${BASE_URL}/suggested_requirements?project_requirement_id=${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
 
 // http://172.25.247.7:8000/api/project_requirement_suggestion?project_requirement_id=2
 

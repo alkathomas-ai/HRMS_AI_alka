@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getProjectRequirements, addProjectRequirement, editProjectRequirement, getProjects, deleteProjectRequirement, showResourceSuggestion } from "../../services/api";
+import { getProjectRequirements, addProjectRequirement, editProjectRequirement, getProjects, deleteProjectRequirement, generateResourceSuggestion, showResourceSuggestion } from "../../services/api";
 import dummySuggestions from "../../data/dummySuggestions";
 import "../D.css";
 import "./AISuggestions.css";
@@ -27,6 +27,7 @@ const SuggestionCard = ({
   } = employee;
   const scoreClass =
     ai_score >= 70 ? "high" : ai_score >= 50 ? "medium" : "low";
+
 
   return (
     <div
@@ -224,22 +225,16 @@ const AISuggestions = () => {
         setProjects(
           result.map((p) => ({ ...p, employees: p.employees || [] })),
         );
-        setSelectedProject(
-          result[0]
-            ? { ...result[0], employees: result[0].employees || [] }
-            : null,
-        );
       } catch (err) {
         console.error("Failed to fetch projects, using dummy data", err);
         setProjects(dummySuggestions);
-        setSelectedProject(dummySuggestions[0]);
       } finally {
         setProjectsLoading(false);
       }
     };
     fetchProjects();
   }, []);
-  const [selectedProject, setSelectedProject] = useState(dummySuggestions[0]);
+  const [selectedProject, setSelectedProject] = useState(null);
   const [activeSkill, setActiveSkill] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -257,7 +252,8 @@ const AISuggestions = () => {
       )
     : projectsList;
 
-  const handleRowClick = (project) => {
+  const handleRowClick = async (project) => {
+    // await getResourceSuggestion(project)
     if (selectedProject?.id === project.id) {
       setSelectedProject(null);
     } else {
@@ -321,9 +317,13 @@ const AISuggestions = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (editingId) {
+      
       const original = projects.find((p) => p.id === editingId);
       try {
-        await editProjectRequirement(editingId, form);
+        const response = await editProjectRequirement(editingId, form);
+        if (response) {
+          await handlegeneratedResponse(original);
+        }
       } catch (err) {
         console.error('Edit failed, updating locally', err);
       }
@@ -348,7 +348,7 @@ const AISuggestions = () => {
           setActiveSkill(null);
           setLoading(true);
           try {
-            const suggestions = await showResourceSuggestion(newId);
+            const suggestions = await generateResourceSuggestion(newId);
             const employees = suggestions?.response?.[0]?.response ?? [];
             const updated = { ...newProject, employees };
             setProjects((prev) => prev.map((p) => p.id === newId ? updated : p));
@@ -372,26 +372,59 @@ const AISuggestions = () => {
 
   const handleGetSuggestions = async (project, e) => {
     e.stopPropagation();
-    const latest = projects.find((p) => p.id === project.id);
-    setSelectedProject(latest);
+    // const latest = projects.find((p) => p.id === project.id);
+    // setSelectedProject(latest);
     setActiveSkill(null);
     setLoading(true);
     setError(null);
     try {
-      const response = await showResourceSuggestion(project.id);
-      console.log('Suggestions response:', response);
+      // const response = await generateResourceSuggestion(project.id);
+      // const result = response?.response?.[0]?.response ?? [];
+      handlegeneratedResponse(project)
+    } catch (err) {
+      console.log(err)
+      setSelectedProject(project);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlegeneratedResponse = async (project)=> {
+    
+      const response = await generateResourceSuggestion(project.id);
       const result = response?.response?.[0]?.response ?? [];
       if (result.length > 0) {
         const updated = projects.map((p) =>
           p.id === project.id ? { ...p, employees: result } : p,
         );
         setProjects(updated);
-        setSelectedProject({ ...latest, employees: result });
+        setSelectedProject({ ...project, employees: result });
       } else {
-        setSelectedProject(latest);
+        setSelectedProject(project);
+      }
+  }
+
+  const getResourceSuggestion = async (project) => {
+    setSelectedProject(project);
+    setActiveSkill(null);
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await showResourceSuggestion(project.id);
+      console.log('Suggestions response:', response);
+      const result = response?.response?.[0].suggestion ?? [];
+      if (result.length > 0) {
+        const updated = projects.map((p) =>
+          p.id === project.id ? { ...p, employees: result } : p,
+        );
+        setProjects(updated);
+        setSelectedProject({ ...project, employees: result });
+      } else {
+        setSelectedProject(project);
       }
     } catch (err) {
-      setSelectedProject(latest);
+      console.log(err);
+      setSelectedProject(project);
     } finally {
       setLoading(false);
     }
@@ -463,7 +496,7 @@ const AISuggestions = () => {
                     <tr
                       key={p.id}
                       className={`project-row ${selectedProject?.id === p.id ? "active-row" : ""}`}
-                      onClick={() => handleRowClick(p)}
+                      onClick={() => getResourceSuggestion(p)}
                     >
                       <td>
                         <div className="project-name-cell">
