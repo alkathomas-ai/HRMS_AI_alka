@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { requirementAPI, getProjectRequirements, addProjectRequirement, editProjectRequirement, getProjects, deleteProjectRequirement, showResourceSuggestion } from "../../services/api";
+import { getProjectRequirements, addProjectRequirement, editProjectRequirement, getProjects, deleteProjectRequirement, showResourceSuggestion } from "../../services/api";
 import dummySuggestions from "../../data/dummySuggestions";
 import "../D.css";
 import "./AISuggestions.css";

@@ -183,19 +183,6 @@ export async function updateEmployeeSkills(employeeId, skills) {
   }
 }
 
-export async function requirementAPI(requirement) {
-  const token = sessionStorage.getItem('authToken');
-  const response = await fetch(`${BASE_URL}/search-rank-simplified-new`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` })
-    },
-    body: JSON.stringify({ query: requirement }),
-  });
-  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-  return response.json();
-}
 
 export async function getProjects() {
   try {
