@@ -120,7 +120,7 @@
 .project-card {
   min-width: 85%;
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--assistant-glow-primary);
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
