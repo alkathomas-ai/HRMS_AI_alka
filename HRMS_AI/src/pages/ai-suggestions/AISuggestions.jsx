@@ -390,7 +390,7 @@ const AISuggestions = () => {
   };
 
   const handlegeneratedResponse = async (project)=> {
-    
+
       const response = await generateResourceSuggestion(project.id);
       const result = response?.response?.[0]?.response ?? [];
       if (result.length > 0) {
@@ -672,7 +672,7 @@ const AISuggestions = () => {
             </div>
             <form onSubmit={handleFormSubmit} className="requirement-form">
               <div className="form-row">
-                <div className="form-group">
+                <div className="project-suggestion-form-group">
                   <label>Project Name <span className="required">*</span></label>
                   <div className="autocomplete-wrapper">
                     <input
@@ -734,7 +734,7 @@ const AISuggestions = () => {
                   rows={3}
                   required
                 />
-                <span className="form-hint">Comma-separated</span>
+                {/* <span className="form-hint">Comma-separated</span> */}
               </div>
               {/* <div className="form-row">
                 <div className="form-group">
