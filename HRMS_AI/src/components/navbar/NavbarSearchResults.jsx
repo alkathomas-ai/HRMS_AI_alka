@@ -128,11 +128,6 @@ const NavbarSearchResults = ({ searchQuery }) => {
   const totalPages = Math.ceil(filteredResults.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
   const paginatedResults = filteredResults.slice(startIndex, startIndex + rowsPerPage);
-  
-  // Choose which results to display based on view mode
-  const displayResults = viewMode === 'scroll' ? filteredResults : paginatedResults;
-
-
 
 
   return (

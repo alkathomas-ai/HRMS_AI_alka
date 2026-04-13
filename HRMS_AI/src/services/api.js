@@ -194,6 +194,87 @@ export async function updateEmployeeSkills(employeeId, skills) {
   }
 }
 
+
+export async function getProjects() {
+  try {
+    const response = await axios.get(`${BASE_URL}/projects`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function getProjectRequirements() {
+  try {
+    const response = await axios.get(`${BASE_URL}/project_requirements`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function addProjectRequirement(data) {
+  try {
+    const response = await axios.post(`${BASE_URL}/project_requirements`, data);
+    // if(response.status === 200){
+    //   const responseFinal = await updateResourceSuggestion(data.id);
+    //   return responseFinal.data;
+    // }
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function editProjectRequirement(id, data) {
+  try {
+    const response = await axios.put(`${BASE_URL}/project_requirements/${id}`, data);
+    // if(response.status === 200){
+    //   const responseFinal = await updateResourceSuggestion(data.id);
+    //   return responseFinal.data;
+    // }
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function deleteProjectRequirement(id) {
+  try {
+    const response = await axios.delete(`${BASE_URL}/project_requirements/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function generateResourceSuggestion(id) {
+  try {
+    const response = await axios.get(`${BASE_URL}/project_requirement_suggestion?project_requirement_id=${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function showResourceSuggestion(id) {
+  try {
+    const response = await axios.get(`${BASE_URL}/suggested_requirements?project_requirement_id=${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+// http://172.25.247.7:8000/api/project_requirement_suggestion?project_requirement_id=2
+
 export async function loginApi(credentials) {
   const response = await axios.post(`${BASE_URL}/login`, credentials);
   return response.data;

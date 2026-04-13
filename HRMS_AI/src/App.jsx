@@ -13,6 +13,7 @@ import { ScheduleNotificationProvider } from './context/scheduleNotificationCont
 import ErrorBoundary from './components/common/ErrorBoundary'
 import { setSessionExpiredCallback } from './services/api'
 import Schedule from './components/dashboard/Schedule'
+import AISuggestions from './pages/ai-suggestions/AISuggestions'
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = sessionStorage.getItem('authToken');
@@ -58,6 +59,7 @@ const App = () => {
               <Route path="user" element={<EditUser />} />
               {/* <Route path="projects" element={<Projects />} /> */}
               <Route path="schedule" element={<Schedule />} />
+              <Route path="ai-suggestions" element={<AISuggestions />} />
               <Route path="d" element={<D />} />
             </Route>
 
