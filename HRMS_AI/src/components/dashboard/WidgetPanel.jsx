@@ -196,7 +196,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           if (widget.id === 'stats-overview') defaultRows = 1;
           if (widget.id === 'project-carousel') {defaultRows = 3; defaultCols = 2;}
           if (widget.id === 'employee-directory' || widget.id === 'available-employees' || widget.id === 'upskill-suggestions') defaultRows = 3;
-          if (widget.id === 'world-map') {defaultRows = 3; defaultCols = 2;}
+          if (widget.id === 'world-map') {defaultRows = 2; defaultCols = 1;}
           
           updatedSizes[widget.id] = { cols: defaultCols, rows: defaultRows };
           hasChanges = true;
