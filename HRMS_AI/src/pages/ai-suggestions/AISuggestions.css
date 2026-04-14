@@ -178,8 +178,22 @@
   transition: all 0.15s;
 }
 .icon-action-btn:hover { background: var(--color-bg-muted); color: var(--color-text-primary); }
+.icon-action-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 .icon-action-btn.danger:hover { background: #fee2e2; color: #871f1f; }
 .icon-action-btn .material-symbols-outlined { font-size: 17px; }
+
+.spinner-small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--color-bg-muted);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
 /* ── Right Slide Panel ── */
 .suggestions-panel {

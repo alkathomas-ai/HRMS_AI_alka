@@ -237,6 +237,8 @@ const AISuggestions = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [activeSkill, setActiveSkill] = useState(null);
   const [loading, setLoading] = useState(false);
+  // Track which project is currently loading for suggestions
+  const [loadingProjectId, setLoadingProjectId] = useState(null);
   const [error, setError] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(EMPTY_PROJECT);
@@ -317,26 +319,52 @@ const AISuggestions = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (editingId) {
-      
       const original = projects.find((p) => p.id === editingId);
       try {
         const response = await editProjectRequirement(editingId, form);
         if (response) {
-          await handlegeneratedResponse(original);
+          // Update the project in the list
+          const updatedProject = { ...original, ...form, id: editingId };
+          setProjects(projects.map((p) =>
+            p.id === editingId ? updatedProject : p
+          ));
+          
+          // Close the modal immediately
+          setShowForm(false);
+          setForm(EMPTY_PROJECT);
+          setEditingId(null);
+          
+          // Show loader in the table row's Get AI Suggestions button and call API
+          setLoadingProjectId(editingId);
+          if (selectedProject?.id === editingId) {
+            setSelectedProject(updatedProject);
+            setLoading(true);
+          }
+          
+          handlegeneratedResponse(updatedProject)
+            .catch(err => console.error('Failed to refresh suggestions after edit', err))
+            .finally(() => {
+              setLoadingProjectId(null);
+              if (selectedProject?.id === editingId) {
+                setLoading(false);
+              }
+            });
         }
       } catch (err) {
         console.error('Edit failed, updating locally', err);
+        setProjects(projects.map((p) =>
+          p.id === editingId ? { ...original, ...form, id: editingId } : p
+        ));
+        // Close modal even on error
+        setShowForm(false);
+        setForm(EMPTY_PROJECT);
+        setEditingId(null);
       }
-      setProjects(projects.map((p) =>
-        p.id === editingId ? { ...original, ...form, id: editingId } : p
-      ));
     } else {
       let newId = null;
       try {
         const res = await addProjectRequirement(form);
         newId = res?.id || res?.project_requirement_id || null; 
-        //const status = res.status; 
-        //const detail = res.detail; 
         const newProject = { ...form, id: newId, employees: [] };
         setProjects((prev) => [...prev, newProject]);
         setShowForm(false);
@@ -346,6 +374,7 @@ const AISuggestions = () => {
         if (newId) {
           setSelectedProject(newProject);
           setActiveSkill(null);
+          setLoadingProjectId(newId);
           setLoading(true);
           try {
             const suggestions = await generateResourceSuggestion(newId);
@@ -356,6 +385,7 @@ const AISuggestions = () => {
           } catch (err) {
             console.error('Failed to fetch suggestions', err);
           } finally {
+            setLoadingProjectId(null);
             setLoading(false);
           }
         }
@@ -372,60 +402,64 @@ const AISuggestions = () => {
 
   const handleGetSuggestions = async (project, e) => {
     e.stopPropagation();
-    // const latest = projects.find((p) => p.id === project.id);
-    // setSelectedProject(latest);
-    setActiveSkill(null);
-    setLoading(true);
-    setError(null);
-    try {
-      // const response = await generateResourceSuggestion(project.id);
-      // const result = response?.response?.[0]?.response ?? [];
-      handlegeneratedResponse(project)
-    } catch (err) {
-      console.log(err)
-      setSelectedProject(project);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handlegeneratedResponse = async (project)=> {
-
-      const response = await generateResourceSuggestion(project.id);
-      const result = response?.response?.[0]?.response ?? [];
-      if (result.length > 0) {
-        const updated = projects.map((p) =>
-          p.id === project.id ? { ...p, employees: result } : p,
-        );
-        setProjects(updated);
-        setSelectedProject({ ...project, employees: result });
-      } else {
-        setSelectedProject(project);
-      }
-  }
-
-  const getResourceSuggestion = async (project) => {
     setSelectedProject(project);
     setActiveSkill(null);
+    setLoadingProjectId(project.id);
     setLoading(true);
     setError(null);
     try {
-      const response = await showResourceSuggestion(project.id);
-      console.log('Suggestions response:', response);
-      const result = response?.response?.[0].suggestion ?? [];
-      if (result.length > 0) {
-        const updated = projects.map((p) =>
-          p.id === project.id ? { ...p, employees: result } : p,
-        );
-        setProjects(updated);
-        setSelectedProject({ ...project, employees: result });
-      } else {
-        setSelectedProject(project);
-      }
+      await handlegeneratedResponse(project);
     } catch (err) {
       console.log(err);
       setSelectedProject(project);
     } finally {
+      setLoadingProjectId(null);
+      setLoading(false);
+    }
+  };
+
+  const handlegeneratedResponse = async (project) => {
+    const response = await generateResourceSuggestion(project.id);
+    const result = response?.response?.[0]?.response ?? [];
+    if (result.length > 0) {
+      const updated = projects.map((p) =>
+        p.id === project.id ? { ...p, employees: result } : p,
+      );
+      setProjects(updated);
+      setSelectedProject({ ...project, employees: result });
+    } else {
+      setSelectedProject(project);
+    }
+  };
+
+  const handleShowResourceSuggestion = async (project) => {
+    const response = await showResourceSuggestion(project.id);
+    console.log('Suggestions response:', response);
+    const result = response?.response?.[0].suggestion ?? [];
+    if (result.length > 0) {
+      const updated = projects.map((p) =>
+        p.id === project.id ? { ...p, employees: result } : p,
+      );
+      setProjects(updated);
+      setSelectedProject({ ...project, employees: result });
+    } else {
+      setSelectedProject(project);
+    }
+  };
+
+  const getResourceSuggestion = async (project) => {
+    setSelectedProject(project);
+    setActiveSkill(null);
+    setLoadingProjectId(project.id);
+    setLoading(true);
+    setError(null);
+    try {
+      await handleShowResourceSuggestion(project);
+    } catch (err) {
+      console.log(err);
+      setSelectedProject(project);
+    } finally {
+      setLoadingProjectId(null);
       setLoading(false);
     }
   };
@@ -549,10 +583,15 @@ const AISuggestions = () => {
                           className="icon-action-btn"
                           title="Get AI Suggestions"
                           onClick={(e) => handleGetSuggestions(p, e)}
+                          disabled={loadingProjectId === p.id}
                         >
-                          <span className="material-symbols-outlined">
-                            auto_awesome
-                          </span>
+                          {loadingProjectId === p.id ? (
+                            <div className="spinner-small"></div>
+                          ) : (
+                            <span className="material-symbols-outlined">
+                              auto_awesome
+                            </span>
+                          )}
                         </button>
                         <button
                           className="icon-action-btn"
