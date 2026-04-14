@@ -391,7 +391,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
           </div>
       </div>
       <div className={`employee-cards-list ${viewMode === 'scroll' ? 'scrollable-results' : ''}`}>
-      {displayResults.map((employee) => {
+      {(viewMode === 'scroll' ? filteredResults : paginatedResults).map((employee) => {
         const {
           display_name,
           designation,

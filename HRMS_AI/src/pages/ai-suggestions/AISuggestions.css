@@ -1,15 +1,17 @@
 .ai-suggestions-page {
-  padding: 24px;
-  height: calc(100vh - 60px);
+  height: 100%;
   overflow: hidden;
+  background: linear-gradient(var(--grad-angle), var(--color-bg-dashboard) 0%, var(--color-bg-dashboard) 50%, var(--color-primary-light) 100%);
 }
 
 /* ── Main container splits into table + panel ── */
 .ais-container {
+  padding: 24px;
   display: flex;
   height: 100%;
   gap: 0;
   transition: gap 0.3s ease;
+  background-color: var(--color-bg-card);
 }
 
 .ais-main {
@@ -178,8 +180,22 @@
   transition: all 0.15s;
 }
 .icon-action-btn:hover { background: var(--color-bg-muted); color: var(--color-text-primary); }
+.icon-action-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 .icon-action-btn.danger:hover { background: #fee2e2; color: #871f1f; }
 .icon-action-btn .material-symbols-outlined { font-size: 17px; }
+
+.spinner-small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--color-bg-muted);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
 /* ── Right Slide Panel ── */
 .suggestions-panel {
@@ -188,13 +204,16 @@
   transition: width 0.3s ease;
   flex-shrink: 0;
   background: var(--color-bg-card);
-  border-left: 1px solid var(--color-bg-muted);
-  border-radius: 0 12px 12px 0;
+  border: 1px solid var(--color-bg-muted);
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
+  margin-left: 25px;
+  visibility: hidden;
 }
 
 .suggestions-panel.open {
+  visibility: visible;
   width: 480px;
 }
 
@@ -281,7 +300,7 @@
   text-align: center;
 }
 .suggestions-empty .material-symbols-outlined { font-size: 40px; opacity: 0.35; }
-.suggestions-empty p { margin: 0; font-size: 13px; }
+.suggestions-empty p { margin: 0; font-size: 15px; }
 
 /* ── Suggestion Cards ── */
 .suggestion-cards-list {
