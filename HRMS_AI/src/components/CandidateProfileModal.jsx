@@ -10,6 +10,15 @@ const CandidateProfileModal = ({ isOpen, onClose, employee, loading, error }) =>
   const [isLoadingManager, setIsLoadingManager] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // Reset navigation state when a new employee is loaded
+  React.useEffect(() => {
+    if (employee && isOpen) {
+      setCurrentEmployee(null);
+      setNavigationHistory([]);
+      setActiveTab('details');
+    }
+  }, [employee, isOpen]);
+
   // Use currentEmployee if navigating, otherwise use prop employee
   const displayEmployee = currentEmployee || employee;
 
@@ -320,15 +329,6 @@ id_card
                           onClick={() => displayEmployee.rm_name && displayEmployee.rm_name !== 'N/A' && displayEmployee.rm_id && handleManagerClick(displayEmployee.rm_id)}
                         >
                           {displayEmployee.rm_name || 'N/A'}
-                        </span>
-                      </div>
-                      <div className="info-row">
-                        <span className="info-label">Project Manager</span>
-                        <span 
-                          className={`info-value ${displayEmployee.pm && displayEmployee.pm !== 'N/A' ? 'clickable-manager' : ''}`}
-                          onClick={() => displayEmployee.pm && displayEmployee.pm !== 'N/A' && handleManagerClick(displayEmployee.pm)}
-                        >
-                          {displayEmployee.pm && displayEmployee.pm.includes('-') ? displayEmployee.pm.split("-")[1] : displayEmployee.pm || 'N/A'}
                         </span>
                       </div>
                       <div className="info-row">

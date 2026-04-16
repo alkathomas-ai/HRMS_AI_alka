@@ -383,6 +383,7 @@
   font-size: 11px;
   color: var(--color-text-secondary);
   flex-shrink: 0;
+  align-items: flex-end;
 }
 .suggestion-meta span { display: flex; align-items: center; gap: 3px; }
 .suggestion-meta i { font-size: 10px; }
