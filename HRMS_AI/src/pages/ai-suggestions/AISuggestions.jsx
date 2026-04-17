@@ -497,9 +497,9 @@ const AISuggestions = () => {
                 <div>
                   <h1 className="welcome-title">AI Resource Suggestions</h1>
                 </div>
-                <button className="btn-primary" onClick={handleAddNew}>
-                  <span className="material-symbols-outlined">add</span> Add
-                  Requirement
+                <button className="primary-btn" onClick={handleAddNew}>
+                  Add Requirement
+                  <i class="fa-solid fa-folder-plus"></i>
                 </button>
               </div>
     
@@ -723,7 +723,7 @@ const AISuggestions = () => {
                   </button>
                 </div>
                 <form onSubmit={handleFormSubmit} className="requirement-form">
-                  <div className="form-row">
+                  <div className="project-suggestion-form-row">
                     <div className="project-suggestion-form-group">
                       <label>Project Name <span className="required">*</span></label>
                       <div className="autocomplete-wrapper">
@@ -761,7 +761,7 @@ const AISuggestions = () => {
                         )}
                       </div>
                     </div>
-                    <div className="form-group">
+                    <div className="project-suggestion-form-group">
                       <label>Client</label>
                       <input
                         name="customer"
@@ -773,7 +773,7 @@ const AISuggestions = () => {
                       />
                     </div>
                   </div>
-                  <div className="form-group">
+                  <div className="project-suggestion-form-group">
                     {/* <label>Required Skills <span className="required">*</span></label> */}
                     <label>
                       Requirements <span className="required">*</span>
@@ -834,15 +834,12 @@ const AISuggestions = () => {
                   <div className="form-actions">
                     <button
                       type="button"
-                      className="btn-outline"
+                      className="btn-cancel"
                       onClick={() => setShowForm(false)}
                     >
                       Cancel
                     </button>
-                    <button type="submit" className="btn-primary">
-                      <span className="material-symbols-outlined">
-                        {editingId ? "save" : "add"}
-                      </span>
+                    <button type="submit" className="btn-confirm">
                       {editingId ? "Save Changes" : "Add Project"}
                     </button>
                   </div>

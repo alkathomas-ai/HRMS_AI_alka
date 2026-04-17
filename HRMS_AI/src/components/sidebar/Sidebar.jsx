@@ -11,7 +11,8 @@ const Sidebar = ({ onNavigate }) => {
     { icon: 'group', label: 'Users', path: '/user' },
     // { icon: 'work', label: 'Projects', path: '/projects' },
     { icon: 'event', label: 'Schedule', path: '/schedule' },
-    { icon: 'auto_awesome', label: 'AI Suggestions', path: '/ai-suggestions' },
+    // { icon: 'auto_awesome', label: 'AI Suggestions', path: '/ai-suggestions' },
+    { icon: 'work', label: 'Project', path: '/project' },
     // { icon: 'stacks', label: 'Documents', path: '/d' },
     // { icon: 'pie_chart', label: 'Reports', path: '#' },
   ];

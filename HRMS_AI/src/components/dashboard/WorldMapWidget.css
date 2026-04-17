@@ -33,16 +33,16 @@
   align-items: center;
   justify-content: space-between;
   padding: 7px 14px;
-  /* border: 1px solid #d1d5db; */
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.781);
   font-size: 13px;
   cursor: pointer;
   transition: all 0.2s ease;
+  border: 1px solid transparent;
 }
 
 .worldmap-dropdown-trigger:hover {
-  border-color: #9ca3af;
+  border-color: var(--color-primary-soft);
 }
 
 .dropdown-arrow {
@@ -130,7 +130,6 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  z-index: 10;
 }
 
 .control-btn {
@@ -153,12 +152,10 @@
 .control-btn:hover {
   background: white;
   border-color: #9ca3af;
-  transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .control-btn:active {
-  transform: translateY(0);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 

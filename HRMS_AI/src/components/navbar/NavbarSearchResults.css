@@ -191,7 +191,7 @@
 .page-btn {
   width: 35px;
   height: 35px;
-  border-radius: 6px;
+  border-radius: 50%;
   border: 1px solid var(--color-bg-muted);
   background: var(--color-bg-card);
   color: var(--color-icon-default);
@@ -203,8 +203,8 @@
 }
 
 .page-btn:hover:not(:disabled) {
-  background: var(--color-bg-muted);
-  border-color: var(--color-primary-soft);
+  background: var(--background-light);
+  /* border-color: var(--color-primary-soft); */
   color: var(--color-primary);
 }
 
