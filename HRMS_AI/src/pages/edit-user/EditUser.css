@@ -619,7 +619,7 @@
     display: flex;
     gap: 6px;
 }
-
+/* 
 .page-btn {
     width: 40px;
     height: 40px;
@@ -643,7 +643,7 @@
 .page-btn:disabled {
     opacity: 0.4;
     cursor: not-allowed;
-}
+} */
 
 .info-icon {
     color: var(--color-text-muted);

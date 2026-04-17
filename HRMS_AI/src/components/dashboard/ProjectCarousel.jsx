@@ -20,7 +20,7 @@ const ProjectCarousel = ({ openModal, projectsData }) => {
     if (projectsData && projectsData.length > 1 && !isHovered) {
       intervalRef.current = setInterval(() => {
         setCurrentIndex((prev) => (prev + 1) % projectsData.length);
-      }, 8000); // 5 seconds
+      }, 28000); // 5 seconds
     }
 
     return () => {
@@ -64,7 +64,7 @@ const ProjectCarousel = ({ openModal, projectsData }) => {
         <div className="carousel-wrapper">
           <div 
             className="carousel-track"
-            style={{ transform: `translateX(-${currentIndex * 85}%)` }}
+            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
             {projectsData.map((project, index) => (
               <div key={index} className="project-card">

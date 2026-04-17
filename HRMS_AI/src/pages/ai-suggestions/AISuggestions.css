@@ -383,6 +383,7 @@
   font-size: 11px;
   color: var(--color-text-secondary);
   flex-shrink: 0;
+  align-items: flex-end;
 }
 .suggestion-meta span { display: flex; align-items: center; gap: 3px; }
 .suggestion-meta i { font-size: 10px; }
@@ -439,14 +440,15 @@
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  animation: modalSlideIn 0.3s ease;
+  position: relative;
 }
 
 .form-modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px 30px 20px;
-  border-bottom: 1px solid var(--color-bg-muted);
+  padding: 20px 24px;
   position: sticky;
   top: 0;
   background: var(--color-bg-card);
@@ -455,16 +457,16 @@
 
 .form-modal-header h3 {
   margin: 0;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--color-text-primary);
 }
 
 .requirement-form {
-  padding: 20px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 20px;
 }
 
 .project-suggestion-form-group {
@@ -483,19 +485,19 @@
 
 .project-suggestion-form-group input,
 .project-suggestion-form-group textarea {
-  padding: 8px 11px;
+  padding: 10px 12px;
   border: 1px solid var(--color-bg-muted);
   border-radius: 7px;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--color-text-primary);
-  background: var(--color-bg-page);
+  background: var(--color-bg-muted);
   outline: none;
   transition: border-color 0.2s;
   font-family: inherit;
 }
 .project-suggestion-form-group input:focus,
 .project-suggestion-form-group textarea:focus { border-color: var(--color-primary); }
-.project-suggestion-form-group textarea { resize: vertical; min-height: 80px; }
+.project-suggestion-form-group textarea { resize: vertical; min-height: 120px; }
 
 .form-hint { font-size: 11px; color: var(--color-text-secondary); }
 .readonly-input{
@@ -550,13 +552,24 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+  align-items: start;
+}
+
+.project-suggestion-form-row .project-suggestion-form-group {
+  min-width: 0;
+  width: 100%;
+}
+
+.project-suggestion-form-row .project-suggestion-form-group input {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .form-actions {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
-  margin-top: 4px;
+  margin-top: 20px;
 }
 
 .btn-spinner {

@@ -10,6 +10,7 @@ export const useCandidateProfileModal = () => {
   const openModal = async (employeeId) => {
     setLoading(true);
     setError(null);
+    setEmployee(null); // Clear previous employee data
     setIsOpen(true);
     
     try {

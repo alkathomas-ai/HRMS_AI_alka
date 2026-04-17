@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   ComposableMap,
   Geographies,
@@ -6,6 +6,7 @@ import {
   Marker,
   ZoomableGroup
 } from 'react-simple-maps';
+import { useRef, useEffect } from 'react';
 import './WorldMapWidget.css';
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
@@ -32,17 +33,59 @@ const WorldMapWidget = () => {
   const [zoom, setZoom] = useState(1);
   const [center, setCenter] = useState([80, 20]);
   const [hoveredMarker, setHoveredMarker] = useState(null);
+  const [selectedCountry, setSelectedCountry] = useState('All countries');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const ZOOM_THRESHOLD = 2.5;
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
+  const filteredLocations = useMemo(() => {
+    if (selectedCountry === 'All countries') return employeeLocations;
+    return employeeLocations.filter(location => location.country === selectedCountry);
+  }, [selectedCountry]);
 
   const handleMoveEnd = (position) => {
     setCenter(position.coordinates);
     setZoom(position.zoom);
-    // Automatically switch to city view when zoomed in enough
     if (position.zoom >= ZOOM_THRESHOLD && !showCities) {
       setShowCities(true);
     } else if (position.zoom < ZOOM_THRESHOLD && showCities) {
       setShowCities(false);
     }
+  };
+
+  const handleCountrySelect = (country) => {
+    setSelectedCountry(country);
+    setIsDropdownOpen(false);
+  };
+
+  const handleZoomIn = () => {
+    setZoom(prev => Math.min(prev * 1.5, 8));
+  };
+
+  const handleZoomOut = () => {
+    setZoom(prev => Math.max(prev / 1.5, 1));
+  };
+
+  const handleReset = () => {
+    setZoom(1);
+    setCenter([80, 20]);
+    setShowCities(false);
   };
 
   const getMarkerSize = (count) => {
@@ -61,7 +104,7 @@ const WorldMapWidget = () => {
 
   const getCountryTotals = () => {
     const countryTotals = {};
-    employeeLocations.forEach(location => {
+    filteredLocations.forEach(location => {
       if (!countryTotals[location.country]) {
         countryTotals[location.country] = {
           count: 0,
@@ -74,192 +117,285 @@ const WorldMapWidget = () => {
   };
 
   const countryTotals = getCountryTotals();
+  const totalEmployees = filteredLocations.reduce((sum, location) => sum + location.count, 0);
+  const maxCount = Math.max(...filteredLocations.map(loc => loc.count));
+  const countries = ['All countries', ...new Set(employeeLocations.map(loc => loc.country))];
 
   return (
     <div className="world-map-widget">
-      <div className="map-container">
-        <ComposableMap
-          projection="geoMercator"
-          width={800}
-          height={400}
-        >
-          <ZoomableGroup
-            zoom={zoom}
-            center={center}
-            onMoveEnd={handleMoveEnd}
-            minZoom={1}
-            maxZoom={8}
-          >
-            <Geographies geography={geoUrl}>
-              {({ geographies }) =>
-                geographies.map((geo) => (
-                  <Geography
-                    key={geo.rsmKey}
-                    geography={geo}
-                    fill="#e5e7eb"
-                    stroke="#d1d5db"
-                    strokeWidth={0.5}
-                  />
-                ))
-              }
-            </Geographies>
-            
-            {showCities ? (
-              employeeLocations.map(({ name, coordinates, count }) => (
-                <Marker key={name} coordinates={coordinates}>
-                  <circle
-                    r={getMarkerSize(count) / zoom}
-                    fill={getMarkerColor(count)}
-                    stroke="#fff"
-                    strokeWidth={2 / zoom}
-                    style={{ cursor: "pointer" }}
-                    onMouseEnter={() => setHoveredMarker(name)}
-                    onMouseLeave={() => setHoveredMarker(null)}
-                  />
-                  <text
-                    textAnchor="middle"
-                    y={(getMarkerSize(count) + 20) / zoom}
-                    style={{
-                      fontFamily: "system-ui",
-                      fontSize: `${12 / zoom}px`,
-                      fill: "#374151",
-                      fontWeight: "600",
-                      pointerEvents: "none"
-                    }}
-                  >
-                    {name}
-                  </text>
-                </Marker>
-              ))
-            ) : (
-              Object.entries(countryTotals).map(([country, data]) => (
-                <Marker key={country} coordinates={data.coordinates}>
-                  <circle
-                    r={getMarkerSize(data.count) / zoom}
-                    fill={getMarkerColor(data.count)}
-                    stroke="#fff"
-                    strokeWidth={2 / zoom}
-                    style={{ cursor: "pointer" }}
-                    onMouseEnter={() => setHoveredMarker(country)}
-                    onMouseLeave={() => setHoveredMarker(null)}
-                  />
-                  <text
-                    textAnchor="middle"
-                    y={(getMarkerSize(data.count) + 20) / zoom}
-                    style={{
-                      fontFamily: "system-ui",
-                      fontSize: `${14 / zoom}px`,
-                      fill: "#374151",
-                      fontWeight: "600",
-                      pointerEvents: "none"
-                    }}
+      <div className="widget-header">
+        <div className="total-employees">
+          <span className="total-count">{totalEmployees}</span>
+          <span className="total-label">Total Employees</span>
+        </div>
+        <div className="country-selector" ref={dropdownRef}>
+          <div className="custom-dropdown">
+            <div 
+              className="worldmap-dropdown-trigger"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsDropdownOpen(!isDropdownOpen);
+              }}
+            >
+              <span>{selectedCountry}</span>
+              <svg 
+                className={`dropdown-arrow ${isDropdownOpen ? 'open' : ''}`}
+                width="12" 
+                height="12" 
+                viewBox="0 0 12 12"
+              >
+                <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+              </svg>
+            </div>
+            {isDropdownOpen && (
+              <div className="worldmap-dropdown-menu">
+                {countries.map(country => (
+                  <div 
+                    key={country} 
+                    className={`dropdown-item ${selectedCountry === country ? 'selected' : ''}`}
+                    onClick={() => handleCountrySelect(country)}
                   >
                     {country}
-                  </text>
-                </Marker>
-              ))
+                  </div>
+                ))}
+              </div>
             )}
-            
-            {/* Render tooltips on top of all markers */}
-            {hoveredMarker && showCities && (
-              employeeLocations
-                .filter(({ name }) => name === hoveredMarker)
-                .map(({ name, coordinates, count }) => (
-                  <Marker key={`tooltip-${name}`} coordinates={coordinates}>
-                    <g>
-                      <rect
-                        x={-70 / zoom}
-                        y={(-70) / zoom}
-                        width={140 / zoom}
-                        height={55 / zoom}
-                        fill="#ffffff"
-                        stroke="#cccccc"
-                        strokeWidth={1 / zoom}
-                        rx={4 / zoom}
-                        filter="drop-shadow(0 2px 4px rgba(0,0,0,0.1))"
-                      />
-                      <text
-                        textAnchor="middle"
-                        y={(-50) / zoom}
-                        style={{
-                          fontFamily: "system-ui",
-                          fontSize: `${16 / zoom}px`,
-                          fill: "#000000",
-                          fontWeight: "600",
-                          pointerEvents: "none"
-                        }}
-                      >
-                        {name}
-                      </text>
-                      <text
-                        textAnchor="middle"
-                        y={(-30) / zoom}
-                        style={{
-                          fontFamily: "system-ui",
-                          fontSize: `${14 / zoom}px`,
-                          fill: "#666666",
-                          fontWeight: "400",
-                          pointerEvents: "none"
-                        }}
-                      >
-                        Employees: {count}
-                      </text>
-                    </g>
-                  </Marker>
-                ))
-            )}
-            
-            {hoveredMarker && !showCities && (
-              Object.entries(countryTotals)
-                .filter(([country]) => country === hoveredMarker)
-                .map(([country, data]) => (
-                  <Marker key={`tooltip-${country}`} coordinates={data.coordinates}>
-                    <g>
-                      <rect
-                        x={-75 / zoom}
-                        y={(-70) / zoom}
-                        width={150 / zoom}
-                        height={55 / zoom}
-                        fill="#ffffff"
-                        stroke="#cccccc"
-                        strokeWidth={1 / zoom}
-                        rx={4 / zoom}
-                        filter="drop-shadow(0 2px 4px rgba(0,0,0,0.1))"
-                      />
-                      <text
-                        textAnchor="middle"
-                        y={(-50) / zoom}
-                        style={{
-                          fontFamily: "system-ui",
-                          fontSize: `${16 / zoom}px`,
-                          fill: "#000000",
-                          fontWeight: "600",
-                          pointerEvents: "none"
-                        }}
-                      >
-                        {country}
-                      </text>
-                      <text
-                        textAnchor="middle"
-                        y={(-30) / zoom}
-                        style={{
-                          fontFamily: "system-ui",
-                          fontSize: `${14 / zoom}px`,
-                          fill: "#666666",
-                          fontWeight: "400",
-                          pointerEvents: "none"
-                        }}
-                      >
-                        Employees: {data.count}
-                      </text>
-                    </g>
-                  </Marker>
-                ))
-            )}
-          </ZoomableGroup>
-        </ComposableMap>
+          </div>
+        </div>
       </div>
-
+      <div className="map-content">
+        <div className="map-container">
+          <div className="map-controls">
+            <button className="control-btn" onClick={handleZoomIn} title="Zoom In">
+              +
+            </button>
+            <button className="control-btn" onClick={handleZoomOut} title="Zoom Out">
+              −
+            </button>
+            <button className="control-btn reset-btn" onClick={handleReset} title="Reset View">
+              ⌂
+            </button>
+          </div>
+          <ComposableMap
+            projection="geoMercator"
+            width={800}
+            height={400}
+          >
+            <ZoomableGroup
+              zoom={zoom}
+              center={center}
+              onMoveEnd={handleMoveEnd}
+              minZoom={1}
+              maxZoom={8}
+            >
+              <Geographies geography={geoUrl}>
+                {({ geographies }) =>
+                  geographies.map((geo) => (
+                    <Geography
+                      key={geo.rsmKey}
+                      geography={geo}
+                      fill="#e5e7eb"
+                      stroke="#d1d5db"
+                      strokeWidth={0.5}
+                    />
+                  ))
+                }
+              </Geographies>
+              
+              {showCities ? (
+                filteredLocations.map(({ name, coordinates, count }) => (
+                  <Marker key={name} coordinates={coordinates}>
+                    <circle
+                      r={getMarkerSize(count) / zoom}
+                      fill={getMarkerColor(count)}
+                      stroke="#fff"
+                      strokeWidth={2 / zoom}
+                      style={{ cursor: "pointer" }}
+                      onMouseEnter={() => setHoveredMarker(name)}
+                      onMouseLeave={() => setHoveredMarker(null)}
+                    />
+                    <text
+                      textAnchor="middle"
+                      y={(getMarkerSize(count) + 20) / zoom}
+                      style={{
+                        fontFamily: "system-ui",
+                        fontSize: `${12 / zoom}px`,
+                        fill: "#374151",
+                        fontWeight: "600",
+                        pointerEvents: "none"
+                      }}
+                    >
+                      {name}
+                    </text>
+                  </Marker>
+                ))
+              ) : (
+                Object.entries(countryTotals).map(([country, data]) => (
+                  <Marker key={country} coordinates={data.coordinates}>
+                    <circle
+                      r={getMarkerSize(data.count) / zoom}
+                      fill={getMarkerColor(data.count)}
+                      stroke="#fff"
+                      strokeWidth={2 / zoom}
+                      style={{ cursor: "pointer" }}
+                      onMouseEnter={() => setHoveredMarker(country)}
+                      onMouseLeave={() => setHoveredMarker(null)}
+                    />
+                    <text
+                      textAnchor="middle"
+                      y={(getMarkerSize(data.count) + 20) / zoom}
+                      style={{
+                        fontFamily: "system-ui",
+                        fontSize: `${14 / zoom}px`,
+                        fill: "#374151",
+                        fontWeight: "600",
+                        pointerEvents: "none"
+                      }}
+                    >
+                      {country}
+                    </text>
+                  </Marker>
+                ))
+              )}
+              
+              {hoveredMarker && showCities && (
+                filteredLocations
+                  .filter(({ name }) => name === hoveredMarker)
+                  .map(({ name, coordinates, count }) => (
+                    <Marker key={`tooltip-${name}`} coordinates={coordinates}>
+                      <g>
+                        <rect
+                          x={-70 / zoom}
+                          y={(-70) / zoom}
+                          width={140 / zoom}
+                          height={55 / zoom}
+                          fill="#ffffff"
+                          stroke="#cccccc"
+                          strokeWidth={1 / zoom}
+                          rx={4 / zoom}
+                          filter="drop-shadow(0 2px 4px rgba(0,0,0,0.1))"
+                        />
+                        <text
+                          textAnchor="middle"
+                          y={(-50) / zoom}
+                          style={{
+                            fontFamily: "system-ui",
+                            fontSize: `${16 / zoom}px`,
+                            fill: "#000000",
+                            fontWeight: "600",
+                            pointerEvents: "none"
+                          }}
+                        >
+                          {name}
+                        </text>
+                        <text
+                          textAnchor="middle"
+                          y={(-30) / zoom}
+                          style={{
+                            fontFamily: "system-ui",
+                            fontSize: `${14 / zoom}px`,
+                            fill: "#666666",
+                            fontWeight: "400",
+                            pointerEvents: "none"
+                          }}
+                        >
+                          Employees: {count}
+                        </text>
+                      </g>
+                    </Marker>
+                  ))
+              )}
+              
+              {hoveredMarker && !showCities && (
+                Object.entries(countryTotals)
+                  .filter(([country]) => country === hoveredMarker)
+                  .map(([country, data]) => (
+                    <Marker key={`tooltip-${country}`} coordinates={data.coordinates}>
+                      <g>
+                        <rect
+                          x={-75 / zoom}
+                          y={(-70) / zoom}
+                          width={150 / zoom}
+                          height={55 / zoom}
+                          fill="#ffffff"
+                          stroke="#cccccc"
+                          strokeWidth={1 / zoom}
+                          rx={4 / zoom}
+                          filter="drop-shadow(0 2px 4px rgba(0,0,0,0.1))"
+                        />
+                        <text
+                          textAnchor="middle"
+                          y={(-50) / zoom}
+                          style={{
+                            fontFamily: "system-ui",
+                            fontSize: `${16 / zoom}px`,
+                            fill: "#000000",
+                            fontWeight: "600",
+                            pointerEvents: "none"
+                          }}
+                        >
+                          {country}
+                        </text>
+                        <text
+                          textAnchor="middle"
+                          y={(-30) / zoom}
+                          style={{
+                            fontFamily: "system-ui",
+                            fontSize: `${14 / zoom}px`,
+                            fill: "#666666",
+                            fontWeight: "400",
+                            pointerEvents: "none"
+                          }}
+                        >
+                          Total: {data.count}
+                        </text>
+                      </g>
+                    </Marker>
+                  ))
+              )}
+            </ZoomableGroup>
+          </ComposableMap>
+        </div>
+        {/* <div className="heat-map-bar">
+          <div className="bar-header">Employee Distribution</div>
+          <div className="single-bar-chart">
+            <div className="heat-bar">
+              {filteredLocations.map(({ name, count }) => {
+                const percentage = (count / maxCount) * 100;
+                return (
+                  <div 
+                    key={name}
+                    className="heat-segment"
+                    style={{ 
+                      height: `${percentage}%`,
+                      backgroundColor: getMarkerColor(count)
+                    }}
+                    title={`${name}: ${count} employees`}
+                  ></div>
+                );
+              })}
+            </div>
+            <div className="heat-legend">
+              <div className="legend-item">
+                <div className="legend-color" style={{ backgroundColor: '#16a34a' }}></div>
+                <span>0-150</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color" style={{ backgroundColor: '#ea580c' }}></div>
+                <span>151-250</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color" style={{ backgroundColor: '#dc2626' }}></div>
+                <span>251-500</span>
+              </div>
+              <div className="legend-item">
+                <div className="legend-color" style={{ backgroundColor: '#7c2d12' }}></div>
+                <span>500+</span>
+              </div>
+            </div>
+          </div>
+        </div> */}
+      </div>
     </div>
   );
 };
