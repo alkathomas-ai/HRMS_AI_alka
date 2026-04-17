@@ -75,11 +75,19 @@ const WorldMapWidget = () => {
   };
 
   const handleZoomIn = () => {
-    setZoom(prev => Math.min(prev * 1.5, 8));
+    const newZoom = Math.min(zoom * 1.5, 8);
+    setZoom(newZoom);
+    if (newZoom >= ZOOM_THRESHOLD && !showCities) {
+      setShowCities(true);
+    }
   };
 
   const handleZoomOut = () => {
-    setZoom(prev => Math.max(prev / 1.5, 1));
+    const newZoom = Math.max(zoom / 1.5, 1);
+    setZoom(newZoom);
+    if (newZoom < ZOOM_THRESHOLD && showCities) {
+      setShowCities(false);
+    }
   };
 
   const handleReset = () => {

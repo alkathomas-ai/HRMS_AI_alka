@@ -611,13 +611,13 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             <div className='d-flex align-center' style={{ marginBottom: '12px', gap: '8px' }}>
               <div className="search-input">
                 {/* <AnimatedSearchInput */}
+                <i className="fa-solid fa-search"></i>
                 <input
                   value={employeeSearch}
                   onChange={(e) => { setEmployeeSearch(e.target.value.replace(/\s+/g, ' ').trimStart()); setEmployeePage(0); }}
                   onClick={(e) => e.stopPropagation()}
                   className="employee-search-input"
                   />
-                <i className="fa-solid fa-search"></i>
                 {/* /> */}
               </div>
               {totalPages > 1 && (
@@ -824,8 +824,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
                       <div className="upskill-employee-name">{employee.display_name}</div>
                       <div className="upskill-employee-meta">
                         <span className="upskill-tech-group">{employee.tech_group}</span>
-                        <span className="upskill-dot">•</span>
-                        <span className="upskill-seniority">{employee.seniority}</span>
+                        <span className="upskill-seniority">{employee.designation}</span>
                       </div>
                     </div>
                   </div>

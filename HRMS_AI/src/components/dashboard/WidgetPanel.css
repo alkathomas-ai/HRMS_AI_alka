@@ -437,9 +437,15 @@
   transform: none;
 }
 .masonry-item:hover {
-  /* box-shadow: 1px 0px 8px rgba(0,0,0,0.12); */
+  box-shadow: 1px 0px 8px rgba(0,0,0,0.12);
   transform: scale(1.005);
+  backface-visibility: hidden;
 }
+.masonry-item:hover canvas,
+.masonry-item:hover svg {
+  transform: scale(0.995);
+}
+
 
 .grid-item-header {
   display: flex;
@@ -960,10 +966,10 @@
   overflow-y: auto;
   border-right: 2px solid var(--color-border);
   padding-right: 12px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-primary-soft) transparent;
+  /* scrollbar-width: thin; */
+  /* scrollbar-color: var(--color-primary-soft) transparent; */
 }
-
+/* 
 .timeline-bar::-webkit-scrollbar {
   width: 4px;
   height: 0;
@@ -986,7 +992,7 @@
   width: 0;
   height: 0;
   display: none;
-}
+} */
 
 .timeline-date-item {
   height: 48px;
@@ -1247,25 +1253,6 @@
   gap: 12px;
   height: calc(100% - 45px);
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-primary-soft) transparent;
-}
-
-.upskill-container::-webkit-scrollbar {
-  width: 6px;
-}
-
-.upskill-container::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.upskill-container::-webkit-scrollbar-thumb {
-  background: var(--color-primary-soft);
-  border-radius: 3px;
-}
-
-.upskill-container::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-hover);
 }
 
 .upskill-employee-card {
