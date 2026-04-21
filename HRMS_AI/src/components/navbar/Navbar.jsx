@@ -134,7 +134,7 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
               className="icon-btn history-btn"
               aria-label="View Search Results"
               onClick={handleReopenSearch}
-              title="View search previous results"
+              title="View previous search results"
               style={{ visibility: hasSearchResults && !showSearchResults ? "visible" : "hidden" }}
             >
               <span className="material-symbols-outlined">history</span>

@@ -35,12 +35,13 @@ const SuggestionCard = ({
     >
       <div className="suggestion-row" onClick={() => setExpanded(!expanded)}>
         <div className="suggestion-score-pill">
-          <span className={`score-dot ${scoreClass}`}></span>
-          <span className="score-num">{ai_score}%</span>
+          {/* <span className={`score-dot ${scoreClass}`}></span> */}
+          <span className= {`score-num ${scoreClass}`}>{ai_score}%</span>
         </div>
         <div className="suggestion-name-col">
           <span className="suggestion-name">{display_name}</span>
           <span className="suggestion-designation">{designation}</span>
+          <span className="suggestion-id">{employee_id}</span>
         </div>
         <div className="suggestion-meta">
           <span>
@@ -77,7 +78,7 @@ const SuggestionCard = ({
         <div className="suggestion-details">
           <div className="suggestion-details-grid">
             <div className="suggestion-details-left">
-              <div className="employee-details-text">
+              {/* <div className="employee-details-text">
                 <p>
                   <i className="fa-regular fa-id-card"></i> {employee_id}
                 </p>
@@ -93,7 +94,7 @@ const SuggestionCard = ({
                 <p>
                   <i className="fa-solid fa-business-time"></i> {total_exp}
                 </p>
-              </div>
+              </div> */}
               {employee.projects?.length > 0 && (
                 <div
                   className="employee-projects-section"
