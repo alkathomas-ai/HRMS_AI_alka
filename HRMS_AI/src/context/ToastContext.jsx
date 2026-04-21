@@ -39,6 +39,7 @@ export const ToastProvider = ({ children }) => {
   const showSuccess = (message, duration) => addToast(message, 'success', duration);
   const showError = (message, duration) => addToast(message, 'error', duration);
   const showInfo = (message, duration) => addToast(message, 'info', duration);
+  const showWarning = (message, duration) => addToast(message, 'warning', duration);
 
   return (
     <ToastContext.Provider value={{
@@ -47,7 +48,8 @@ export const ToastProvider = ({ children }) => {
       removeToast,
       showSuccess,
       showError,
-      showInfo
+      showInfo,
+      showWarning
     }}>
       {children}
     </ToastContext.Provider>

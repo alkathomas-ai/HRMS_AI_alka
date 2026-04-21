@@ -32,6 +32,11 @@
   color: white;
 }
 
+.toast-warning {
+  background: #d86f19;
+  color: rgb(255, 255, 255);
+}
+
 .toast-content {
   display: flex;
   align-items: center;
