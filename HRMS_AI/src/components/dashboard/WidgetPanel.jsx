@@ -6,6 +6,7 @@ import './WidgetPanel.css';
 import { Icons } from '../../assets/icons';
 import { getProjectDistributions, getEmployeeDirectory, getEmployeeCount, getDepartment, getSoonAvailableEmployees, getFreepoolProjectSuggestions } from '../../services/api';
 import Alert from '../common/Alert';
+import { useToast } from '../../context/ToastContext';
 import DoughnutChart from './charts/DoughnutChart';
 import BarChart from './charts/BarChart';
 import CreateWidgetModal from './CreateWidgetModal';
@@ -43,6 +44,7 @@ const SortableWidget = ({ id, children, isPinned, widgetSize }) => {
 const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const { confirm, ConfirmationModal } = useConfirmation();
   const { isOpen, employee, loading, error, openModal, closeModal } = useCandidateProfileModal();
+  const { showWarning } = useToast();
   const [selectedWidgets, setSelectedWidgets] = useState(() => {
     const saved = localStorage.getItem('selectedWidgets');
     return saved ? JSON.parse(saved) : ['project-carousel', 'project-distribution', 'department-overview', 'employee-directory', 'available-employees', 'world-map'];
@@ -56,7 +58,6 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     return saved ? JSON.parse(saved) : [];
   });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
   const [editingWidget, setEditingWidget] = useState(null);
@@ -393,9 +394,8 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     setPinnedWidgets(prev => {
       if (prev.includes(id)) {
         return prev.filter(widgetId => widgetId !== id);
-      } else if (prev.length >= 5) {
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 3000);
+      } else if (prev.length >= 3) {
+        showWarning('Maximum 3 widgets can be pinned.');
         return prev;
       } else {
         // Auto-center the widget when pinned
@@ -989,7 +989,6 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
 
   return (
     <div className={`grid-container`} data-expanded={isExpanded}>
-      <Alert message="Maximum 5 widgets can be pinned" show={showAlert} type="warning" />
       {isLoading ? 
       (    
         <div className="loader" id="theme-loader">
