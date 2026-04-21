@@ -181,6 +181,28 @@ export async function generateWidgetFromPrompt(payload) {
   }
 }
 
+export async function generateStatsFromPrompt(payload) {
+  try {
+    console.log(payload)
+    const response = await axios.post(`${BASE_URL}/ai-stats`, {
+      "prompt": payload.prompt,
+      "chartType": payload.chartType || "card"
+    });
+
+    if (response.data.status === 'error') {
+      throw new Error(response.data.message);
+    }
+
+    return response.data;
+  } catch (error) {
+    if (error.response?.data?.message) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error(error.message || 'Failed to generate stats');
+  }
+}
+
+
 export async function updateEmployeeSkills(employeeId, skills) {
   try {
     const cleanId = employeeId.replace('VVDN/', '');

@@ -102,7 +102,7 @@
 }
 
 .next-btn {
-  right: 0;
+  right: -10px;
 }
 
 .carousel-nav-btn svg {
@@ -354,6 +354,10 @@
   gap: 4px;
 }
 
+.employee-details p {
+  font-size: 10px;
+}
+
 .carousel-employee-header {
   display: flex;
   flex-direction: column;
@@ -391,14 +395,16 @@
   font-weight: 500;
 }
 
-.employee-role {
-  color: #374151;
+.employee-role i{
+  background-color: var(--color-bg-muted);
+  font-size: 14px;
   font-size: 11px;
   font-weight: 500;
-  background: #f9fafb;
+  /* background: #f9fafb; */
   padding: 3px 6px;
   border-radius: 4px;
-  border-left: 2px solid #d1d5db;
+  color: var(--color-text-secondary);
+  /* border-left: 2px solid #d1d5db; */
 }
 
 .employee-tech-group {

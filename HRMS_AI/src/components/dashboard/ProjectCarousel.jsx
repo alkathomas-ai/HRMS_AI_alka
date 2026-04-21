@@ -20,7 +20,7 @@ const ProjectCarousel = ({ openModal, projectsData }) => {
     if (projectsData && projectsData.length > 1 && !isHovered) {
       intervalRef.current = setInterval(() => {
         setCurrentIndex((prev) => (prev + 1) % projectsData.length);
-      }, 28000); // 5 seconds
+      }, 8000);
     }
 
     return () => {
@@ -145,11 +145,17 @@ const ProjectCarousel = ({ openModal, projectsData }) => {
                             </div>
                           </div>
                           <div className="employee-details">
-                            <div className="carousel-employee-designation">{employee.designation}</div>
-                            <div className="employee-role">{employee.assigned_role}</div>
                             <div className="employee-tech-group">
+                              <div className="carousel-employee-designation">{employee.designation}</div>
                               <span className="tech-group-badge">{employee.tech_group}</span>
-                              <span className="seniority-badge">{employee.seniority}</span>
+                            </div>
+                            <div className="employee-reason">
+                              <span className="reason-label">
+                                Suggested Role :
+                              </span>
+                              <div className="employee-role">
+                                <i>{employee.assigned_role}</i>
+                              </div>
                             </div>
                             {/* <div className="employee-skills">
                               <div className="skills-section">
