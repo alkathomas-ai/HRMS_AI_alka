@@ -437,7 +437,7 @@
   transform: none;
 }
 .masonry-item:hover {
-  box-shadow: 1px 0px 8px rgba(0,0,0,0.12);
+  /* box-shadow: 1px 0px 8px rgba(0,0,0,0.12); */
   transform: scale(1.005);
   backface-visibility: hidden;
 }

@@ -9,6 +9,7 @@ import Alert from '../common/Alert';
 import DoughnutChart from './charts/DoughnutChart';
 import BarChart from './charts/BarChart';
 import CreateWidgetModal from './CreateWidgetModal';
+import AddStatsModal from './AddStatsModal';
 import DynamicWidget from './DynamicWidget';
 import AnimatedSearchInput from './AnimatedSearchInput';
 import StatsWidget from './StatsWidget';
@@ -57,6 +58,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
   const [editingWidget, setEditingWidget] = useState(null);
   const [isLoading, setIsLoading] = useState(true)
   const dropdownRef = useRef(null);
@@ -73,6 +75,10 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   const [widgetSearch, setWidgetSearch] = useState('');
   const [containerWidth, setContainerWidth] = useState(1200);
   const [activeReleaseDate, setActiveReleaseDate] = useState(null);
+  const [customStats, setCustomStats] = useState(() => {
+    const saved = localStorage.getItem('customStats');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [gridColumns, setGridColumns] = useState(() => {
     const saved = localStorage.getItem('gridColumns');
     return saved ? parseInt(saved) : 3;
@@ -230,6 +236,22 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   useEffect(() => {
     localStorage.setItem('widgetSizes', JSON.stringify(widgetSizes));
   }, [widgetSizes]);
+
+  useEffect(() => {
+    localStorage.setItem('customStats', JSON.stringify(customStats));
+  }, [customStats]);
+
+  const handleAddStat = (newStat) => {
+    setCustomStats(() => {
+      const existingStat = localStorage.getItem('customStats');
+      const parsedStats = existingStat ? JSON.parse(existingStat) : [];
+      const updated = [...parsedStats, newStat];
+      localStorage.setItem('customStats', JSON.stringify(updated));
+      // Trigger custom event to refresh StatsWidget
+      window.dispatchEvent(new Event('statsUpdated'));
+      return updated;
+    });
+  };
 
   const setWidgetSize = (widgetId, cols, rows) => {
     setWidgetSizes(prev => ({ ...prev, [widgetId]: { cols, rows } }));
@@ -508,6 +530,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
               employeeCount={employeeCount.employeeCount}
               projectCount={employeeCount.projectCount}
               freepoolCount={employeeCount.freepoolCount}
+              onOpenAddModal={() => setIsStatsModalOpen(true)}
             />
           </>
         );
@@ -1144,6 +1167,12 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           setIsModalOpen(false);
           setEditingWidget(null);
         }}
+      />
+
+      <AddStatsModal
+        isOpen={isStatsModalOpen}
+        onClose={() => setIsStatsModalOpen(false)}
+        onAdd={handleAddStat}
       />
 
       <ConfirmationModal />
