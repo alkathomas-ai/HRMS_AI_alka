@@ -42,7 +42,7 @@ const useConfirmation = () => {
               Cancel
             </button>
             <button className="btn-confirm" onClick={config.onConfirm}>
-              Remove
+              Ok
             </button>
           </div>
         </div>

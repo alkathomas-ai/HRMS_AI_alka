@@ -12,7 +12,7 @@ import { searchAPI } from "../../services/api";
 import { EmployeeContext } from "../../context/employeeContext";
 import { useScheduleNotification } from "../../context/scheduleNotificationContext";
 
-const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
+const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
   const { notifications, markAllAsRead } = useScheduleNotification();
   const navigate = useNavigate();
   const location = useLocation();
@@ -169,8 +169,13 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
             aria-label="Upload CSV"
             title="Upload CSV"
             onClick={() => setShowUploadModal(true)}
+            disabled={isUploading}
           >
-            <span className="material-symbols-outlined">upload</span>
+            {isUploading ? (
+              <span className="material-symbols-outlined rotating">progress_activity</span>
+            ) : (
+              <span className="material-symbols-outlined">upload</span>
+            )}
           </button>
       </div>
 

@@ -294,6 +294,15 @@
   cursor: not-allowed;
 }
 
+.btn-generate .rotating {
+  font-size: 18px;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .btn-generate:disabled:hover {
   transform: none;
   box-shadow: none;

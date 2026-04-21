@@ -3,6 +3,8 @@ import { getProjectRequirements, addProjectRequirement, editProjectRequirement, 
 import dummySuggestions from "../../data/dummySuggestions";
 import "../D.css";
 import "./AISuggestions.css";
+import { useToast } from "../../context/ToastContext";
+import useConfirmation from "../../components/common/useConfirmation";
 
 const SuggestionCard = ({
   employee,
@@ -250,6 +252,9 @@ const AISuggestions = () => {
   const [projectSearch, setProjectSearch] = useState('');
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState(true)
+  const { showSuccess, showError, showInfo } = useToast();
+  const { confirm, ConfirmationModal } = useConfirmation();
+  
 
   const filteredProjectsList = projectSearch
     ? projectsList.filter((p) =>
@@ -305,17 +310,22 @@ const AISuggestions = () => {
 
   const handleDelete = async (id, e) => {
     e.stopPropagation();
-    if (!window.confirm('Delete this requirement?')) return;
+    const confirmed = await confirm({
+      title: 'Delete Requirement',
+      message: 'Are you sure you want to delete this project requirement? This action cannot be undone.',
+    });
+    if (!confirmed) return;
     try {
       await deleteProjectRequirement(id);
       setProjects(projects.filter((p) => p.id !== id));
       if (selectedProject?.id === id) setSelectedProject(null);
+      showSuccess('Project requirement deleted successfully!');
     } catch (err) {
       const msg = err.response?.data?.detail || '';
       if (msg.includes('ForeignKeyViolation') || msg.includes('still referenced')) {
-        alert('Cannot delete this requirement because it has linked suggestions. Please delete the suggestions first.');
+        showError('Cannot delete: this requirement has linked suggestions.');
       } else {
-        alert('Failed to delete. Please try again.');
+        showError('Failed to delete. Please try again.');
       }
     }
   };
@@ -332,7 +342,7 @@ const AISuggestions = () => {
           setProjects(projects.map((p) =>
             p.id === editingId ? updatedProject : p
           ));
-          
+          showInfo(editingId ? 'Project Requirement updated successfully!': 'Project Requirement added successfully');
           // Close the modal immediately
           setShowForm(false);
           setForm(EMPTY_PROJECT);
@@ -346,7 +356,11 @@ const AISuggestions = () => {
           }
           
           handlegeneratedResponse(updatedProject)
-            .catch(err => console.error('Failed to refresh suggestions after edit', err))
+            .catch(err => 
+              {console.error('Failed to refresh suggestions after edit', err);
+              showError('Failed to refresh suggestions!');
+
+            })
             .finally(() => {
               setLoadingProjectId(null);
               if (selectedProject?.id === editingId) {
@@ -354,7 +368,9 @@ const AISuggestions = () => {
               }
             });
         }
-      } catch (err) {
+      
+      // console.log('Edit response:', response);
+    } catch (err) {
         console.error('Edit failed, updating locally', err);
         setProjects(projects.map((p) =>
           p.id === editingId ? { ...original, ...form, id: editingId } : p
@@ -393,9 +409,12 @@ const AISuggestions = () => {
             setLoading(false);
           }
         }
+        showSuccess('Project Requirement added successfully!')
         return;
+
       } catch (err) {
         console.error('Add failed, adding locally', err);
+        showError('Failed to add Project Requirement!')
         setProjects((prev) => [...prev, { ...form, id: Date.now(), employees: [] }]);
       }
     }
@@ -710,6 +729,8 @@ const AISuggestions = () => {
             </div>
           </div>
     
+          <ConfirmationModal />
+
           {/* Add / Edit Form Modal */}
           {showForm && (
             <div className="form-modal-overlay" onClick={() => setShowForm(false)}>
