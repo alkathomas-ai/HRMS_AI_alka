@@ -30,6 +30,7 @@ const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
     try { return JSON.parse(localStorage.getItem('searchHistory')) || []; }
     catch { return []; }
   });
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const notifRef = useRef(null);
   const avatarRef = useRef(null);
   const searchRef = useRef(null);
@@ -104,6 +105,12 @@ const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
 
   const handleSearch = () => handleSearchWithQuery(searchValue);
 
+  const highlightMatch = (text, query) => {
+    const idx = text.toLowerCase().indexOf(query.toLowerCase());
+    if (idx === -1) return text;
+    return <>{text.slice(0, idx)}<strong>{text.slice(idx, idx + query.length)}</strong>{text.slice(idx + query.length)}</>;
+  };
+
   const removeHistoryItem = (e, query) => {
     e.stopPropagation();
     setSearchHistory(prev => {
@@ -171,11 +178,35 @@ const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
             </div>
             <AnimatedSearchInput
               value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value.replace(/\s+/g, ' ').trimStart())}
+              onChange={(e) => {
+                setSearchValue(e.target.value.replace(/\s+/g, ' ').trimStart());
+                setShowHistory(true);
+                setHighlightedIndex(-1);
+              }}
               onFocus={() => setShowHistory(true)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && searchValue.trim()) {
-                  handleSearch();
+                const suggestions = searchValue.trim()
+                  ? searchHistory.filter(q => q.toLowerCase().includes(searchValue.toLowerCase()))
+                  : searchHistory;
+                const total = suggestions.length + (searchValue.trim() ? 1 : 0);
+                if (e.key === 'ArrowDown') {
+                  e.preventDefault();
+                  setHighlightedIndex(prev => Math.min(prev + 1, total - 1));
+                } else if (e.key === 'ArrowUp') {
+                  e.preventDefault();
+                  setHighlightedIndex(prev => Math.max(prev - 1, -1));
+                } else if (e.key === 'Enter') {
+                  if (highlightedIndex >= 0 && highlightedIndex < suggestions.length) {
+                    const q = suggestions[highlightedIndex];
+                    setSearchValue(q);
+                    handleSearchWithQuery(q);
+                  } else if (searchValue.trim()) {
+                    handleSearch();
+                  }
+                  setHighlightedIndex(-1);
+                } else if (e.key === 'Escape') {
+                  setShowHistory(false);
+                  setHighlightedIndex(-1);
                 }
               }}
               className="search-input"
@@ -187,22 +218,47 @@ const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
               ]}
             />
           </div>
-          {showHistory && searchHistory.length > 0 && (
-            <div className="search-history-dropdown">
-              <div className="search-history-header">
-                <span>Recent Searches</span>
+          {showHistory && (() => {
+            const suggestions = searchValue.trim()
+              ? searchHistory.filter(q => q.toLowerCase().includes(searchValue.toLowerCase()))
+              : searchHistory;
+            if (!suggestions.length && !searchValue.trim()) return null;
+            return (
+              <div className="search-history-dropdown">
+                {suggestions.length > 0 && (
+                  <>
+                    {!searchValue.trim() && <div className="search-history-header"><span>Recent Searches</span></div>}
+                    {suggestions.map((query, i) => (
+                      <div
+                        key={i}
+                        className={`search-history-item${highlightedIndex === i ? ' highlighted' : ''}`}
+                        onMouseDown={() => { setSearchValue(query); handleSearchWithQuery(query); }}
+                        onMouseEnter={() => setHighlightedIndex(i)}
+                      >
+                        <span className="material-symbols-outlined">history</span>
+                        <span className="search-history-text">
+                          {searchValue.trim() ? highlightMatch(query, searchValue) : query}
+                        </span>
+                        <button className="search-history-remove" onMouseDown={(e) => removeHistoryItem(e, query)}>
+                          <span className="material-symbols-outlined">close</span>
+                        </button>
+                      </div>
+                    ))}
+                  </>
+                )}
+                {searchValue.trim() && (
+                  <div
+                    className={`search-history-item search-action${highlightedIndex === suggestions.length ? ' highlighted' : ''}`}
+                    onMouseDown={() => handleSearch()}
+                    onMouseEnter={() => setHighlightedIndex(suggestions.length)}
+                  >
+                    <span className="material-symbols-outlined">search</span>
+                    <span className="search-history-text">Search for "<strong>{searchValue}</strong>"</span>
+                  </div>
+                )}
               </div>
-              {searchHistory.map((query, i) => (
-                <div key={i} className="search-history-item" onMouseDown={() => { setSearchValue(query); handleSearchWithQuery(query); }}>
-                  <span className="material-symbols-outlined">history</span>
-                  <span className="search-history-text">{query}</span>
-                  <button className="search-history-remove" onMouseDown={(e) => removeHistoryItem(e, query)}>
-                    <span className="material-symbols-outlined">delete</span>
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
+            );
+          })()}
         </div>
           <button
             className="icon-btn"
