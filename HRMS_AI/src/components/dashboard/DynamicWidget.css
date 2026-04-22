@@ -151,3 +151,35 @@
 .cell-more-btn:hover {
     color: var(--color-primary-hover);
 }
+
+/* Table scrollbar styles */
+.table-scroll-container {
+    flex: 1;
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+}
+
+.table-scroll-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.table-scroll-container::-webkit-scrollbar-track {
+    background: var(--color-bg-muted);
+    border-radius: 4px;
+}
+
+.table-scroll-container::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 4px;
+    border: 1px solid var(--color-bg-muted);
+}
+
+.table-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-secondary);
+}
+
+.table-scroll-container::-webkit-scrollbar-corner {
+    background: var(--color-bg-muted);
+}
