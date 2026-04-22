@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import './EditUser.css'
 import { Icons } from '../../assets/icons'
 import { getEmployeeDirectory, getEmployeesPaginated, updateEmployeeSkills } from '../../services/api'
 import CandidateProfileModal from '../../components/CandidateProfileModal'
 import { useCandidateProfileModal } from '../../hooks/useCandidateProfileModal'
+import { useToast } from '../../context/ToastContext'
+import useConfirmation from '../../components/common/useConfirmation'
 
 const EditUser = () => {
   const [employees, setEmployees] = useState([]);
@@ -23,6 +25,10 @@ const EditUser = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [itemsPerPage, setItemsPerPage] = useState(25);
   const [isRowsDropdownOpen, setIsRowsDropdownOpen] = useState(false);
+
+  const { showSuccess, showError } = useToast();
+  const { confirm, ConfirmationModal } = useConfirmation();
+  const skipBlurRef = useRef(false);
 
   // Candidate Profile Modal
   const {
@@ -113,36 +119,30 @@ const EditUser = () => {
     setNewSkillInput('');
   };
 
-  const handleSaveEdit = async (employee) => {
+  const handleSaveEdit = async (employee, skillsToSave, showToast = false, closeEditor = true) => {
     try {
-      await updateEmployeeSkills(employee.employee_id, editingSkills);
-      
-      const skillsString = editingSkills.join(', ');
-      // Update local state
+      await updateEmployeeSkills(employee.employee_id, skillsToSave);
+      const skillsString = skillsToSave.join(', ');
       if (isSearching) {
-        setFilteredEmployees(prev => prev.map(emp => 
-          emp.employee_id === employee.employee_id 
-            ? { ...emp, skill_set: skillsString } 
-            : emp
+        setFilteredEmployees(prev => prev.map(emp =>
+          emp.employee_id === employee.employee_id ? { ...emp, skill_set: skillsString } : emp
         ));
       } else {
-        setEmployees(prev => prev.map(emp => 
-          emp.employee_id === employee.employee_id 
-            ? { ...emp, skill_set: skillsString } 
-            : emp
+        setEmployees(prev => prev.map(emp =>
+          emp.employee_id === employee.employee_id ? { ...emp, skill_set: skillsString } : emp
         ));
       }
-      setAllEmployees(prev => prev.map(emp => 
-        emp.employee_id === employee.employee_id 
-          ? { ...emp, skill_set: skillsString } 
-          : emp
+      setAllEmployees(prev => prev.map(emp =>
+        emp.employee_id === employee.employee_id ? { ...emp, skill_set: skillsString } : emp
       ));
-      
-      setEditingEmployee(null);
-      setEditingSkills([]);
-      setNewSkillInput('');
+      if (closeEditor) {
+        setEditingEmployee(null);
+        setEditingSkills([]);
+        setNewSkillInput('');
+      }
+      if (showToast) showSuccess('Skills updated successfully!');
     } catch (error) {
-      alert(`Failed to update skills: ${error.message}`);
+      showError(`Failed to update skills: ${error.message}`);
     }
   };
 
@@ -154,17 +154,28 @@ const EditUser = () => {
     return Math.min(skillsArray.length, 5);
   };
 
-  const handleCancelEdit = () => {
+  const handleCancelEdit = async () => {
+    const confirmed = await confirm({
+      title: 'Discard Changes',
+      message: 'Are you sure you want to discard your skill changes?',
+    });
+    if (!confirmed) return;
     setEditingEmployee(null);
     setEditingSkills([]);
     setNewSkillInput('');
   };
 
-  const handleRemoveSkill = (skillIndex) => {
-    setEditingSkills(prev => prev.filter((_, index) => index !== skillIndex));
-  };
-
-  const handleAddSkill = () => {
+  const handleRemoveSkill = async (employee, skillIndex) => {
+    skipBlurRef.current = true;
+    const confirmed = await confirm({
+      title: 'Remove Skill',
+      message: `Remove "${editingSkills[skillIndex]}" from skills?`,
+    });
+    skipBlurRef.current = false;
+    if (!confirmed) return;
+    const updated = editingSkills.filter((_, i) => i !== skillIndex);
+    setEditingSkills(updated);
+    handleSaveEdit(employee, updated, true, false);
     const trimmedSkill = newSkillInput.trim();
     if (trimmedSkill && !editingSkills.includes(trimmedSkill)) {
       setEditingSkills(prev => [...prev, trimmedSkill]);
@@ -176,9 +187,12 @@ const EditUser = () => {
     if (e.key === 'Enter') {
       e.preventDefault();
       if (newSkillInput.trim()) {
-        handleAddSkill();
+        const updated = [...editingSkills, newSkillInput.trim()];
+        setEditingSkills(updated);
+        setNewSkillInput('');
+        handleSaveEdit(employee, updated, true, false);
       } else {
-        handleSaveEdit(employee);
+        handleSaveEdit(employee, editingSkills, true);
       }
     }
   };
@@ -304,10 +318,7 @@ const EditUser = () => {
                                       <button
                                         type="button"
                                         className="remove-skill-btn"
-                                        onMouseDown={(e) => {
-                                          e.preventDefault();
-                                          handleRemoveSkill(index);
-                                        }}
+                                        onClick={() => handleRemoveSkill(employee, index)}
                                         title="Remove skill"
                                       >
                                         ×
@@ -321,8 +332,14 @@ const EditUser = () => {
                                     onKeyPress={(e) => handleKeyPress(e, employee)}
                                     onBlur={() => {
                                       setTimeout(() => {
-                                        handleSaveEdit(employee);
-                                      }, 100);
+                                        if (skipBlurRef.current) return;
+                                        if (newSkillInput.trim()) {
+                                          const updated = [...editingSkills, newSkillInput.trim()];
+                                          handleSaveEdit(employee, updated, false);
+                                        } else {
+                                          handleSaveEdit(employee, editingSkills, false);
+                                        }
+                                      }, 150);
                                     }}
                                     className="add-skill-input"
                                     placeholder="Add new skill..."
@@ -400,6 +417,8 @@ const EditUser = () => {
         </div>
       </div>
       
+      <ConfirmationModal />
+
       {/* Candidate Profile Modal */}
       <CandidateProfileModal
         isOpen={isModalOpen}
