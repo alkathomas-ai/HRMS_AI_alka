@@ -11,12 +11,13 @@
   padding: 2px 12px;
   background: var(--color-bg-secondary);
   border-radius: 8px;
+  flex-wrap: wrap;
 }
 
 .threshold-control {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 5px;
 }
 
 .threshold-control label {

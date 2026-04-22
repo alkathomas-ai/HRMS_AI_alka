@@ -5,7 +5,7 @@ import './LowOccupancyWidget.css';
 const LowOccupancyWidget = ({ openModal }) => {
   const [lowOccupancyEmployees, setLowOccupancyEmployees] = useState([]);
   const [occupancyThreshold, setOccupancyThreshold] = useState(50);
-  const [longTermThreshold, setLongTermThreshold] = useState(6);
+  const [longTermThreshold, setLongTermThreshold] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchLowOccupancyEmployees = useCallback(async () => {
@@ -39,13 +39,23 @@ const LowOccupancyWidget = ({ openModal }) => {
             <input
               type="number"
               value={occupancyThreshold}
-              onChange={(e) => {
-                const value = Math.max(1, Math.min(100, Number(e.target.value) || 1));
-                setOccupancyThreshold(value);
-              }}
+               onChange={(e) => {
+                  const val = e.target.value;
+
+                  // allow empty while typing
+                  if (val === "") {
+                    setOccupancyThreshold("");
+                    return;
+                  }
+
+                  const num = Number(val);
+
+                  if (!isNaN(num)) {
+                    setOccupancyThreshold(Math.min(100, Math.max(1, num)));
+                  }
+                }}
               min="1"
               max="100"
-              placeholder="Enter occupancy %"
             />
           </div>
           <span className="unit">%</span>
@@ -57,11 +67,21 @@ const LowOccupancyWidget = ({ openModal }) => {
               type="number"
               value={longTermThreshold}
               onChange={(e) => {
-                const value = Math.max(1, Number(e.target.value) || 1);
-                setLongTermThreshold(value);
+                const val = e.target.value;
+
+                if (val === "") {
+                  setLongTermThreshold("");
+                  return;
+                }
+
+                const num = Number(val);
+
+                if (!isNaN(num)) {
+                  setLongTermThreshold(Math.min(9999, Math.max(1, num)));
+                }
               }}
               min="1"
-              placeholder="Enter months"
+              max="10000"
             />
           </div>
           <span className="unit">months</span>
