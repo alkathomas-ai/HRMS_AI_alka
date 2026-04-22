@@ -342,7 +342,7 @@ const AISuggestions = () => {
           setProjects(projects.map((p) =>
             p.id === editingId ? updatedProject : p
           ));
-          showInfo(editingId ? 'Project Requirement updated successfully!': 'Project Requirement added successfully');
+          showSuccess(editingId ? 'Project Requirement updated successfully!': 'Project Requirement added successfully');
           // Close the modal immediately
           setShowForm(false);
           setForm(EMPTY_PROJECT);
