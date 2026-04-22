@@ -11,6 +11,7 @@ const MainLayoutContent = () => {
   const { showSuccess, showError } = useToast();
   const [scheduleTab, setScheduleTab] = useState('schedule');
   const [csvFile, setCsvFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
   const closeSearchResultsRef = React.useRef(null);
     const [notifications, setNotifications] = useState([
       { id: 1, title: 'Interview Reminder', text: 'Interview with Habibur Rahman at 09:30 AM', time: '2h ago', read: false },
@@ -43,21 +44,21 @@ const MainLayoutContent = () => {
 
     const handleCSVUpload = async (file) => {
       setCsvFile(file);
-      console.log('Toast functions available:', { showSuccess, showError });
+      setIsUploading(true);
       try {
         const formData = new FormData();
         formData.append('file', file);
         const result = await uploadAPI(formData);
-        console.log('About to show success toast');
         showSuccess('CSV file uploaded successfully!');
         console.log('Upload successful:', result);
       } catch (error) {
-        console.log('About to show error toast');
         showError('Failed to upload CSV file. Please try again.');
         console.error('Upload failed:', error);
+      } finally {
+        setIsUploading(false);
+        const timeoutId = setTimeout(() => setCsvFile(null), 100);
+        return () => clearTimeout(timeoutId);
       }
-      const timeoutId = setTimeout(() => setCsvFile(null), 100);
-      return () => clearTimeout(timeoutId);
     };
 
   return (
@@ -67,6 +68,7 @@ const MainLayoutContent = () => {
         onNotificationClick={handleNotificationClick} 
         onMarkAllRead={handleMarkAllRead}
         onCSVUpload={handleCSVUpload}
+        isUploading={isUploading}
         onCloseSearchResults={closeSearchResultsRef}
       />
       <Sidebar onNavigate={handleSidebarNavigate} />

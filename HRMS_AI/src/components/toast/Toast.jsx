@@ -19,6 +19,8 @@ const Toast = ({ toast, onRemove }) => {
         return 'check_circle';
       case 'error':
         return 'error';
+      case 'warning':
+        return 'warning';
       case 'info':
       default:
         return 'info';

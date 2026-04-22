@@ -12,7 +12,7 @@ import { searchAPI } from "../../services/api";
 import { EmployeeContext } from "../../context/employeeContext";
 import { useScheduleNotification } from "../../context/scheduleNotificationContext";
 
-const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
+const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
   const { notifications, markAllAsRead } = useScheduleNotification();
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,6 +25,11 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearchResults, setHasSearchResults] = useState(false);
   const [username, setUsername] = useState('');
+  const [showHistory, setShowHistory] = useState(false);
+  const [searchHistory, setSearchHistory] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('searchHistory')) || []; }
+    catch { return []; }
+  });
   const notifRef = useRef(null);
   const avatarRef = useRef(null);
   const searchRef = useRef(null);
@@ -73,7 +78,13 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
 
   const handleSearchWithQuery = async (query) => {
     if (!query.trim()) return;
-    
+    const trimmed = query.trim();
+    setShowHistory(false);
+    setSearchHistory(prev => {
+      const updated = [trimmed, ...prev.filter(q => q !== trimmed)].slice(0, 6);
+      localStorage.setItem('searchHistory', JSON.stringify(updated));
+      return updated;
+    });
     setIsSearching(true);
     setShowSearchResults(true);
     
@@ -93,6 +104,15 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
 
   const handleSearch = () => handleSearchWithQuery(searchValue);
 
+  const removeHistoryItem = (e, query) => {
+    e.stopPropagation();
+    setSearchHistory(prev => {
+      const updated = prev.filter(q => q !== query);
+      localStorage.setItem('searchHistory', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (notifRef.current && !notifRef.current.contains(e.target)) {
@@ -100,6 +120,9 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
       }
       if (avatarRef.current && !avatarRef.current.contains(e.target)) {
         setShowAvatarDropdown(false);
+      }
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setShowHistory(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -134,7 +157,7 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
               className="icon-btn history-btn"
               aria-label="View Search Results"
               onClick={handleReopenSearch}
-              title="View search previous results"
+              title="View previous search results"
               style={{ visibility: hasSearchResults && !showSearchResults ? "visible" : "hidden" }}
             >
               <span className="material-symbols-outlined">history</span>
@@ -149,6 +172,7 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
             <AnimatedSearchInput
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value.replace(/\s+/g, ' ').trimStart())}
+              onFocus={() => setShowHistory(true)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && searchValue.trim()) {
                   handleSearch();
@@ -163,14 +187,35 @@ const Navbar = ({ onCSVUpload, onCloseSearchResults }) => {
               ]}
             />
           </div>
+          {showHistory && searchHistory.length > 0 && (
+            <div className="search-history-dropdown">
+              <div className="search-history-header">
+                <span>Recent Searches</span>
+              </div>
+              {searchHistory.map((query, i) => (
+                <div key={i} className="search-history-item" onMouseDown={() => { setSearchValue(query); handleSearchWithQuery(query); }}>
+                  <span className="material-symbols-outlined">history</span>
+                  <span className="search-history-text">{query}</span>
+                  <button className="search-history-remove" onMouseDown={(e) => removeHistoryItem(e, query)}>
+                    <span className="material-symbols-outlined">delete</span>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
           <button
             className="icon-btn"
             aria-label="Upload CSV"
             title="Upload CSV"
             onClick={() => setShowUploadModal(true)}
+            disabled={isUploading}
           >
-            <span className="material-symbols-outlined">upload</span>
+            {isUploading ? (
+              <span className="material-symbols-outlined rotating">progress_activity</span>
+            ) : (
+              <span className="material-symbols-outlined">upload</span>
+            )}
           </button>
       </div>
 
