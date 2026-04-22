@@ -18,6 +18,8 @@ import CandidateProfileModal from '../CandidateProfileModal';
 import { useCandidateProfileModal } from '../../hooks/useCandidateProfileModal';
 import ProjectCarousel from './ProjectCarousel';
 import WorldMapWidget from './WorldMapWidget';
+import LowOccupancyWidget from './LowOccupancyWidget';
+import './LowOccupancyWidget.css';
 
 
 const SortableWidget = ({ id, children, isPinned, widgetSize }) => {
@@ -104,6 +106,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     { id: 'available-employees', label: 'Available Employees' },
     { id: 'upskill-suggestions', label: 'Upskill Suggestions' },
     { id: 'world-map', label: 'Global Employee Distribution' },
+    { id: 'low-occupancy-employees', label: 'Low Occupancy Long-term Employees' },
   ];
 
   
@@ -201,7 +204,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           let defaultCols = 1;
           if (widget.id === 'stats-overview') defaultRows = 1;
           if (widget.id === 'project-carousel') {defaultRows = 3; defaultCols = 2;}
-          if (widget.id === 'employee-directory' || widget.id === 'available-employees' || widget.id === 'upskill-suggestions') defaultRows = 3;
+          if (widget.id === 'employee-directory' || widget.id === 'available-employees' || widget.id === 'upskill-suggestions' || widget.id === 'low-occupancy-employees') defaultRows = 3;
           if (widget.id === 'world-map') {defaultRows = 2; defaultCols = 1;}
           
           updatedSizes[widget.id] = { cols: defaultCols, rows: defaultRows };
@@ -888,6 +891,28 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
   onMouseDown={(e) => e.stopPropagation()}
   onTouchStart={(e) => e.stopPropagation()}>
               <WorldMapWidget />
+            </div>
+          </>
+        );
+
+      case 'low-occupancy-employees':
+        return (
+          <>
+            <div className="grid-item-header">
+              <h4 title="Low Occupancy Long-term Employees">Low Occupancy Long-term Employees</h4>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <SizeSelector />
+                <button
+                  onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
+                  className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
+                >
+                  <img src={Icons.pin} alt="" />
+                </button>
+                <span className='widget-close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+              </div>
+            </div>
+            <div style={{ height: 'calc(100% - 45px)', overflow: 'hidden' }}>
+              <LowOccupancyWidget openModal={openModal} />
             </div>
           </>
         );

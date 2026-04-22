@@ -128,6 +128,17 @@ export async function getSoonAvailableEmployees() {
   }
 }
 
+export async function getLowOccupancyEmployees(occupancy, long_term_threshold) {
+    try {
+    const response = await axios.get(`${BASE_URL}/low_occupancy_employees?occupancy_threshold=${occupancy}&long_term_extension_months
+=${long_term_threshold}`);
+    console.log(response.data)
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export async function getFreepoolProjectSuggestions() {
   try {
     const response = await axios.get(`${BASE_URL}/freepool_suggestions`);

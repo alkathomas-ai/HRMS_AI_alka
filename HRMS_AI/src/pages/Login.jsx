@@ -138,7 +138,7 @@ const Login = () => {
   
             <div>
               <form onSubmit={handleSubmit} className="login-form">
-                {error && <div className="error-message">{error}</div>}
+                {error && <div className="login-error-message">{error}</div>}
       
                 <div className="form-group">
                   <label htmlFor="username">Username</label>
