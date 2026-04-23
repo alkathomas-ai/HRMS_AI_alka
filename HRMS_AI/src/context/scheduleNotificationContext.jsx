@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useMemo, useCallback, useEffect } from 'react';
+import React, { createContext, useState, useContext, useMemo, useCallback } from 'react';
 import { getAllNotifications, markAsReadNotifications, markAsUnreadNotifications, deleteNotifications as deleteNotificationsAPI } from '../services/api';
 
 const ScheduleNotificationContext = createContext();
@@ -12,7 +12,7 @@ export const useScheduleNotification = () => {
 export const ScheduleNotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
 
-  useEffect(() => {
+  const fetchNotifications = useCallback(() => {
     getAllNotifications()
       .then(data => {
         const list = Array.isArray(data) ? data : data?.notifications || data?.data || [];
@@ -30,6 +30,11 @@ export const ScheduleNotificationProvider = ({ children }) => {
   const markAsRead = useCallback((id) => {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
     markAsReadNotifications([id]).catch(err => console.error('Failed to mark as read', err));
+  }, []);
+
+  const markAsUnread = useCallback((id) => {
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: false } : n));
+    markAsUnreadNotifications([id]).catch(err => console.error('Failed to mark as unread', err));
   }, []);
 
   const markAllAsRead = useCallback(() => {
@@ -51,19 +56,15 @@ export const ScheduleNotificationProvider = ({ children }) => {
     deleteNotificationsAPI(ids).catch(err => console.error('Failed to delete notifications', err));
   }, []);
 
-  const markAsUnread = useCallback((id) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: false } : n));
-    markAsUnreadNotifications([id]).catch(err => console.error('Failed to mark as unread', err));
-  }, []);
-
   const value = useMemo(() => ({
     notifications,
+    fetchNotifications,
     markAsRead,
+    markAsUnread,
     markAllAsRead,
     markMultipleAsRead,
-    markAsUnread,
     deleteNotifications,
-  }), [notifications, markAsRead, markAllAsRead, markMultipleAsRead, markAsUnread, deleteNotifications]);
+  }), [notifications, fetchNotifications, markAsRead, markAsUnread, markAllAsRead, markMultipleAsRead, deleteNotifications]);
 
   return (
     <ScheduleNotificationContext.Provider value={value}>
@@ -71,4 +72,3 @@ export const ScheduleNotificationProvider = ({ children }) => {
     </ScheduleNotificationContext.Provider>
   );
 };
-

@@ -5,7 +5,7 @@ import "./Schedule.css";
 import { useScheduleNotification } from "../../context/scheduleNotificationContext";
 
 const Schedule = () => {
-  const { notifications, markAsRead, markAsUnread, deleteNotifications, markMultipleAsRead } = useScheduleNotification();
+  const { notifications, fetchNotifications, markAsRead, markAsUnread, deleteNotifications, markMultipleAsRead } = useScheduleNotification();
   const location = useLocation();
   
   // --- STATE FOR EXPANDED VIEW ---
@@ -19,6 +19,10 @@ const Schedule = () => {
       setExpandedTab('notification');
     }
   }, [location.state]);
+
+  useEffect(() => {
+    if (expandedTab === 'notification') fetchNotifications();
+  }, [expandedTab]);
 
   // --- LOGIC FOR EXPANDED VIEW (Calendar) ---
   const renderCalendarDays = () => {
@@ -231,7 +235,7 @@ const Schedule = () => {
             {notifications.map(notif => (
               <div 
                 key={notif.id} 
-                className={`notif-row ${notif.read ? 'unread' : 'read'} ${selectedNotifs.includes(notif.id) ? 'selected' : ''}`}
+                className={`notif-row ${notif.read ? 'read' : 'unread'} ${selectedNotifs.includes(notif.id) ? 'selected' : ''}`}
               >
                 <label className="checkbox-wrapper" onClick={(e) => e.stopPropagation()}>
                   <input 
