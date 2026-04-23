@@ -13,7 +13,7 @@ import { EmployeeContext } from "../../context/employeeContext";
 import { useScheduleNotification } from "../../context/scheduleNotificationContext";
 
 const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
-  const { notifications, markAllAsRead } = useScheduleNotification();
+  const { notifications, fetchNotifications, markAllAsRead } = useScheduleNotification();
   const navigate = useNavigate();
   const location = useLocation();
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
@@ -289,7 +289,10 @@ const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
           <button
             className={`icon-btn ${showNotifDropdown ? "active" : ""}`}
             aria-label="Notifications"
-            onClick={() => setShowNotifDropdown(!showNotifDropdown)}
+            onClick={() => {
+              if (!showNotifDropdown) fetchNotifications();
+              setShowNotifDropdown(!showNotifDropdown);
+            }}
           >
             <span className="material-symbols-outlined">notifications</span>
             {hasUnread && <span className="notif-badge"></span>}
