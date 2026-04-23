@@ -312,3 +312,42 @@ export async function loginApi(credentials) {
   const response = await axios.post(`${BASE_URL}/login`, credentials);
   return response.data;
 }
+
+export async function getAllNotifications() {
+  try {
+    const response = await axios.get(`${BASE_URL}/notification/get_all_notifications`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function markAsReadNotifications(ids) {
+  try {
+    const response = await axios.patch(`${BASE_URL}/notification/mark_as_read`, { ids });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function markAsUnreadNotifications(ids) {
+  try {
+    const response = await axios.patch(`${BASE_URL}/notification/mark_as_unread`, { ids });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+export async function deleteNotifications(ids) {
+  try {
+    const response = await axios.delete(`${BASE_URL}/notification/delete`, { data: { ids } });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
