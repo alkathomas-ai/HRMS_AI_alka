@@ -142,10 +142,8 @@ const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
   const weekday = today.toLocaleDateString("en-US", { weekday: "short" });
   const month = today.toLocaleDateString("en-US", { month: "long" });
 
-  const todayNotifications = notifications.filter(
-    (n) => !n.read && n.time.includes("h ago"),
-  );
-  const hasUnread = todayNotifications.length > 0;
+  const unreadNotifications = notifications.filter(n => !n.read);
+  const hasUnread = unreadNotifications.length > 0;
 
   return (
     <header className="topbar">
@@ -300,7 +298,7 @@ const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
             <div className="notif-dropdown">
               <div className="notif-dropdown-header">
                 <h4>Notifications</h4>
-                {todayNotifications.length > 0 && (
+                {unreadNotifications.length > 0 && (
                   <button
                     className="mark-all-read"
                     onClick={() => markAllAsRead()}
@@ -310,8 +308,8 @@ const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
                 )}
               </div>
               <div className="notif-dropdown-list">
-                {todayNotifications.length > 0 ? (
-                  todayNotifications.map((notif) => (
+                {unreadNotifications.length > 0 ? (
+                  unreadNotifications.map((notif) => (
                     <div key={notif.id} className="notif-dropdown-item">
                       <svg
                         width="16"
