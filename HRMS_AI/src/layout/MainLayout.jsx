@@ -1,11 +1,18 @@
 import React, { useState } from 'react'
 import Navbar from '../components/navbar/Navbar'
+import Sidebar from '../components/sidebar/Sidebar'
 import { Outlet } from 'react-router-dom'
+import { uploadAPI } from '../services/api'
+import { ToastProvider, useToast } from '../context/ToastContext'
+import ToastContainer from '../components/toast/ToastContainer'
 import './MainLayout.css'
 
-const MainLayout = () => {
-    const [scheduleTab, setScheduleTab] = useState('schedule');
-    const [csvFile, setCsvFile] = useState(null);
+const MainLayoutContent = () => {
+  const { showSuccess, showError } = useToast();
+  const [scheduleTab, setScheduleTab] = useState('schedule');
+  const [csvFile, setCsvFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const closeSearchResultsRef = React.useRef(null);
     const [notifications, setNotifications] = useState([
       { id: 1, title: 'Interview Reminder', text: 'Interview with Habibur Rahman at 09:30 AM', time: '2h ago', read: false },
       { id: 2, title: 'Schedule Updated', text: "Willem van Helden's interview rescheduled", time: '5h ago', read: false },
@@ -29,26 +36,56 @@ const MainLayout = () => {
       setNotifications(notifications.map(n => ({ ...n, read: true })));
     };
 
-    const handleCSVUpload = (file) => {
+    const handleSidebarNavigate = () => {
+      if (closeSearchResultsRef.current) {
+        closeSearchResultsRef.current();
+      }
+    };
+
+    const handleCSVUpload = async (file) => {
       setCsvFile(file);
-      setTimeout(() => setCsvFile(null), 100);
+      setIsUploading(true);
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const result = await uploadAPI(formData);
+        showSuccess('CSV file uploaded successfully!');
+        console.log('Upload successful:', result);
+      } catch (error) {
+        showError('Failed to upload CSV file. Please try again.');
+        console.error('Upload failed:', error);
+      } finally {
+        setIsUploading(false);
+        const timeoutId = setTimeout(() => setCsvFile(null), 100);
+        return () => clearTimeout(timeoutId);
+      }
     };
 
   return (
     <>
-        {/* <Navbar /> */}
       <Navbar 
         notifications={notifications} 
         onNotificationClick={handleNotificationClick} 
         onMarkAllRead={handleMarkAllRead}
         onCSVUpload={handleCSVUpload}
+        isUploading={isUploading}
+        onCloseSearchResults={closeSearchResultsRef}
       />
-
-        <div className="page-content">
-            <Outlet context={{ scheduleTab, setScheduleTab, csvFile }} />
-        </div>
+      <Sidebar onNavigate={handleSidebarNavigate} />
+      <div className="page-content">
+        <Outlet context={{ scheduleTab, setScheduleTab, csvFile }} />
+      </div>
     </>
   )
+}
+
+const MainLayout = () => {
+  return (
+    <ToastProvider>
+      <MainLayoutContent />
+      <ToastContainer />
+    </ToastProvider>
+  );
 }
 
 export default MainLayout

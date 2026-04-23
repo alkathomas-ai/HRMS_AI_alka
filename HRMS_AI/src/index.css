@@ -26,7 +26,7 @@
   --assistant-text-secondary: #6B4A4A;
   
   /* Backgrounds */
-  --color-bg-page: #ffffffd6;
+  --color-bg-page: #f8f8f8ea;
   --color-bg-card: #FFFFFF;
   --color-bg-muted: #e9e9e9;
   --color-bg-topbar: #FCFBFD;
@@ -83,19 +83,44 @@ body {
     var(--color-bg-edituser-primary) 100%
   );
 }
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 0;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 2px;
+  cursor:pointer;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+  display: none;
+}
 /* Hide scrollbar but allow scrolling */
 ::-webkit-scrollbar {
-  display: none;
+  /* display: none; */
 }
 
 /* Firefox */
 html {
-  scrollbar-width: none;
+  /* scrollbar-width: none; */
 }
 
 /* IE / Edge (legacy) */
 body {
-  -ms-overflow-style: none;
+  /* -ms-overflow-style: none; */
 }
 
 

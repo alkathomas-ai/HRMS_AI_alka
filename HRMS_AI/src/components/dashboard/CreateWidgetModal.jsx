@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './CreateWidgetModal.css';
 import { generateWidgetFromPrompt } from '../../services/api';
+import { useToast } from '../../context/ToastContext';
 // import bubbles from '../../assets/icons/bubbles.svg';
 
 const CreateWidgetModal = ({ isOpen, onClose, onGenerate, editingWidget }) => {
@@ -10,6 +11,7 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate, editingWidget }) => {
   const [loading, setLoading] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [error, setError] = useState('');
+  const { showSuccess, showError } = useToast();
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -32,6 +34,7 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate, editingWidget }) => {
     { value: 'scatter', label: 'Scatter', icon: 'fa-arrow-up-right-dots' },
     { value: 'radar', label: 'Radar', icon: 'fa-hexagon-nodes' },
     { value: 'pie', label: 'Pie', icon: 'fa-chart-pie' },
+    { value: 'doughnut', label: 'Doughnut', icon: 'fa-o' },
     { value: 'line', label: 'Line', icon: 'fa-chart-line' },
     { value: 'table', label: 'Table', icon: 'fa-table' },
     { value: 'card', label: 'Card', icon: 'fa-square' }
@@ -68,8 +71,10 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate, editingWidget }) => {
       setTitle('');
       setPrompt('');
       setChartType('auto');
+      showSuccess(editingWidget ? 'Widget updated successfully!' : 'Widget generated successfully!');
     } catch (err) {
       setError(err.message);
+      showError('Failed to generate widget. Please try again.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -137,7 +142,7 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate, editingWidget }) => {
             <textarea
               placeholder="Describe what you want this widget to display..."
               value={prompt}
-              onChange={(e) => { setPrompt(e.target.value); setError(''); }}
+              onChange={(e) => { setPrompt(e.target.value.replace(/\s+/g, ' ').trimStart()); setError(''); }}
               rows={5}
               className={error ? 'error' : ''}
             />
@@ -152,6 +157,7 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate, editingWidget }) => {
         
         <div className="modal-footer">
           <button className="btn-generate" onClick={handleGenerate} disabled={loading}>
+            {loading && <span className="material-symbols-outlined rotating">progress_activity</span>}
             {loading ? 'Generating...' : editingWidget ? 'Update Widget' : 'Generate Widget'}
           </button>
         </div>

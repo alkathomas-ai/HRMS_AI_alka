@@ -48,7 +48,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
           </div>
           <div className="employee-info-section">
             <div className="employee-header">
-              <p className="employee-details-text">
+              <div className="employee-details-text">
                 <p>
                   <i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;
                 </p>
@@ -66,10 +66,31 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                 <p>
                   <i className="fa-solid fa-business-time"></i> {total_exp}
                 </p>
-              </p>
+              </div>
             </div>
 
             <div className="employee-skill-description">
+              {employee.projects && employee.projects.length > 0 && (
+                <div className="employee-projects-section">
+                  <span className="projects-label">Projects: </span>
+                  <span className="projects-text">
+                    {employee.projects.map((project, projectIndex) => (
+                      <span key={projectIndex}>
+                        <span className="project-name">
+                          {project.project_name}
+                        </span>
+                        <span className="project-customer">
+                          {" "}
+                          ({project.customer})
+                        </span>
+                        {projectIndex < employee.projects.length - 1 && (
+                          <span>, </span>
+                        )}
+                      </span>
+                    ))}
+                  </span>
+                </div>
+              )}
               {skill_set && (
                 <div className="employee-skills-section">
                   <span className="skills-label">Skills:</span>
@@ -79,7 +100,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                       .slice(0, showAllSkills ? undefined : 5)
                       .map((skill, skillIndex) => {
                           const trimmedSkill = skill.trim();
-                          const isActive = activeSkill && (trimmedSkill.toLowerCase().includes(activeSkill.toLowerCase()) || activeSkill.toLowerCase().includes(trimmedSkill.toLowerCase()));
+                          const isActive = activeSkill && trimmedSkill.toLowerCase() === activeSkill.toLowerCase();
 
                         return (
                           <span
@@ -113,27 +134,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                 </div>
               )}
 
-              {employee.projects && employee.projects.length > 0 && (
-                <div className="employee-projects-section">
-                  <span className="projects-label">Projects: </span>
-                  <span className="projects-text">
-                    {employee.projects.map((project, projectIndex) => (
-                      <span key={projectIndex}>
-                        <span className="project-name">
-                          {project.project_name}
-                        </span>
-                        <span className="project-customer">
-                          {" "}
-                          ({project.customer})
-                        </span>
-                        {projectIndex < employee.projects.length - 1 && (
-                          <span>, </span>
-                        )}
-                      </span>
-                    ))}
-                  </span>
-                </div>
-              )}
+              
 
               <div className="ai-reason-section">
                 <button
@@ -196,7 +197,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
         </div>
         <div className="employee-info-section-plain">
           <div className="employee-header">
-            <p className="employee-details-text">
+            <div className="employee-details-text">
               <p>
                 <i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;
               </p>
@@ -214,7 +215,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
               <p>
                 <i className="fa-solid fa-business-time"></i> {total_exp}
               </p>
-            </p>
+            </div>
           </div>
 
           <div className="employee-skill-description">
@@ -227,7 +228,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                     .slice(0, showAllSkills ? undefined : 5)
                     .map((skill, skillIndex) => {
                       const trimmedSkill = skill.trim();
-                      const isActive = activeSkill && (trimmedSkill.toLowerCase().includes(activeSkill.toLowerCase()) || activeSkill.toLowerCase().includes(trimmedSkill.toLowerCase()));
+                      const isActive = activeSkill && trimmedSkill.toLowerCase() === activeSkill.toLowerCase();
 
                       return (
                         <span
@@ -291,6 +292,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
 
 const SearchAssistant = ({ isExpanded, onExpand, onClose, csvFile }) => {
   const fileInputRef = useRef(null);
+  const isMountedRef = useRef(true);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [inputText, setInputText] = useState("");
@@ -315,11 +317,42 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose, csvFile }) => {
   });
   const [showUploadModal, setShowUploadModal] = useState(false);
 
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file && file.type === "text/csv") {
+      setUploadedFile(file);
+    } else if (file) {
+      alert("Please select a CSV file");
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setUploadedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   useEffect(() => {
     if (csvFile) {
       handleSendMessage(csvFile);
     }
   }, [csvFile]);
+
+  useEffect(() => {
+    filterOnDepartment();
+  }, [deptFilters]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      setHoveredIndex(null);
+      setAllCardEmployees(null);
+      setTableEmployees([]);
+    };
+  }, []);
 
 //   function filterOnSearch(skill) {
 //   let filtered;
@@ -339,6 +372,8 @@ const SearchAssistant = ({ isExpanded, onExpand, onClose, csvFile }) => {
 // }
 
 function filterOnSearch(skill) {
+  if (!allCardEmployees) return;
+  
   let filtered;
 
   if (skill) {
@@ -349,7 +384,7 @@ function filterOnSearch(skill) {
         ?.toLowerCase()
         .split(",")
         .map((s) => s.trim())
-        .some((s) => s.includes(searchSkill) || searchSkill.includes(s))
+        .some((s) => s === searchSkill)
     );
   } else {
     filtered = allCardEmployees;
@@ -378,7 +413,7 @@ function filterOnSearch(skill) {
 
 
   const handleSendMessage = async (fileToUpload = null) => {
-  if (!inputText.trim() && !fileToUpload) return;
+  if (!fileToUpload && !inputText.trim()) return;
 
   setIsLoading(true);
   if (!fileToUpload) {
@@ -401,6 +436,8 @@ function filterOnSearch(skill) {
 
       response = await uploadAPI(formData);
 
+      if (!isMountedRef.current) return;
+
       const employees =
         response?.all_employees ||
         response?.data?.all_employees ||
@@ -418,6 +455,8 @@ function filterOnSearch(skill) {
     } else {
       response = await searchAPI(textToSend);
 
+      if (!isMountedRef.current) return;
+
       const employees = response?.data || response?.employee || [];
 
       setSearchResult({ result: employees, viewModeCard: "card"})
@@ -427,7 +466,9 @@ function filterOnSearch(skill) {
   } catch (error) {
     console.error(error);
   } finally {
-    setIsLoading(false);
+    if (isMountedRef.current) {
+      setIsLoading(false);
+    }
   }
 };
 
@@ -462,13 +503,11 @@ function filterOnSearch(skill) {
   //   }
   // };
 
-  // console.log(messages);
-
   console.log("Card", searchResult);
   
   return (
     <>
-      <UploadResultsModal 
+      <UploadResultsModal
         show={showUploadModal}
         onClose={() => setShowUploadModal(false)}
         employees={tableEmployees}
@@ -834,8 +873,8 @@ function filterOnSearch(skill) {
                     type="checkbox" 
                     checked={deptFilters.cloud}
                     onChange={(e) => {
-                      setDeptFilters({...deptFilters, cloud: e.target.checked});
-                      setTimeout(() => filterOnDepartment(), 0);
+                      const newFilters = {...deptFilters, cloud: e.target.checked};
+                      setDeptFilters(newFilters);
                     }}
                   />
                   Cloud and Mobile Apps
@@ -845,8 +884,8 @@ function filterOnSearch(skill) {
                     type="checkbox" 
                     checked={deptFilters.vision}
                     onChange={(e) => {
-                      setDeptFilters({...deptFilters, vision: e.target.checked});
-                      setTimeout(() => filterOnDepartment(), 0);
+                      const newFilters = {...deptFilters, vision: e.target.checked};
+                      setDeptFilters(newFilters);
                     }}
                   />
                   Vision
@@ -856,8 +895,8 @@ function filterOnSearch(skill) {
                     type="checkbox" 
                     checked={deptFilters.others}
                     onChange={(e) => {
-                      setDeptFilters({...deptFilters, others: e.target.checked});
-                      setTimeout(() => filterOnDepartment(), 0);
+                      const newFilters = {...deptFilters, others: e.target.checked};
+                      setDeptFilters(newFilters);
                     }}
                   />
                   Others
@@ -912,7 +951,7 @@ function filterOnSearch(skill) {
               {/* <span className="material-symbols-outlined">smart_toy</span> */}
               <img src="/bubbles.svg" alt="" srcSet="" />
             </span>
-
+{/* 
             {!isExpanded ? (
               <span className="expand-icon" onClick={onExpand}>
                 <span className="material-symbols-outlined">open_in_full</span>
@@ -921,7 +960,7 @@ function filterOnSearch(skill) {
               <span className="expand-icon" onClick={onClose}>
                 ✕
               </span>
-            )}
+            )} */}
           </div>
           <div>
             <h3>
