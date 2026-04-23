@@ -14,6 +14,7 @@ import ErrorBoundary from './components/common/ErrorBoundary'
 import { setSessionExpiredCallback } from './services/api'
 import Schedule from './components/dashboard/Schedule'
 import AISuggestions from './pages/ai-suggestions/AISuggestions'
+import { websocketService } from './services/websocket'
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = sessionStorage.getItem('authToken');
@@ -39,10 +40,16 @@ const App = () => {
     setSessionExpiredCallback(() => {
       setShowSessionExpired(true);
     });
+    
+    // Connect WebSocket if user is already authenticated
+    if (sessionStorage.getItem('authToken')) {
+      websocketService.connect();
+    }
   }, []);
 
   const handleSessionExpiredClose = () => {
     setShowSessionExpired(false);
+    websocketService.disconnect();
     navigate('/login');
   };
 

@@ -179,7 +179,7 @@
 }
 
 .icon-btn:hover span, .icon-btn.active span {
-  color: var(--color-primary);
+  /* color: var(--color-primary); */
 }
 
 .icon-svg {
@@ -278,13 +278,15 @@
 
 .notif-badge {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 8px;
-  height: 8px;
+  top: 0;
+  right: 0;
+  width: 18px;
+  height: 18px;
   background: var(--color-primary-soft);
   border-radius: 50%;
-  border: 2px solid var(--color-bg-topbar);
+  color: var(--color-text-inverse);
+  font-size: 10px;
+  padding: 3px;
 }
 
 .notif-dropdown {
@@ -381,7 +383,7 @@
   padding-top: 3px;;
 }
 
-.icon-btn span {
+.icon-btn i {
   font-size: 22px;
 }
 
