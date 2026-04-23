@@ -1,12 +1,11 @@
-import { useState, useMemo, useEffect } from "react";
-import { Icons } from "../../assets/icons";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import "./Dashboard.css";
 import "./Schedule.css";
 import { useScheduleNotification } from "../../context/scheduleNotificationContext";
 
 const Schedule = () => {
-  const { notifications, scheduleData, markAsRead, deleteNotifications, markMultipleAsRead } = useScheduleNotification();
+  const { notifications, markAsRead, markAsUnread, deleteNotifications, markMultipleAsRead } = useScheduleNotification();
   const location = useLocation();
   
   // --- STATE FOR EXPANDED VIEW ---
@@ -20,9 +19,6 @@ const Schedule = () => {
       setExpandedTab('notification');
     }
   }, [location.state]);
-
-  // --- SHARED DATA ---
-  const expandedScheduleData = scheduleData.schedule;
 
   // --- LOGIC FOR EXPANDED VIEW (Calendar) ---
   const renderCalendarDays = () => {
@@ -66,15 +62,6 @@ const Schedule = () => {
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 
                     'July', 'August', 'September', 'October', 'November', 'December'];
     return `${months[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
-  };
-
-  const parseTime = (timeStr) => {
-    const [time, period] = timeStr.split(' ');
-    const [hours, minutes] = time.split(':');
-    let hour = parseInt(hours);
-    if (period === 'PM' && hour !== 12) hour += 12;
-    if (period === 'AM' && hour === 12) hour = 0;
-    return hour;
   };
 
   // Get current time for red line indicator
@@ -132,7 +119,7 @@ const Schedule = () => {
           {/* HEADER AT TOP */}
           <header className="timeline-header">
             <div className="date-title">
-              <h2>September 18, Tuesday <span className="text-light">2022</span></h2>
+              <h2>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} <span className="text-light">{new Date().getFullYear()}</span></h2>
             </div>
             <div className="header-actions">
               <button className="btn-nav">‹</button>
@@ -168,25 +155,6 @@ const Schedule = () => {
                     </div>
                   )}
 
-                  {/* Events */}
-                  {expandedScheduleData
-                    .filter((e) => parseTime(e.time) === hour)
-                    .map((event, idx) => (
-                      <div 
-                        key={idx} 
-                        className={`event-card ${event.category} ${event.status ? 'rescheduled' : ''}`}
-                      >
-                        <div className="event-header-row">
-                          <div className="event-title">{event.name}</div>
-                          {event.status && (
-                            <span className="event-status">{event.status}</span>
-                          )}
-                        </div>
-                        <div className="event-meta">
-                          {event.time} · {event.role}
-                        </div>
-                      </div>
-                    ))}
                 </div>
               </div>
             ))}
@@ -212,12 +180,7 @@ const Schedule = () => {
 
           <div className="day-summary-list">
             <h4>Scheduled for this day:</h4>
-            {expandedScheduleData.map((event, idx) => (
-              <div key={idx} className="summary-card">
-                <h5>{event.name}</h5>
-                <p>{event.time} · {event.role}</p>
-              </div>
-            ))}
+            <div className="notif-empty">No schedule data available</div>
           </div>
         </div>
       </div>
@@ -268,12 +231,7 @@ const Schedule = () => {
             {notifications.map(notif => (
               <div 
                 key={notif.id} 
-                className={`notif-row ${notif.read ? 'read' : 'unread'} ${selectedNotifs.includes(notif.id) ? 'selected' : ''}`}
-                onClick={(e) => {
-                  if (e.target.type !== 'checkbox') {
-                    markAsRead(notif.id);
-                  }
-                }}
+                className={`notif-row ${notif.read ? 'unread' : 'read'} ${selectedNotifs.includes(notif.id) ? 'selected' : ''}`}
               >
                 <label className="checkbox-wrapper" onClick={(e) => e.stopPropagation()}>
                   <input 
@@ -288,8 +246,22 @@ const Schedule = () => {
                 <div className="notif-body">
                   <h4>{notif.title}</h4>
                   <p>{notif.text}</p>
-                  <span className="notif-time">{notif.time}</span>
+                  <span className="notif-time">{notif.time
+                              ? new Date(notif.time).toLocaleString("en-IN", {
+                                  dateStyle: "medium",
+                                  timeStyle: "short",
+                                })
+                              : "—"}</span>
                 </div>
+                <button
+                  className="icon-btn notif-toggle-btn"
+                  title={notif.read ? 'Mark as unread' : 'Mark as read'}
+                  onClick={() => notif.read ? markAsUnread(notif.id) : markAsRead(notif.id)}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+                    {notif.read ? 'mark_email_unread' : 'mark_email_read'}
+                  </span>
+                </button>
               </div>
             ))}
           </div>
