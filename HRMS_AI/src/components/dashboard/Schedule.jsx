@@ -251,9 +251,10 @@ const Schedule = () => {
                   <h4>{notif.title}</h4>
                   <p>{notif.text}</p>
                   <span className="notif-time">{notif.time
-                              ? new Date(notif.time).toLocaleString("en-IN", {
+                              ? new Date(notif.time + "Z").toLocaleString("en-IN", {
                                   dateStyle: "medium",
                                   timeStyle: "short",
+                                  timeZone: "Asia/Kolkata",
                                 })
                               : "—"}</span>
                 </div>
