@@ -11,6 +11,8 @@ import SearchLoadingAnimation from "./SearchLoadingAnimation";
 import { searchAPI } from "../../services/api";
 import { EmployeeContext } from "../../context/employeeContext";
 import { useScheduleNotification } from "../../context/scheduleNotificationContext";
+import { websocketService } from "../../services/websocket";
+import { getNotificationCount } from "../../services/api";
 
 const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
   const { notifications, fetchNotifications, markAllAsRead } = useScheduleNotification();
@@ -18,6 +20,7 @@ const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
   const location = useLocation();
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [showAvatarDropdown, setShowAvatarDropdown] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
   const [searchValue, setSearchValue] = useState('');
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -39,7 +42,22 @@ const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
   useEffect(() => {
     const storedUsername = sessionStorage.getItem('username');
     setUsername(storedUsername || 'User');
+    
+    // Fetch initial notification count
+    fetchNotificationCount();
+    
+    // Set up WebSocket notification callback
+    websocketService.setNotificationCallback(fetchNotificationCount);
   }, []);
+
+  const fetchNotificationCount = async () => {
+    try {
+      const response = await getNotificationCount();
+      setNotificationCount(response.count || 0);
+    } catch (error) {
+      console.error('Failed to fetch notification count:', error);
+    }
+  };
 
 
 
@@ -70,6 +88,7 @@ const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
   };
 
   const handleLogout = () => {
+    websocketService.disconnect();
     sessionStorage.removeItem('authToken');
     sessionStorage.removeItem('username');
     navigate('/login');
@@ -137,13 +156,21 @@ const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
   }, []);
 
   const today = new Date();
+  // const curr_day = today.toLocaleDateString("en-CA");
 
   const day = today.getDate();
   const weekday = today.toLocaleDateString("en-US", { weekday: "short" });
   const month = today.toLocaleDateString("en-US", { month: "long" });
 
-  const unreadNotifications = notifications.filter(n => !n.read);
-  const hasUnread = unreadNotifications.length > 0;
+  const unreadNotifications = notifications.filter((notif) => {
+    if (notif.read) return false;
+    return true;
+    // const notifDate = new Date(notif.time)
+    //   .toLocaleDateString("en-CA");
+
+    // return notifDate === curr_day;
+  });
+  const hasUnread = notificationCount > 0;
 
   return (
     <header className="topbar">
@@ -294,14 +321,14 @@ const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
               setShowNotifDropdown(!showNotifDropdown);
             }}
           >
-            <span className="material-symbols-outlined">notifications</span>
-            {hasUnread && <span className="notif-badge"></span>}
+            <i className="material-symbols-outlined">notifications</i>
+            {hasUnread && <span className="notif-badge">{notificationCount}</span>}
           </button>
           {showNotifDropdown && (
             <div className="notif-dropdown">
               <div className="notif-dropdown-header">
                 <h4>Notifications</h4>
-                {unreadNotifications.length > 0 && (
+                {notificationCount > 0 && (
                   <button
                     className="mark-all-read"
                     onClick={() => markAllAsRead()}

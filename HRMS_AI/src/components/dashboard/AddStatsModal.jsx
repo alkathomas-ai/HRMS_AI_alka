@@ -77,7 +77,7 @@ const AddStatsModal = ({ isOpen, onClose, onAdd }) => {
       
       // Reset form
       setLabel('');
-      setSelectedIcon('fa-solid fa-chart-bar');
+      setSelectedIcon('fa-solid fa-users');
       setPrompt('');
       onClose();
     } catch (err) {
@@ -159,8 +159,8 @@ const AddStatsModal = ({ isOpen, onClose, onAdd }) => {
         </div>
         
         <div className="modal-footer">
-          <button className="btn-generate" onClick={handleSubmit} disabled={loading || !label.trim() || !prompt.trim()}>
-            {loading ? 'Generating...' : 'Generate Stat'}
+          <button className="btn-generate" onClick={handleSubmit} disabled={loading}>
+            {loading ? 'Generating...' : 'Generate'}
           </button>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import dummyUploadData from '../data/dummyUploadData';
+import { websocketService } from './websocket';
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 let sessionExpiredCallback = null;
@@ -25,6 +25,7 @@ axios.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      websocketService.disconnect();
       sessionStorage.removeItem('authToken');
       if (sessionExpiredCallback) {
         sessionExpiredCallback();
@@ -78,7 +79,7 @@ export async function uploadAPI(formData) {
   } catch (error) {
     console.log(error);
     console.log("Backend not available. Using dummy data.");
-    return dummyUploadData; 
+    throw error; 
   }
 }
 
@@ -121,6 +122,17 @@ export async function getEmployeeCount() {
 export async function getSoonAvailableEmployees() {
   try {
     const response = await axios.get(`${BASE_URL}/available_employees?month_threshold=3`);
+    console.log(response.data)
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getLowOccupancyEmployees(occupancy, long_term_threshold) {
+    try {
+    const response = await axios.get(`${BASE_URL}/low_occupancy_employees?occupancy_threshold=${occupancy}&long_term_extension_months
+=${long_term_threshold}`);
     console.log(response.data)
     return response.data;
   } catch (error) {
@@ -334,6 +346,16 @@ export async function markAsUnreadNotifications(ids) {
 export async function deleteNotifications(ids) {
   try {
     const response = await axios.delete(`${BASE_URL}/notification/delete`, { data: { ids } });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function getNotificationCount() {
+  try {
+    const response = await axios.get(`${BASE_URL}/notification/count`);
     return response.data;
   } catch (error) {
     console.error(error);

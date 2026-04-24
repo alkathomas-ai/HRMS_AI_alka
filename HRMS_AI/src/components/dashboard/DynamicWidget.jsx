@@ -181,7 +181,7 @@ const DynamicWidget = ({ widgetData }) => {
                 )}
               </div>
             </div>
-            <div style={{ flex: 1, overflow: 'auto' }}>
+            <div className="table-scroll-container">
               <table className='dynmaic-table' style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                   <tr>

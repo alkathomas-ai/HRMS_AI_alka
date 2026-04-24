@@ -262,7 +262,7 @@ const Schedule = () => {
                   title={notif.read ? 'Mark as unread' : 'Mark as read'}
                   onClick={() => notif.read ? markAsUnread(notif.id) : markAsRead(notif.id)}
                 >
-                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+                  <span className="material-symbols-outlined">
                     {notif.read ? 'mark_email_unread' : 'mark_email_read'}
                   </span>
                 </button>

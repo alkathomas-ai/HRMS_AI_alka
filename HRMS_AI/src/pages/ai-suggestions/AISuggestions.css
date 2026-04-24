@@ -251,7 +251,7 @@
   transition: all 0.15s;
 }
 .panel-close-btn:hover { background: var(--color-bg-muted); color: var(--color-text-primary); }
-.panel-close-btn .material-symbols-outlined { font-size: 18px; }
+/* .panel-close-btn .material-symbols-outlined { font-size: 18px; } */
 
 .panel-body {
   flex: 1;

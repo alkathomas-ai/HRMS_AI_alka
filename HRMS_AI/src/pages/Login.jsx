@@ -6,6 +6,7 @@ import ThemeToggle from "../components/navbar/ThemeToggle";
 import { loginApi } from "../services/api";
 import { Eye, EyeOff, ArrowRight, User, Lock } from "lucide-react";
 import { OnboardingIllustration, AnalyticsIllustration, TalentMatchingIllustration } from "../components/illustrations/HRMSIllustrations";
+import { websocketService } from "../services/websocket";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -83,6 +84,7 @@ const Login = () => {
           localStorage.removeItem('rememberedPassword');
         }
       }
+      websocketService.connect();
       navigate("/");
     } catch (error) {
       setError(error.response?.data?.message || "Invalid credentials");
@@ -138,7 +140,7 @@ const Login = () => {
   
             <div>
               <form onSubmit={handleSubmit} className="login-form">
-                {error && <div className="error-message">{error}</div>}
+                {error && <div className="login-error-message">{error}</div>}
       
                 <div className="form-group">
                   <label htmlFor="username">Username</label>

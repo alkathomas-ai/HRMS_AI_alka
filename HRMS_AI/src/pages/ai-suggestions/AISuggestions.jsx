@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { getProjectRequirements, addProjectRequirement, editProjectRequirement, getProjects, deleteProjectRequirement, generateResourceSuggestion, showResourceSuggestion } from "../../services/api";
-import dummySuggestions from "../../data/dummySuggestions";
 import "../D.css";
 import "./AISuggestions.css";
 import { useToast } from "../../context/ToastContext";
@@ -19,7 +18,6 @@ const SuggestionCard = ({
     display_name,
     designation,
     employee_id,
-    employee_department,
     emp_location,
     tech_group,
     total_exp,
@@ -519,7 +517,7 @@ const AISuggestions = () => {
                 </div>
                 <button className="primary-btn" onClick={handleAddNew}>
                   Add Requirement
-                  <i class="fa-solid fa-folder-plus"></i>
+                  <i className="fa-solid fa-folder-plus"></i>
                 </button>
               </div>
     
