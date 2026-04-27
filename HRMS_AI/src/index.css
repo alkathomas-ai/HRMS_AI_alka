@@ -151,6 +151,11 @@ body {
 .d-block{
     display: block;
 }
+
+.gap-5 {
+  gap: 5px;
+}
+
 .btn-primary{
   background: none;
   border: none;

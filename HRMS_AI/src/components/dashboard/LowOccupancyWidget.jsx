@@ -114,7 +114,7 @@ const LowOccupancyWidget = ({ openModal }) => {
                   <div className="project-occupancy-item">
                     { employee.projects?.map((p, i)=>(
                         <div key={i} className="occupancy-info">
-                          <div>
+                          <div className='d-flex gap-5'>
                             <span>{p.project_name}</span>
                             <span className="occupancy-badge">
                               {p.occupancy}%
