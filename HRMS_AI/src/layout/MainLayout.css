@@ -1,7 +1,9 @@
 .page-content {
     height: calc(100vh - 72px);
     margin-left: 80px;
-    overflow-y: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 @media (max-width: 768px) {
