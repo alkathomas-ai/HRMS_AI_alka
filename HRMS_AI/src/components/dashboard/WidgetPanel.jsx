@@ -51,6 +51,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     const saved = localStorage.getItem('selectedWidgets');
     return saved ? JSON.parse(saved) : ['project-carousel', 'project-distribution', 'department-overview', 'employee-directory', 'available-employees', 'world-map'];
   });
+  const [previousSelectedWidgets, setPreviousSelectedWidgets] = useState([]);
   const [pinnedWidgets, setPinnedWidgets] = useState(() => {
     const saved = localStorage.getItem('pinnedWidgets');
     return saved ? JSON.parse(saved) : [];
@@ -271,47 +272,76 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const [projects, departments, employees, counts, availableEmployees, aiSuggestions] = await Promise.all([
-          getProjectDistributions(),
-          getDepartment(),
-          getEmployeeDirectory(),
-          getEmployeeCount(),
-          getSoonAvailableEmployees(),
-          getFreepoolProjectSuggestions()
-        ]);
+        const apiCalls = [];
+        
+        // Only call APIs for widgets that are actually selected
+        if (selectedWidgets.includes('project-distribution')) {
+          apiCalls.push(getProjectDistributions().then(data => ({ type: 'projects', data })));
+        }
+        if (selectedWidgets.includes('department-overview')) {
+          apiCalls.push(getDepartment().then(data => ({ type: 'departments', data })));
+        }
+        if (selectedWidgets.includes('employee-directory')) {
+          apiCalls.push(getEmployeeDirectory().then(data => ({ type: 'employees', data })));
+        }
+        if (selectedWidgets.includes('available-employees')) {
+          apiCalls.push(getSoonAvailableEmployees().then(data => ({ type: 'availableEmployees', data })));
+        }
+        if (selectedWidgets.includes('project-carousel') || selectedWidgets.includes('upskill-suggestions')) {
+          apiCalls.push(getFreepoolProjectSuggestions().then(data => ({ type: 'aiSuggestions', data })));
+        }
+        
+        // Always fetch counts for header stats
+        apiCalls.push(getEmployeeCount().then(data => ({ type: 'counts', data })));
+        
+        const results = await Promise.all(apiCalls);
         setIsLoading(false);
 
-        setFreepoolUpSkillProjectSuggestions(aiSuggestions.upskill_suggestions)
-        setFreepoolProjectSuggestions(aiSuggestions.project_suggestions)
-        console.log("freepoolProjectSuggestions", freepoolProjectSuggestions,aiSuggestions.project_suggestions                 )
-        setProjectDistribution({ projects: projects.projects, total_employees: projects.total_employees });
-        setDepartmentData({ departments: departments.departments });
-        setEmployeeDirectory({ employees: employees.employees });
-        setSoonAvailableEmployees(availableEmployees?.data || []);
-        setEmployeeCount({
-          employeeCount: counts.employee_count || 0,
-          projectCount: counts.project_count || 0,
-          freepoolCount: counts.freepool_count || 0
+        // Process results
+        results.forEach(result => {
+          switch (result.type) {
+            case 'projects':
+              setProjectDistribution({ projects: result.data.projects, total_employees: result.data.total_employees });
+              break;
+            case 'departments':
+              setDepartmentData({ departments: result.data.departments });
+              break;
+            case 'employees':
+              setEmployeeDirectory({ employees: result.data.employees });
+              break;
+            case 'availableEmployees':
+              setSoonAvailableEmployees(result.data?.data || []);
+              if (result.data?.data?.length) {
+                const sorted = [...result.data.data]
+                  .filter(emp => emp.committed_relieving_date)
+                  .sort((a, b) => new Date(a.committed_relieving_date) - new Date(b.committed_relieving_date));
+                setActiveReleaseDate(sorted[0]?.committed_relieving_date);
+              }
+              break;
+            case 'aiSuggestions':
+              setFreepoolUpSkillProjectSuggestions(result.data.upskill_suggestions);
+              setFreepoolProjectSuggestions(result.data.project_suggestions);
+              break;
+            case 'counts':
+              setEmployeeCount({
+                employeeCount: result.data.employee_count || 0,
+                projectCount: result.data.project_count || 0,
+                freepoolCount: result.data.freepool_count || 0
+              });
+              break;
+          }
         });
-        if (availableEmployees?.data?.length) {
-          const sorted = [...availableEmployees.data]
-            .filter(emp => emp.committed_relieving_date)
-            .sort((a, b) =>
-              new Date(a.committed_relieving_date) -
-              new Date(b.committed_relieving_date)
-            );
-
-          setActiveReleaseDate(sorted[0]?.committed_relieving_date);
-        }
 
       } catch (error) {
         console.error('Error fetching data:', error);
+        setIsLoading(false);
       }
     };
     
-    // Fetch data when expanded or on initial mount if not explicitly minimized
-    if (isExpanded || isExpanded === null) {
+    // Initial load - fetch all selected widgets
+    if ((isExpanded || isExpanded === null) && previousSelectedWidgets.length === 0) {
       fetchData();
+      setPreviousSelectedWidgets(selectedWidgets);
     }
 
     const updateWidth = () => {
@@ -344,6 +374,73 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
       }
     };
   }, [isExpanded]);
+
+  // Separate effect to handle widget changes
+  useEffect(() => {
+    const fetchNewWidgetData = async (newWidgetId) => {
+      try {
+        let apiCall = null;
+        
+        switch (newWidgetId) {
+          case 'project-distribution':
+            apiCall = getProjectDistributions().then(data => {
+              setProjectDistribution({ projects: data.projects, total_employees: data.total_employees });
+            });
+            break;
+          case 'department-overview':
+            apiCall = getDepartment().then(data => {
+              setDepartmentData({ departments: data.departments });
+            });
+            break;
+          case 'employee-directory':
+            apiCall = getEmployeeDirectory().then(data => {
+              setEmployeeDirectory({ employees: data.employees });
+            });
+            break;
+          case 'available-employees':
+            apiCall = getSoonAvailableEmployees().then(data => {
+              setSoonAvailableEmployees(data?.data || []);
+              if (data?.data?.length) {
+                const sorted = [...data.data]
+                  .filter(emp => emp.committed_relieving_date)
+                  .sort((a, b) => new Date(a.committed_relieving_date) - new Date(b.committed_relieving_date));
+                setActiveReleaseDate(sorted[0]?.committed_relieving_date);
+              }
+            });
+            break;
+          case 'project-carousel':
+          case 'upskill-suggestions':
+            // Only call if we don't already have the data
+            if (freepoolProjectSuggestions.length === 0 && upSkillProjectSuggestions.length === 0) {
+              apiCall = getFreepoolProjectSuggestions().then(data => {
+                setFreepoolUpSkillProjectSuggestions(data.upskill_suggestions);
+                setFreepoolProjectSuggestions(data.project_suggestions);
+              });
+            }
+            break;
+        }
+        
+        if (apiCall) {
+          await apiCall;
+        }
+      } catch (error) {
+        console.error(`Error fetching data for widget ${newWidgetId}:`, error);
+      }
+    };
+
+    // Detect newly added widgets
+    if (previousSelectedWidgets.length > 0) {
+      const addedWidgets = selectedWidgets.filter(widget => !previousSelectedWidgets.includes(widget));
+      
+      if (addedWidgets.length > 0) {
+        addedWidgets.forEach(widgetId => {
+          fetchNewWidgetData(widgetId);
+        });
+      }
+    }
+    
+    setPreviousSelectedWidgets(selectedWidgets);
+  }, [selectedWidgets]);
 
   const toggleWidget = (widgetId) => {
     if (selectedWidgets.includes(widgetId)) {
