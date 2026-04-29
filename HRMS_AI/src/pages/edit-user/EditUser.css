@@ -1,13 +1,11 @@
 .edit-user-container {
     padding: 20px;
-    /* max-width: 1400px; */
-    height: 100%;
-    /* margin: 0 auto; */
-    overflow: auto;
-    /* background: var(--color-bg-muted); */
-    /* background: linear-gradient(var(--grad-angle), var(--color-bg-dashboard) 0%, var(--color-bg-dashboard) 50%, var(--color-primary-light) 100%);
-    animation: rotateGradient 10s ease-in-out infinite alternate; */
-    background-color: var(--color-bg-dashboard);
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 }
 
 .edit-user-header {
@@ -52,10 +50,10 @@
 
 .material-table-container {
     background: var(--color-bg-card);
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
     overflow: auto;
-    height: calc(100% - 62px);
+    flex: 1;
+    min-height: 0;
 }
 
 .material-table {
@@ -69,11 +67,14 @@
     top: 0;
     z-index: 5;
     background: var(--color-bg-muted);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
 }
 .edit-user-not-overflow-container {
-    overflow: auto;
-    height: 100%;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .edit-user-not-overflow-container ::-webkit-scrollbar {
@@ -81,7 +82,7 @@
 }
 
 .material-table th {
-    padding: 16px 20px;
+    padding: 12px;
     text-align: left;
     font-weight: 600;
     color: var(--color-text-primary);
@@ -92,7 +93,7 @@
 }
 
 .material-table td {
-    padding: 16px 20px;
+    padding: 12px;
     border: 1px solid var(--color-bg-muted);
     vertical-align: middle;
     color: var(--color-text-primary);
@@ -151,9 +152,10 @@
 
 .skills-container {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 6px;
     align-items: center;
+    overflow: hidden;
 }
 
 .skill-chip {
@@ -167,6 +169,7 @@
 }
 
 .more-skills-btn {
+    flex-shrink: 0;
     background: var(--color-bg-muted);
     color: var(--color-text-secondary);
     border: none;
@@ -535,7 +538,7 @@
     position: sticky;
     top: 0;
     z-index: 10;
-    background: var(--color-bg-dashboard);
+    /* background: var(--color-bg-dashboard); */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -673,4 +676,5 @@
 
 .skills-cell {
     width: 60%;
+    max-width: 600px;
 }

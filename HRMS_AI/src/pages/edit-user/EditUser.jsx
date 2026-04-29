@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useLayoutEffect } from 'react'
 import './EditUser.css'
 import { Icons } from '../../assets/icons'
 import { getEmployeeDirectory, getEmployeesPaginated, updateEmployeeSkills } from '../../services/api'
@@ -146,12 +146,68 @@ const EditUser = () => {
     }
   };
 
-  const getVisibleSkillsCount = (skills) => {
-    if (!skills) return 0;
-    const skillsArray = skills.split(',');
-    // Estimate based on average skill length and available space
-    // Show more skills but cap at a reasonable number for table display
-    return Math.min(skillsArray.length, 5);
+  const getVisibleSkillsCount = (employee) => 3;
+
+  const SkillsCell = ({ skillSet, expanded, onToggle, onDoubleClick }) => {
+    const containerRef = useRef(null);
+    const [visibleCount, setVisibleCount] = useState(null);
+    const skillsArray = skillSet ? skillSet.split(',').map(s => s.trim()).filter(s => s) : [];
+
+    useLayoutEffect(() => {
+      if (!containerRef.current) return;
+      const measure = () => {
+        if (expanded) { setVisibleCount(null); return; }
+        const container = containerRef.current;
+        const allChips = Array.from(container.querySelectorAll('.skill-chip[data-measure="true"]'));
+        if (!allChips.length) return;
+        const containerWidth = container.offsetWidth;
+        const btnWidth = 52;
+        const gap = 6;
+        let used = 0, count = 0;
+        for (const chip of allChips) {
+          const w = chip.offsetWidth + gap;
+          if (used + w + btnWidth > containerWidth) break;
+          used += w;
+          count++;
+        }
+        setVisibleCount(count || 1);
+      };
+      measure();
+      const ro = new ResizeObserver(measure);
+      ro.observe(containerRef.current);
+      return () => ro.disconnect();
+    }, [skillSet, expanded]);
+
+    if (!skillsArray.length) return null;
+    const count = visibleCount ?? 0;
+    const remaining = skillsArray.length - count;
+
+    return (
+      <div
+        ref={containerRef}
+        className='skills-container'
+        onDoubleClick={onDoubleClick}
+        title="Double-click to edit"
+        style={{ cursor: 'text', flexWrap: expanded ? 'wrap' : 'nowrap' }}
+      >
+        {/* hidden chips for measurement */}
+        {!expanded && skillsArray.map((skill, i) => (
+          <span key={`m-${i}`} data-measure="true" className='skill-chip' style={{ position: 'absolute', visibility: 'hidden', pointerEvents: 'none' }}>{skill}</span>
+        ))}
+        {/* visible chips */}
+        {(expanded ? skillsArray : skillsArray.slice(0, count)).map((skill, i) => (
+          <span key={i} className='skill-chip'>{skill}</span>
+        ))}
+        {!expanded && (
+          <button className="more-skills-btn" style={{ flexShrink: 0 }} onClick={(e) => { e.stopPropagation(); onToggle(); }}>
+            {remaining > 0 ? `+${remaining}` : `+0`}
+          </button>
+        )}
+        {expanded && (
+          <button className="more-skills-btn" style={{ flexShrink: 0 }} onClick={(e) => { e.stopPropagation(); onToggle(); }}>Less</button>
+        )}
+      </div>
+    );
   };
 
   const handleCancelEdit = async () => {
@@ -201,8 +257,8 @@ const EditUser = () => {
 
   return (
     <>
-      <div className='edit-user-container'>
-        <div className="edit-user-not-overflow-container">
+    <div className='edit-user-container'>
+      <div className='edit-user-not-overflow-container'>
           <div className='edit-user-header'>
             <h2>Edit Employee Skills</h2>
           </div>
@@ -364,44 +420,13 @@ const EditUser = () => {
                                 </div> */}
                               </div>
                             ) : (
-                              <div 
-                                className='skills-container'
+                              <SkillsCell
+                                skillSet={employee.skill_set}
+                                employeeId={employee.employee_id}
+                                expanded={expandedEmployeeId === employee.employee_id}
+                                onToggle={() => setExpandedEmployeeId(expandedEmployeeId === employee.employee_id ? null : employee.employee_id)}
                                 onDoubleClick={() => handleStartEdit(employee)}
-                                style={{ cursor: 'text' }}
-                                title="Double-click to edit"
-                              >
-                                {employee.skill_set && (() => {
-                                  const skillsArray = employee.skill_set.split(',');
-                                  const visibleCount = expandedEmployeeId === employee.employee_id ? skillsArray.length : getVisibleSkillsCount(employee.skill_set);
-                                  
-                                  return (
-                                    <>
-                                      {skillsArray.slice(0, visibleCount).map((skill, i) => (
-                                        <span key={i} className='skill-chip'>
-                                          {skill.trim()}
-                                        </span>
-                                      ))}
-                                      {skillsArray.length > visibleCount && (
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setExpandedEmployeeId(
-                                              expandedEmployeeId === employee.employee_id
-                                                ? null
-                                                : employee.employee_id
-                                            );
-                                          }}
-                                          className="more-skills-btn"
-                                        >
-                                          {expandedEmployeeId === employee.employee_id
-                                            ? 'Less'
-                                            : `+${skillsArray.length - visibleCount}`}
-                                        </button>
-                                      )}
-                                    </>
-                                  );
-                                })()}
-                              </div>
+                              />
                             )}
                           </td>
                         </tr>
@@ -414,12 +439,11 @@ const EditUser = () => {
               </div>
             </>
           )}
-        </div>
-      </div>
-      
-      <ConfirmationModal />
 
-      {/* Candidate Profile Modal */}
+      </div>
+    </div>
+
+      <ConfirmationModal />
       <CandidateProfileModal
         isOpen={isModalOpen}
         onClose={closeModal}
