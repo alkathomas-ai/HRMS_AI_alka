@@ -17,8 +17,8 @@
     var(--color-bg-dashboard) 50%,
     #f04d4d3b 100%
   ); */
-  background: linear-gradient(var(--grad-angle), var(--color-bg-dashboard) 0%, var(--color-bg-dashboard) 50%, var(--color-primary-light) 100%);
-  animation: rotateGradient 10s ease-in-out infinite alternate;
+  /* background: linear-gradient(var(--grad-angle), var(--color-bg-dashboard) 0%, var(--color-bg-dashboard) 50%, var(--color-primary-light) 100%);
+  animation: rotateGradient 10s ease-in-out infinite alternate; */
 }
 
 @keyframes rotateGradient {
@@ -49,7 +49,7 @@
   grid-template-columns: 370px 1fr;
   gap: 32px;
   height: calc(100vh - 72px);
-  padding: 20px 0 20px 20px;
+  /* padding: 20px 0 20px 20px; */
   /* padding-top: 92px; */
 }
 
@@ -65,7 +65,7 @@
 .dashboard-right {
   height: 100%;
   overflow-y: auto;
-  padding-right: 20px;
+  /* padding-right: 20px; */
 }
 
 /* Welcome Section */

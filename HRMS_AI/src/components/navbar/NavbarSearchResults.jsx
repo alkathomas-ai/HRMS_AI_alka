@@ -2,7 +2,6 @@ import { useState, useContext, useRef, useEffect, useMemo } from "react";
 import { EmployeeContext } from "../../context/employeeContext";
 import "../dashboard/SearchAssistant.css";
 import "./NavbarSearchResults.css";
-import "../../pages/D.css";
 
 const NavbarSearchResults = ({ searchQuery }) => {
   const { searchResult } = useContext(EmployeeContext);
