@@ -13,6 +13,7 @@ const EditUser = () => {
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [showAllSkills, setShowAllSkills] = useState(false);
   const [expandedEmployeeId, setExpandedEmployeeId] = useState(null);
+  const [openDropdownId, setOpenDropdownId] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [editingEmployee, setEditingEmployee] = useState(null);
@@ -117,7 +118,41 @@ const EditUser = () => {
     const skillsArray = employee.skill_set ? employee.skill_set.split(',').map(s => s.trim()).filter(s => s) : [];
     setEditingSkills(skillsArray);
     setNewSkillInput('');
+    setOpenDropdownId(null); // Close dropdown when starting edit
   };
+
+  const handleDropdownToggle = (employeeId, event) => {
+    event.stopPropagation();
+    setOpenDropdownId(openDropdownId === employeeId ? null : employeeId);
+  };
+
+  const handleDropdownAction = (action, employee, event) => {
+    event.stopPropagation();
+    setOpenDropdownId(null);
+    
+    switch (action) {
+      case 'edit':
+        handleStartEdit(employee);
+        break;
+      case 'view':
+        openModal(employee.employee_id);
+        break;
+      default:
+        break;
+    }
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setOpenDropdownId(null);
+    };
+    
+    if (openDropdownId) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [openDropdownId]);
 
   const handleSaveEdit = async (employee, skillsToSave, showToast = false, closeEditor = true) => {
     try {
@@ -279,60 +314,6 @@ const EditUser = () => {
                     onChange={(e) => handleSearch(e.target.value.replace(/\s+/g, ' ').trimStart())}
                   />
                 </div>
-                {!isSearching && (
-                  <div className='search-results-pagination'>
-                    <div className="rows-selector">
-                      <span>Rows per page:</span>
-                      <div className="custom-select-wrapper">
-                        <div 
-                          className="select-trigger"
-                          onClick={() => setIsRowsDropdownOpen(!isRowsDropdownOpen)}
-                        >
-                          <span>{itemsPerPage}</span>
-                          <span className="material-symbols-outlined">
-                            {isRowsDropdownOpen ? 'expand_less' : 'expand_more'}
-                          </span>
-                        </div>
-                        {isRowsDropdownOpen && (
-                          <div className="dropdown-menu">
-                            {[10, 15, 25].map(value => (
-                              <div 
-                                key={value}
-                                className="option"
-                                onClick={() => {
-                                  setItemsPerPage(value);
-                                  setCurrentPage(1);
-                                  setIsRowsDropdownOpen(false);
-                                }}
-                              >
-                                {value}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="pagination-info">
-                      Showing {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, totalEmployees)} of {totalEmployees} employees
-                    </div>
-                    <div className="pagination-controls">
-                      <button
-                        className="page-btn"
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                        disabled={currentPage === 1}
-                      >
-                        <span className="material-symbols-outlined">chevron_left</span>
-                      </button>
-                      <button
-                        className="page-btn"
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                      >
-                        <span className="material-symbols-outlined">chevron_right</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
               </div>
               <div className='material-table-container'>
                 {Array.isArray(isSearching ? filteredEmployees : employees) && (isSearching ? filteredEmployees : employees).length > 0 ? (
@@ -343,6 +324,7 @@ const EditUser = () => {
                         <th>ID</th>
                         <th>Designation</th>
                         <th>Skills <i className="fa-solid fa-circle-info info-icon" title="Double-click to edit skills"></i></th>
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -402,22 +384,6 @@ const EditUser = () => {
                                     autoFocus
                                   />
                                 </div>
-                                {/* <div className="skills-edit-actions">
-                                  <button
-                                    type="button"
-                                    className="save-skills-btn"
-                                    onClick={() => handleSaveEdit(employee)}
-                                  >
-                                    Save
-                                  </button>
-                                  <button
-                                    type="button"
-                                    className="cancel-skills-btn"
-                                    onClick={handleCancelEdit}
-                                  >
-                                    Cancel
-                                  </button>
-                                </div> */}
                               </div>
                             ) : (
                               <SkillsCell
@@ -429,6 +395,33 @@ const EditUser = () => {
                               />
                             )}
                           </td>
+                          <td className="actions-cell">
+                            <div className="action-dropdown-container">
+                              <button
+                                className="action-menu-btn"
+                                onClick={(e) => handleDropdownToggle(employee.employee_id, e)}
+                                title="More actions"
+                              >
+                                <span className="material-symbols-outlined">more_vert</span>
+                              </button>
+                              {openDropdownId === employee.employee_id && (
+                                <div className="action-dropdown-menu">
+                                  <button
+                                    className="dropdown-item"
+                                    onClick={(e) => handleDropdownAction('edit', employee, e)}
+                                  >
+                                    Edit Skills
+                                  </button>
+                                  <button
+                                    className="dropdown-item"
+                                    onClick={(e) => handleDropdownAction('view', employee, e)}
+                                  >
+                                    View Profile
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -437,6 +430,60 @@ const EditUser = () => {
                   <div className="no-data">No employees found</div>
                 )}
               </div>
+              {!isSearching && (
+                <div className='bottom-pagination'>
+                  <div className="rows-selector">
+                    <span>Rows per page:</span>
+                    <div className="custom-select-wrapper">
+                      <div 
+                        className="select-trigger"
+                        onClick={() => setIsRowsDropdownOpen(!isRowsDropdownOpen)}
+                      >
+                        <span>{itemsPerPage}</span>
+                        <span className="material-symbols-outlined">
+                          {isRowsDropdownOpen ? 'expand_less' : 'expand_more'}
+                        </span>
+                      </div>
+                      {isRowsDropdownOpen && (
+                        <div className="dropdown-menu">
+                          {[10, 15, 25].map(value => (
+                            <div 
+                              key={value}
+                              className="option"
+                              onClick={() => {
+                                setItemsPerPage(value);
+                                setCurrentPage(1);
+                                setIsRowsDropdownOpen(false);
+                              }}
+                            >
+                              {value}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="pagination-info">
+                    Showing {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, totalEmployees)} of {totalEmployees} employees
+                  </div>
+                  <div className="pagination-controls">
+                    <button
+                      className="page-btn"
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      <span className="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    <button
+                      className="page-btn"
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      <span className="material-symbols-outlined">chevron_right</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </>
           )}
 

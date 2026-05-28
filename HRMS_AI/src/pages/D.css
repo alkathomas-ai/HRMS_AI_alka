@@ -98,9 +98,9 @@
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   transition: all 0.2s ease;
-  border-top: 1px solid var(--color-bg-muted);
-  border-bottom: 1px solid var(--color-bg-muted);
-  border-right: 1px solid var(--color-bg-muted);
+  border-top: 4px solid var(--color-text-muted);
+  border-bottom: 4px solid var(--color-text-muted);
+  border-right: 4px solid var(--color-text-muted);
   border-left: 5px solid var(--color-text-muted);
   position: relative;
 }
@@ -111,19 +111,19 @@
 }
 
 .employee-card.high-score {
-  border-left-color: #0a5d0a;
+  border-color: #0a5d0a;
   /* border-left-color: var(--color-primary); */
   /* background: #f0fdf4; */
 }
 
 .employee-card.medium-score {
-  border-left-color: #ce6d07;
+  border-color: #ce6d07;
   /* border-left-color: var(--color-primary-medium); */
   /* background: #fffbeb; */
 }
 
 .employee-card.low-score {
-  border-left-color: #871f1f;
+  border-color: #871f1f;
   /* border-left-color: var(--color-primary-low); */
   /* background: #fef2f2; */
 }
