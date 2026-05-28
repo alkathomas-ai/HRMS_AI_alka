@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getProjectRequirements, addProjectRequirement, editProjectRequirement, getProjects, deleteProjectRequirement, generateResourceSuggestion, showResourceSuggestion } from "../../services/api";
-import "../D.css";
+import "../../components/dashboard/SearchAssistant.css";
 import "./AISuggestions.css";
 import { useToast } from "../../context/ToastContext";
 import useConfirmation from "../../components/common/useConfirmation";
