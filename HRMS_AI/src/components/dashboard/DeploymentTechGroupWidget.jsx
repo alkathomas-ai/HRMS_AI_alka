@@ -34,7 +34,8 @@ const DeploymentTechGroupWidget = ({ openModal }) => {
 
       // Fetch all employees initially
       const employeeResult = await getEmployeeDirectory();
-      const employeeData = employeeResult?.employees || employeeResult?.data || [];
+      const employeeData =
+        employeeResult?.employees || employeeResult?.data || [];
       setEmployees(Array.isArray(employeeData) ? employeeData : []);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -50,39 +51,48 @@ const DeploymentTechGroupWidget = ({ openModal }) => {
     fetchData();
   }, [fetchData]);
 
-  const fetchAllDeploymentsData = useCallback(async (deploymentsList, techGroup) => {
-    try {
-      setIsLoading(true);
-      let allEmployees = [];
+  const fetchAllDeploymentsData = useCallback(
+    async (deploymentsList, techGroup) => {
+      try {
+        setIsLoading(true);
+        let allEmployees = [];
 
-      // Fetch data for each deployment
-      for (const dep of deploymentsList) {
-        try {
-          const resourcesResult = await getDeploymentResources(dep.deployment, techGroup);
-          const resourceData = resourcesResult?.data || [];
-          allEmployees = [...allEmployees, ...resourceData];
-        } catch (error) {
-          console.error(`Error fetching data for deployment ${dep.deployment}:`, error);
+        // Fetch data for each deployment
+        for (const dep of deploymentsList) {
+          try {
+            const resourcesResult = await getDeploymentResources(
+              dep.deployment,
+              techGroup,
+            );
+            const resourceData = resourcesResult?.data || [];
+            allEmployees = [...allEmployees, ...resourceData];
+          } catch (error) {
+            console.error(
+              `Error fetching data for deployment ${dep.deployment}:`,
+              error,
+            );
+          }
         }
+
+        // Remove duplicates based on employee_id
+        const uniqueEmployees = Array.from(
+          new Map(allEmployees.map((emp) => [emp.employee_id, emp])).values(),
+        );
+
+        console.log("All deployments data count:", uniqueEmployees.length);
+        console.log("First employee from all deployments:", uniqueEmployees[0]);
+        setAllFetchedEmployees(uniqueEmployees);
+        setFilteredEmployees(uniqueEmployees);
+      } catch (error) {
+        console.error("Error fetching all deployments data:", error);
+        setAllFetchedEmployees([]);
+        setFilteredEmployees([]);
+      } finally {
+        setIsLoading(false);
       }
-
-      // Remove duplicates based on employee_id
-      const uniqueEmployees = Array.from(
-        new Map(allEmployees.map((emp) => [emp.employee_id, emp])).values()
-      );
-
-      console.log("All deployments data count:", uniqueEmployees.length);
-      console.log("First employee from all deployments:", uniqueEmployees[0]);
-      setAllFetchedEmployees(uniqueEmployees);
-      setFilteredEmployees(uniqueEmployees);
-    } catch (error) {
-      console.error("Error fetching all deployments data:", error);
-      setAllFetchedEmployees([]);
-      setFilteredEmployees([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   // Initialize data after deployments are loaded
   useEffect(() => {
@@ -91,29 +101,35 @@ const DeploymentTechGroupWidget = ({ openModal }) => {
     }
   }, [deployments, fetchAllDeploymentsData]);
 
-  const fetchDeploymentResources = useCallback(async (deployment, techGroup) => {
-    try {
-      setIsLoading(true);
-      const resourcesResult = await getDeploymentResources(deployment, techGroup);
-      const resourceData = resourcesResult?.data || [];
-      console.log("Fetched resources count:", resourceData.length);
-      console.log("First resource sample:", resourceData[0]);
-      setAllFetchedEmployees(Array.isArray(resourceData) ? resourceData : []);
-      setFilteredEmployees(Array.isArray(resourceData) ? resourceData : []);
-    } catch (error) {
-      console.error("Error fetching deployment resources:", error);
-      setAllFetchedEmployees([]);
-      setFilteredEmployees([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const fetchDeploymentResources = useCallback(
+    async (deployment, techGroup) => {
+      try {
+        setIsLoading(true);
+        const resourcesResult = await getDeploymentResources(
+          deployment,
+          techGroup,
+        );
+        const resourceData = resourcesResult?.data || [];
+        console.log("Fetched resources count:", resourceData.length);
+        console.log("First resource sample:", resourceData[0]);
+        setAllFetchedEmployees(Array.isArray(resourceData) ? resourceData : []);
+        setFilteredEmployees(Array.isArray(resourceData) ? resourceData : []);
+      } catch (error) {
+        console.error("Error fetching deployment resources:", error);
+        setAllFetchedEmployees([]);
+        setFilteredEmployees([]);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [],
+  );
 
   const handleDeploymentChange = (e) => {
     const value = e.target.value;
     setSelectedDeployment(value);
     setSearchTerm("");
-    
+
     if (value === "all" && selectedTechGroup === "all") {
       fetchAllDeploymentsData(deployments, "all");
     } else if (value === "all") {
@@ -127,7 +143,7 @@ const DeploymentTechGroupWidget = ({ openModal }) => {
     const value = e.target.value;
     setSelectedTechGroup(value);
     setSearchTerm("");
-    
+
     if (selectedDeployment === "all" && value === "all") {
       fetchAllDeploymentsData(deployments, "all");
     } else if (selectedDeployment === "all") {
@@ -140,17 +156,17 @@ const DeploymentTechGroupWidget = ({ openModal }) => {
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
-    
+
     let filtered = allFetchedEmployees;
-    
+
     if (value.trim()) {
       filtered = filtered.filter(
         (emp) =>
           emp.display_name?.toLowerCase().includes(value.toLowerCase()) ||
-          emp.employee_id?.toLowerCase().includes(value.toLowerCase())
+          emp.employee_id?.toLowerCase().includes(value.toLowerCase()),
       );
     }
-    
+
     setFilteredEmployees(filtered);
   };
 
@@ -225,10 +241,12 @@ const DeploymentTechGroupWidget = ({ openModal }) => {
                   </div>
                   <div className="employee-details">
                     <div className="deployment-emp-details-head">
-                      <div className="employee-name">{employee.display_name}</div>
+                      <div className="employee-name">
+                        {employee.display_name}
+                      </div>
                       <span className="deployment-employee-id">
-                          {employee.employee_id}
-                        </span>
+                        {employee.employee_id}
+                      </span>
                     </div>
                     <div className="employee-meta">
                       <span className="deployment-employee-dept">
@@ -250,12 +268,12 @@ const DeploymentTechGroupWidget = ({ openModal }) => {
                           {employee.tech_group}
                         </span>
                       )}
-                      {employee.employee_department && (
-                        <span className="tag department-tag">
-                          {employee.employee_department}
-                        </span>
-                      )}
                     </div>
+                  </div>
+                  <div>
+                    {employee.aging_days !== undefined && (
+                      <div className="aging-badge">{employee.aging_days}d</div>
+                    )}
                   </div>
                 </div>
               ))}
