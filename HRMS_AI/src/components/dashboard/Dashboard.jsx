@@ -52,8 +52,8 @@ const Dashboard = ({ csvFile }) => {
 
   return (
     <div className="dashboard">
-      <div className="dashboard-grid">
-        <div className="dashboard-left">
+      {/* <div className="dashboard-grid"> */}
+        {/* <div className="dashboard-left">
           {leftPanels.slice(0, 2).map(({ key, title, Component, props }) => (
             <Panel key={key} title={title}>
               <Component
@@ -63,7 +63,7 @@ const Dashboard = ({ csvFile }) => {
               />
             </Panel>
           ))}
-        </div>
+        </div> */}
 
         <div className="dashboard-right">
           {expandedPanel ? (
@@ -78,7 +78,7 @@ const Dashboard = ({ csvFile }) => {
             </Panel>
           )}
         </div>
-      </div>
+      {/* </div> */}
     </div>
   );
 };

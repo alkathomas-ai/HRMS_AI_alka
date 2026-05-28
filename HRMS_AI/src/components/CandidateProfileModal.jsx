@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, ArrowLeft, Calendar, User, Mail, Phone, MapPin, Briefcase, Building, Clock, Copy, Check } from 'lucide-react';
 import { getEmployeeDetails } from '../services/api';
+import { useToast } from '../context/ToastContext';
 import './CandidateProfileModal.css';
 
 const CandidateProfileModal = ({ isOpen, onClose, employee, loading, error }) => {
@@ -9,6 +10,7 @@ const CandidateProfileModal = ({ isOpen, onClose, employee, loading, error }) =>
   const [currentEmployee, setCurrentEmployee] = useState(null);
   const [isLoadingManager, setIsLoadingManager] = useState(false);
   const [copied, setCopied] = useState(false);
+  const { showError } = useToast();
 
   // Reset navigation state when a new employee is loaded
   React.useEffect(() => {
@@ -50,9 +52,14 @@ const CandidateProfileModal = ({ isOpen, onClose, employee, loading, error }) =>
         setNavigationHistory(prev => [...prev, displayEmployee]);
         setCurrentEmployee(response.employee);
         setActiveTab('details'); // Reset to details tab when navigating
+      } else {
+        const errorMessage = response?.message || 'No data found for this employee';
+        showError(errorMessage);
       }
     } catch (err) {
-      console.error('Error loading manager details:', err);
+      const errorMessage = err.response?.data?.message || err.message || 'Error loading details';
+      showError(errorMessage);
+      console.error('Manager details API error:', err);
     } finally {
       setIsLoadingManager(false);
     }

@@ -178,7 +178,7 @@ const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
       <div className="topbar-left">
         <div className="logo">
           <img src="./public/bubbles.svg" className="logo-icon" />
-          <span className="logo-text">HRMS.<span className="logo-ai">AI</span></span>
+          <span className="logo-text">HRMS.<span className="logo-ai">ai</span></span>
         </div>
       </div>
 

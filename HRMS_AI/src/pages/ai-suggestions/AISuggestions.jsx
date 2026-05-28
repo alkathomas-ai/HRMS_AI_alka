@@ -4,6 +4,8 @@ import "../../components/dashboard/SearchAssistant.css";
 import "./AISuggestions.css";
 import { useToast } from "../../context/ToastContext";
 import useConfirmation from "../../components/common/useConfirmation";
+import CandidateProfileModal from "../../components/CandidateProfileModal";
+import { useCandidateProfileModal } from "../../hooks/useCandidateProfileModal";
 
 const SuggestionCard = ({
   employee,
@@ -28,173 +30,139 @@ const SuggestionCard = ({
   const scoreClass =
     ai_score >= 70 ? "high" : ai_score >= 50 ? "medium" : "low";
 
-
   return (
-    <div
-      className={`suggestion-card ${scoreClass}-score ${expanded ? "expanded" : ""}`}
-    >
+    <div className={`suggestion-card ${scoreClass}-score ${expanded ? "expanded" : ""}`}>
       <div className="suggestion-row" onClick={() => setExpanded(!expanded)}>
-        <div className="suggestion-score-pill">
-          {/* <span className={`score-dot ${scoreClass}`}></span> */}
-          <span className= {`score-num ${scoreClass}`}>{ai_score}%</span>
+        <div className={`suggestion-score-circle ${expanded ? 'expanded' : ''}`}>
+          <svg className="score-progress" viewBox="0 0 36 36">
+            <path
+              className="score-bg"
+              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+            />
+            <path
+              className={`score-fill ${scoreClass}`}
+              strokeDasharray={`${ai_score}, 100`}
+              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+            />
+          </svg>
+          <div className="score-center">
+            <span className={`score-text ${scoreClass}`}>{ai_score}</span>
+            {expanded && <span className="score-label">Total score</span>}
+          </div>
         </div>
-        <div className="suggestion-name-col">
-          <span className="suggestion-name">{display_name}</span>
-          <span className="suggestion-designation">{designation}</span>
-          <span className="suggestion-id">{employee_id}</span>
-        </div>
-        <div className="suggestion-meta">
-          <span>
-            <i className="fa-solid fa-location-dot"></i> {emp_location}
-          </span>
-          <span>
-            <i className="fa-solid fa-laptop-code"></i> {tech_group}
-          </span>
-          <span>
-            <i className="fa-solid fa-business-time"></i> {total_exp}
-          </span>
-        </div>
-        <div className="suggestion-skills-preview">
-          {skill_set
-            ?.split(",")
-            .slice(0, 3)
-            .map((s, i) => (
-              <span key={i} className="skill-badge">
-                {s.trim()}
+        
+        <div className={`suggestion-content ${expanded ? 'expanded' : ''}`}>
+          <div className="suggestion-header">
+            <div className="suggestion-name-section">
+              <span className="suggestion-name">{display_name}</span>
+              <span className="suggestion-meta-inline">
+                {designation} • {emp_location} • {tech_group}
               </span>
-            ))}
-          {skill_set?.split(",").length > 3 && (
-            <span className="skill-badge">
-              +{skill_set.split(",").length - 3}
-            </span>
-          )}
-        </div>
-        <span className="expand-chevron material-symbols-outlined">
-          {expanded ? "expand_less" : "expand_more"}
-        </span>
-      </div>
-
-      {expanded && (
-        <div className="suggestion-details">
-          <div className="suggestion-details-grid">
-            <div className="suggestion-details-left">
-              {/* <div className="employee-details-text">
-                <p>
-                  <i className="fa-regular fa-id-card"></i> {employee_id}
-                </p>
-                <p>
-                  <i className="fa-solid fa-building"></i> {employee_department}
-                </p>
-                <p>
-                  <i className="fa-solid fa-location-dot"></i> {emp_location}
-                </p>
-                <p>
-                  <i className="fa-solid fa-laptop-code"></i> {tech_group}
-                </p>
-                <p>
-                  <i className="fa-solid fa-business-time"></i> {total_exp}
-                </p>
-              </div> */}
-              {employee.projects?.length > 0 && (
-                <div
-                  className="employee-projects-section"
-                  style={{ marginTop: 10 }}
-                >
-                  <span className="projects-label">Projects: </span>
-                  <span className="projects-text">
-                    {employee.projects.map((p, i) => (
-                      <span key={i}>
-                        <span className="project-name">{p.project_name}</span>
-                        <span className="project-customer">
-                          {" "}
-                          ({p.customer})
-                        </span>
-                        {i < employee.projects.length - 1 && ", "}
-                      </span>
-                    ))}
+            </div>
+          </div>
+          
+          {!expanded && (
+            <div className="suggestion-skills-preview">
+              {skill_set
+                ?.split(",")
+                .slice(0, 3)
+                .map((s, i) => (
+                  <span key={i} className="skill-badge-preview">
+                    {s.trim()}
                   </span>
-                </div>
-              )}
-              {skill_set && (
-                <div
-                  className="employee-skills-section"
-                  style={{ marginTop: 10 }}
-                >
-                  <span className="skills-label">Skills:</span>
-                  <div className="skills-container">
-                    {skill_set
-                      .split(",")
-                      .slice(0, showAllSkills ? undefined : 6)
-                      .map((skill, i) => {
-                        const trimmed = skill.trim();
-                        const isActive = activeSkill === trimmed;
-                        return (
-                          <span
-                            key={i}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const next = isActive ? null : trimmed;
-                              setActiveSkill(next);
-                              onSkillClick(next);
-                            }}
-                            className={
-                              isActive
-                                ? "skill-badge active-skill-badge"
-                                : "skill-badge"
-                            }
-                          >
-                            {trimmed}
-                          </span>
-                        );
-                      })}
-                    {skill_set.split(",").length > 6 && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowAllSkills(!showAllSkills);
-                        }}
-                        className="skill-more-btn"
-                      >
-                        {showAllSkills
-                          ? "Show Less"
-                          : `+${skill_set.split(",").length - 6} More`}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
-              {ai_reason && (
-                <div className="ai-reason-section" style={{ marginTop: 10 }}>
-                  <span className="reason-label">Why this match?</span>
-                  <p className="reason-text">{ai_reason}</p>
-                </div>
+                ))}
+              {skill_set?.split(",").length > 3 && (
+                <span className="skill-badge-preview more">
+                  +{skill_set.split(",").length - 3}
+                </span>
               )}
             </div>
-            {employee.ai_criteria && (
-              <div className="suggestion-criteria">
-                {Object.entries(employee.ai_criteria).map(
-                  ([criteria, score]) => {
-                    const cls =
-                      score >= 70 ? "high" : score >= 50 ? "medium" : "low";
-                    return (
-                      <div key={criteria} className="criteria-item">
-                        <div className="criteria-header">
-                          <span className="criteria-name">{criteria}</span>
-                          <span className="criteria-score">{score}%</span>
-                        </div>
+          )}
+          
+          {expanded && employee.ai_criteria && (
+            <div className="criteria-breakdown">
+              {Object.entries(employee.ai_criteria).map(
+                ([criteria, score]) => {
+                  const cls =
+                    score >= 70 ? "high" : score >= 50 ? "medium" : "low";
+                  return (
+                    <div key={criteria} className="criteria-row">
+                      <span className="criteria-name">{criteria}</span>
+                      <div className="criteria-bar-container">
                         <div className="criteria-bar-bg">
                           <div
                             className={`criteria-bar-fill ${cls}`}
                             style={{ width: `${score}%` }}
                           />
                         </div>
+                        <span className={`criteria-score ${cls}`}>
+                          {criteria === 'Confidence' ? 
+                            `${score >= 70 ? 'High' : score >= 50 ? 'Medium' : 'Low'} (${score}%)` : 
+                            score
+                          }
+                        </span>
                       </div>
+                    </div>
+                  );
+                },
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {expanded && (
+        <div className="expanded-content">
+          {skill_set && (
+            <div className="skills-section">
+              <div className="skills-container">
+                {skill_set
+                  .split(",")
+                  .slice(0, showAllSkills ? undefined : 6)
+                  .map((skill, i) => {
+                    const trimmed = skill.trim();
+                    const isActive = activeSkill === trimmed;
+                    return (
+                      <span
+                        key={i}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const next = isActive ? null : trimmed;
+                          setActiveSkill(next);
+                          onSkillClick(next);
+                        }}
+                        className={
+                          isActive
+                            ? "skill-badge-preview active-skill-badge-preview"
+                            : "skill-badge-preview"
+                        }
+                      >
+                        {trimmed}
+                      </span>
                     );
-                  },
+                  })}
+                {skill_set.split(",").length > 6 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowAllSkills(!showAllSkills);
+                    }}
+                    className="skill-more-btn-preview"
+                  >
+                    {showAllSkills
+                      ? "Show Less"
+                      : `+${skill_set.split(",").length - 6} More`}
+                  </button>
                 )}
               </div>
-            )}
-          </div>
+            </div>
+          )}
+          
+          {ai_reason && (
+            <div className="ai-reason-section">
+              <p className="reason-text">{ai_reason}</p>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -215,32 +183,10 @@ const EMPTY_PROJECT = {
 const AISuggestions = () => {
   const [projects, setProjects] = useState([]);
   const [projectsLoading, setProjectsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      setIsLoading(true);
-      try {
-        const data = await getProjectRequirements();
-        const result = Array.isArray(data)
-          ? data
-          : data?.data || data?.projects || [];
-        setProjects(
-          result.map((p) => ({ ...p, employees: p.employees || [] })),
-        );
-      } catch (err) {
-        console.error("Failed to fetch projects, using dummy data", err);
-        // setProjects(dummySuggestions);
-      } finally {
-        setProjectsLoading(false);
-        setIsLoading(false);
-      }
-    };
-    fetchProjects();
-  }, []);
+  const [activeTab, setActiveTab] = useState('projects');
   const [selectedProject, setSelectedProject] = useState(null);
   const [activeSkill, setActiveSkill] = useState(null);
   const [loading, setLoading] = useState(false);
-  // Track which project is currently loading for suggestions
   const [loadingProjectId, setLoadingProjectId] = useState(null);
   const [error, setError] = useState(null);
   const [showForm, setShowForm] = useState(false);
@@ -249,10 +195,47 @@ const AISuggestions = () => {
   const [projectsList, setProjectsList] = useState([]);
   const [projectSearch, setProjectSearch] = useState('');
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
+  const [openDropdownId, setOpenDropdownId] = useState(null);
+  const [projectsSearchQuery, setProjectsSearchQuery] = useState('');
+  const [aiSuggestionsSearchQuery, setAiSuggestionsSearchQuery] = useState('');
   const { showSuccess, showError, showInfo } = useToast();
   const { confirm, ConfirmationModal } = useConfirmation();
   
+  // Candidate Profile Modal for delivery owner
+  const {
+    isOpen: isModalOpen,
+    employee: selectedEmployee,
+    loading: modalLoading,
+    error: modalError,
+    openModal,
+    closeModal
+  } = useCandidateProfileModal();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch project requirements for AI suggestions tab
+        const requirementsData = await getProjectRequirements();
+        const requirementsResult = Array.isArray(requirementsData)
+          ? requirementsData
+          : requirementsData?.data || requirementsData?.projects || [];
+        setProjects(
+          requirementsResult.map((p) => ({ ...p, employees: p.employees || [] })),
+        );
+        
+        // Fetch all projects for projects tab
+        await fetchProjectsList();
+      } catch (err) {
+        console.error("Failed to fetch data", err);
+      } finally {
+        setProjectsLoading(false);
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const filteredProjectsList = projectSearch
     ? projectsList.filter((p) =>
@@ -261,14 +244,37 @@ const AISuggestions = () => {
       )
     : projectsList;
 
+  const filteredProjectsForTab = projectsSearchQuery
+    ? projectsList.filter((p) =>
+        p.project_name?.toLowerCase().includes(projectsSearchQuery.toLowerCase()) ||
+        p.customer?.toLowerCase().includes(projectsSearchQuery.toLowerCase()) ||
+        p.project_department?.toLowerCase().includes(projectsSearchQuery.toLowerCase()) ||
+        p.project_status?.toLowerCase().includes(projectsSearchQuery.toLowerCase()) ||
+        p.delivery_owner?.toLowerCase().includes(projectsSearchQuery.toLowerCase())
+      )
+    : projectsList;
+
+  const filteredProjectsForAI = aiSuggestionsSearchQuery
+    ? projects.filter((p) =>
+        p.project_name?.toLowerCase().includes(aiSuggestionsSearchQuery.toLowerCase()) ||
+        p.customer?.toLowerCase().includes(aiSuggestionsSearchQuery.toLowerCase()) ||
+        p.client?.toLowerCase().includes(aiSuggestionsSearchQuery.toLowerCase()) ||
+        p.requirements?.toLowerCase().includes(aiSuggestionsSearchQuery.toLowerCase()) ||
+        p.required_skills?.toLowerCase().includes(aiSuggestionsSearchQuery.toLowerCase())
+      )
+    : projects;
+
   const handleRowClick = async (project) => {
-    // await getResourceSuggestion(project)
     if (selectedProject?.id === project.id) {
       setSelectedProject(null);
     } else {
       const latest = projects.find((p) => p.id === project.id);
       setSelectedProject(latest);
       setActiveSkill(null);
+      // Only switch to AI suggestions tab if we're not already there
+      if (activeTab === 'projects') {
+        setActiveTab('ai-suggestions');
+      }
     }
   };
 
@@ -278,9 +284,7 @@ const AISuggestions = () => {
   const fetchProjectsList = async () => {
     try {
       const data = await getProjects();
-      console.log('Projects API raw response:', data);
       const list = data?.response ?? [];
-      console.log('Projects list parsed:', list);
       setProjectsList(list);
     } catch (err) {
       console.error('Failed to fetch projects list', err);
@@ -296,36 +300,11 @@ const AISuggestions = () => {
     fetchProjectsList();
   };
 
-  const handleEdit = (project, e) => {
-    e.stopPropagation();
-    setForm({ ...project });
+  const handleEdit = (project) => {
+    setForm(project);
     setEditingId(project.id);
-    setProjectSearch(project.project_name || '');
     setShowForm(true);
-    setSelectedProject(null);
     fetchProjectsList();
-  };
-
-  const handleDelete = async (id, e) => {
-    e.stopPropagation();
-    const confirmed = await confirm({
-      title: 'Delete Requirement',
-      message: 'Are you sure you want to delete this project requirement? This action cannot be undone.',
-    });
-    if (!confirmed) return;
-    try {
-      await deleteProjectRequirement(id);
-      setProjects(projects.filter((p) => p.id !== id));
-      if (selectedProject?.id === id) setSelectedProject(null);
-      showSuccess('Project requirement deleted successfully!');
-    } catch (err) {
-      const msg = err.response?.data?.detail || '';
-      if (msg.includes('ForeignKeyViolation') || msg.includes('still referenced')) {
-        showError('Cannot delete: this requirement has linked suggestions.');
-      } else {
-        showError('Failed to delete. Please try again.');
-      }
-    }
   };
 
   const handleFormSubmit = async (e) => {
@@ -340,7 +319,7 @@ const AISuggestions = () => {
           setProjects(projects.map((p) =>
             p.id === editingId ? updatedProject : p
           ));
-          showSuccess(editingId ? 'Project Requirement updated successfully!': 'Project Requirement added successfully');
+          showSuccess('Project Requirement updated successfully!');
           // Close the modal immediately
           setShowForm(false);
           setForm(EMPTY_PROJECT);
@@ -354,10 +333,9 @@ const AISuggestions = () => {
           }
           
           handlegeneratedResponse(updatedProject)
-            .catch(err => 
-              {console.error('Failed to refresh suggestions after edit', err);
+            .catch(err => {
+              console.error('Failed to refresh suggestions after edit', err);
               showError('Failed to refresh suggestions!');
-
             })
             .finally(() => {
               setLoadingProjectId(null);
@@ -366,9 +344,7 @@ const AISuggestions = () => {
               }
             });
         }
-      
-      // console.log('Edit response:', response);
-    } catch (err) {
+      } catch (err) {
         console.error('Edit failed, updating locally', err);
         setProjects(projects.map((p) =>
           p.id === editingId ? { ...original, ...form, id: editingId } : p
@@ -407,18 +383,64 @@ const AISuggestions = () => {
             setLoading(false);
           }
         }
-        showSuccess('Project Requirement added successfully!')
+        showSuccess('Project Requirement added successfully!');
         return;
-
       } catch (err) {
         console.error('Add failed, adding locally', err);
-        showError('Failed to add Project Requirement!')
+        showError('Failed to add Project Requirement!');
         setProjects((prev) => [...prev, { ...form, id: Date.now(), employees: [] }]);
       }
     }
     setShowForm(false);
     setForm(EMPTY_PROJECT);
     setEditingId(null);
+  };
+
+  const handleDelete = async (id) => {
+    const confirmed = await confirm('Are you sure you want to delete this project?');
+    if (!confirmed) return;
+    
+    try {
+      await deleteProjectRequirement(id);
+      showSuccess('Project deleted successfully');
+      const data = await getProjectRequirements();
+      const result = Array.isArray(data) ? data : data?.data || data?.projects || [];
+      setProjects(result.map((p) => ({ ...p, employees: p.employees || [] })));
+    } catch (err) {
+      showError('Failed to delete project');
+    }
+  };
+
+  const getResourceSuggestion = async (project) => {
+    setSelectedProject(project);
+    setActiveSkill(null);
+    setLoadingProjectId(project.id);
+    setLoading(true);
+    setError(null);
+    try {
+      await handleShowResourceSuggestion(project);
+    } catch (err) {
+      console.log(err);
+      setSelectedProject(project);
+    } finally {
+      setLoadingProjectId(null);
+      setLoading(false);
+    }
+  };
+
+  const handleShowResourceSuggestion = async (project) => {
+    const response = await showResourceSuggestion(project.id);
+    console.log('Suggestions response:', response);
+    const result = response?.response?.[0].suggestion ?? [];
+    if (result.length > 0) {
+      const updated = projects.map((p) =>
+        p.id === project.id ? { ...p, employees: result } : p,
+      );
+      setProjects(updated);
+      setSelectedProject({ ...project, employees: result });
+    } else {
+      setSelectedProject(project);
+    }
   };
 
   const handleGetSuggestions = async (project, e) => {
@@ -453,93 +475,266 @@ const AISuggestions = () => {
     }
   };
 
-  const handleShowResourceSuggestion = async (project) => {
-    const response = await showResourceSuggestion(project.id);
-    console.log('Suggestions response:', response);
-    const result = response?.response?.[0].suggestion ?? [];
-    if (result.length > 0) {
-      const updated = projects.map((p) =>
-        p.id === project.id ? { ...p, employees: result } : p,
-      );
-      setProjects(updated);
-      setSelectedProject({ ...project, employees: result });
-    } else {
-      setSelectedProject(project);
-    }
+  const handleEditProject = (project, e) => {
+    e.stopPropagation();
+    setForm({ ...project });
+    setEditingId(project.id);
+    setProjectSearch(project.project_name || '');
+    setShowForm(true);
+    setSelectedProject(null);
+    fetchProjectsList();
   };
 
-  const getResourceSuggestion = async (project) => {
-    setSelectedProject(project);
-    setActiveSkill(null);
-    setLoadingProjectId(project.id);
-    setLoading(true);
-    setError(null);
+  const handleDeleteProject = async (id, e) => {
+    e.stopPropagation();
+    const confirmed = await confirm({
+      title: 'Delete Requirement',
+      message: 'Are you sure you want to delete this project requirement? This action cannot be undone.',
+    });
+    if (!confirmed) return;
     try {
-      await handleShowResourceSuggestion(project);
+      await deleteProjectRequirement(id);
+      setProjects(projects.filter((p) => p.id !== id));
+      if (selectedProject?.id === id) setSelectedProject(null);
+      showSuccess('Project requirement deleted successfully!');
     } catch (err) {
-      console.log(err);
-      setSelectedProject(project);
-    } finally {
-      setLoadingProjectId(null);
-      setLoading(false);
+      const msg = err.response?.data?.detail || '';
+      if (msg.includes('ForeignKeyViolation') || msg.includes('still referenced')) {
+        showError('Cannot delete: this requirement has linked suggestions.');
+      } else {
+        showError('Failed to delete. Please try again.');
+      }
     }
   };
 
-  const handleSkillFilter = (skill) => setActiveSkill(skill);
+  const handleDropdownToggle = (projectId, event) => {
+    event.stopPropagation();
+    setOpenDropdownId(openDropdownId === projectId ? null : projectId);
+  };
 
-  const displayedEmployees = activeSkill
-    ? selectedProject?.employees?.filter((e) =>
-        e.skill_set
-          ?.split(",")
-          .map((s) => s.trim().toLowerCase())
-          .includes(activeSkill.toLowerCase()),
-      )
-    : selectedProject?.employees;
-
-  const panelOpen = !!selectedProject;
-
-  return (
-    <>
-    {isLoading ? 
-      (    
-        <div className="loader" id="theme-loader">
-        <div className="justify-content-center jimu-primary-loading"></div>
-      </div>
-      )
-      : (
-        <div className="ai-suggestions-page">
-          <div className={`ais-container ${panelOpen ? "panel-open" : ""}`}>
-            {/* Main Table Area */}
-            <div className="ais-main">
-              <div className="ais-toolbar">
-                <div>
-                  <h1 className="welcome-title">AI Resource Suggestions</h1>
-                </div>
-                <button className="primary-btn" onClick={handleAddNew}>
-                  Add Requirement
-                  <i className="fa-solid fa-folder-plus"></i>
-                </button>
-              </div>
+  const handleDropdownAction = (action, project, event) => {
+    event.stopPropagation();
+    setOpenDropdownId(null);
     
-              <div className="projects-table-card">
+    switch (action) {
+      case 'edit':
+        handleEditProject(project, event);
+        break;
+      case 'delete':
+        handleDeleteProject(project.id, event);
+        break;
+      case 'generate':
+        handleGetSuggestions(project, event);
+        break;
+      default:
+        break;
+    }
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setOpenDropdownId(null);
+    };
+    
+    if (openDropdownId) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [openDropdownId]);
+
+  // // Helper function to extract employee ID from delivery owner
+  // const extractEmployeeId = (deliveryOwner) => {
+  //   if (!deliveryOwner) return null;
+  //   // Assuming format is "EMP123 - John Doe" or just "EMP123"
+  //   const match = deliveryOwner.match(/^([A-Z0-9]+)/);
+  //   return match ? match[1] : null;
+  // };
+
+  // Handle delivery owner click
+  const handleDeliveryOwnerClick = (deliveryOwner, e) => {
+    e.stopPropagation();
+    debugger
+    if (deliveryOwner) {
+      openModal(deliveryOwner);
+    }
+  };
+
+  const renderProjectsTab = () => (
+    <div className="projects-content">
+      {/* <div className="ais-toolbar">
+        <div>
+          <h1 className="welcome-title">All Projects</h1>
+        </div>
+      </div> */}
+      
+      {/* Project Count Tile */}
+      <div className="project-count-tile">
+        <div className="count-tile-icon">
+          <span className="material-symbols-outlined">folder</span>
+        </div>
+        <div className="count-tile-content">
+          <div className="count-tile-number">{filteredProjectsForTab.length}</div>
+          <div className="count-tile-label">
+            {projectsSearchQuery ? 'Filtered Projects' : 'Total Projects'}
+          </div>
+        </div>
+      </div>
+      
+      <div className="projects-table-card">
+        {/* Search box integrated with table */}
+        <div className="table-search-header">
+          <div className="search-box">
+            <span className="material-symbols-outlined">search</span>
+            <input
+              type="text"
+              placeholder="Search projects by name, customer, department..."
+              value={projectsSearchQuery}
+              onChange={(e) => setProjectsSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
+        
+        <div className="table-wrapper">
+          <table className="projects-table">
+            <thead>
+              <tr>
+                <th>Project Name</th>
+                <th>Customer</th>
+                <th>Department</th>
+                <th>Status</th>
+                <th>Delivery Owner</th>
+                <th>Project Manager</th>
+                <th>End Date</th>
+                <th>Updated At</th>
+              </tr>
+            </thead>
+            <tbody>
+              {projectsLoading ? (
+                <tr>
+                  <td colSpan={8} className="table-loader">
+                    <div className="table-loader-inner">
+                      <div className="spinner"></div>
+                      <span>Fetching projects...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : filteredProjectsForTab.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="table-empty">
+                    {projectsSearchQuery ? 'No projects found matching your search.' : 'No projects found.'}
+                  </td>
+                </tr>
+              ) : (
+                filteredProjectsForTab.map((project, index) => (
+                  <tr
+                    key={`${project.project_name}-${index}`}
+                    className="project-row"
+                  >
+                    <td>
+                      <div className="project-name-cell">
+                        <span className="material-symbols-outlined project-row-icon">
+                          folder
+                        </span>
+                        <span>{project.project_name || "—"}</span>
+                      </div>
+                    </td>
+                    <td>{project.customer || "—"}</td>
+                    <td>{project.project_department || "—"}</td>
+                    <td>
+                      <span className={`status-badge ${project.project_status?.toLowerCase()}`}>
+                        {project.project_status || "—"}
+                      </span>
+                    </td>
+                    <td>
+                      {project.delivery_owner ? (
+                        <span 
+                          className="delivery-owner-clickable"
+                          onClick={(e) => handleDeliveryOwnerClick(project.delivery_owner_emp_id, e)}
+                          title="Click to view employee profile"
+                        >
+                          {project.delivery_owner}
+                        </span>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                    <td>
+                      {project.pm ? project.pm.split(' - ')[1] || project.pm : "—"}
+                    </td>
+                    <td>
+                      {project.project_extended_end_date || project.project_committed_end_date || "—"}
+                    </td>
+                    <td>
+                      {project.updated_at
+                        ? new Date(project.updated_at).toLocaleString("en-IN", {
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                          })
+                        : "—"}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderAISuggestionsTab = () => {
+    const panelOpen = !!selectedProject;
+    const displayedEmployees = activeSkill
+      ? selectedProject?.employees?.filter((e) =>
+          e.skill_set
+            ?.split(",")
+            .map((s) => s.trim().toLowerCase())
+            .includes(activeSkill.toLowerCase()),
+        )
+      : selectedProject?.employees;
+
+    return (
+      <div className="ai-suggestions-content">
+        <div className={`ais-container ${panelOpen ? "panel-open" : ""}`}>
+          {/* Main Table Area */}
+          <div className="ais-main">
+            {/* <div className="ais-toolbar">
+              <div>
+                <h1 className="welcome-title">AI Resource Suggestions</h1>
+              </div>
+            </div> */}
+
+            <div className="projects-table-card">
+              {/* Search box integrated with table */}
+              <div className="table-search-header">
+                <div className="search-box">
+                  <span className="material-symbols-outlined">search</span>
+                  <input
+                    type="text"
+                    placeholder="Search by project, client, requirements..."
+                    value={aiSuggestionsSearchQuery}
+                    onChange={(e) => setAiSuggestionsSearchQuery(e.target.value)}
+                  />
+                </div>
+              </div>
+              
+              <div className="table-wrapper">
                 <table className="projects-table">
                   <thead>
                     <tr>
                       <th>Project</th>
                       <th>Client</th>
-                      {/* <th>Required Skills</th> */}
                       <th>Requirements</th>
-                      {/* <th>Experience</th>
-                      <th>Start Date</th>
-                      <th>Suggestions</th> */}
+                      <th>Suggestions</th>
                       <th>Updated At</th>
-                      <th></th>
+                      <th width="40"></th>
                     </tr>
                   </thead>
                   <tbody>
                     {projectsLoading ? (
                       <tr>
-                        <td colSpan={7} className="table-loader">
+                        <td colSpan={6} className="table-loader">
                           <div className="table-loader-inner">
                             <div className="spinner"></div>
                             <span>Fetching projects...</span>
@@ -548,14 +743,18 @@ const AISuggestions = () => {
                       </tr>
                     ) : projects.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="table-empty">
-                          No requirements added yet. Click "Add Requirement" to get
-                          started.
+                        <td colSpan={6} className="table-empty">
+                          No requirements added yet. Click "Add Requirement" to get started.
                         </td>
                       </tr>
-                    ) : null}
-                    {!projectsLoading &&
-                      projects.map((p) => (
+                    ) : filteredProjectsForAI.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="table-empty">
+                          No projects found matching your search.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredProjectsForAI.map((p) => (
                         <tr
                           key={p.id}
                           className={`project-row ${selectedProject?.id === p.id ? "active-row" : ""}`}
@@ -569,30 +768,9 @@ const AISuggestions = () => {
                               <span>{p.project_name || "—"}</span>
                             </div>
                           </td>
-                          <td>{p.customer || "—"}</td>
+                          <td>{p.customer || p.client || "—"}</td>
+                          <td>{p.requirements || p.required_skills || "—"}</td>
                           <td>
-                            {/* <div className="table-skills">
-                            {p.required_skills?.split(",").slice(0, 3).map((s, i) => (
-                              <span key={i} className="skill-badge">{s.trim()}</span>
-                            ))}
-                            {p.required_skills?.split(",").length > 3 && (
-                              <span className="skill-badge">+{p.required_skills.split(",").length - 3}</span>
-                            )}
-                          </div> */}
-                            {p.requirements}
-                          </td>
-                          {/* <td>{p.experience_min || "—"}{p.experience_max ? `–${p.experience_max} yrs` : p.experience_min ? " yrs" : ""}</td> */}
-                          {/* <td>{p.start_date || "—"}</td> */}
-                          <td>
-                            {p.updated_at
-                              ? new Date(p.updated_at).toLocaleString("en-IN", {
-                                  dateStyle: "medium",
-                                  timeStyle: "short",
-                                })
-                              : "—"}
-                          </td>
-                          {/* <td>{p.updated_at ? timeAgo(p.updated_at) : "—"}</td> */}
-                          {/* <td>
                             {p.employees?.length > 0 ? (
                               <span className="suggestions-count">
                                 <span className="material-symbols-outlined">
@@ -603,274 +781,290 @@ const AISuggestions = () => {
                             ) : (
                               <span className="no-suggestions">—</span>
                             )}
-                          </td> */}
+                          </td>
+                          <td>
+                            {p.updated_at
+                              ? new Date(p.updated_at).toLocaleString("en-IN", {
+                                  dateStyle: "medium",
+                                  timeStyle: "short",
+                                })
+                              : "—"}
+                          </td>
                           <td
                             className="row-actions"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            <button
-                              className="icon-action-btn"
-                              title="Get AI Suggestions"
-                              onClick={(e) => handleGetSuggestions(p, e)}
-                              disabled={loadingProjectId === p.id}
-                            >
-                              {loadingProjectId === p.id ? (
-                                <div className="spinner-small"></div>
-                              ) : (
-                                <span className="material-symbols-outlined">
-                                  auto_awesome
-                                </span>
+                            <div className="action-dropdown-container">
+                              <button
+                                className="action-menu-btn"
+                                onClick={(e) => handleDropdownToggle(p.id, e)}
+                                title="More actions"
+                              >
+                                <span className="material-symbols-outlined">more_vert</span>
+                              </button>
+                              {openDropdownId === p.id && (
+                                <div className="action-dropdown-menu">
+                                  <button
+                                    className="dropdown-item"
+                                    onClick={(e) => handleDropdownAction('generate', p, e)}
+                                    disabled={loadingProjectId === p.id}
+                                  >
+                                    <span className="material-symbols-outlined">auto_awesome</span>
+                                    {loadingProjectId === p.id ? 'Generating...' : 'Generate AI Suggestions'}
+                                  </button>
+                                  <button
+                                    className="dropdown-item"
+                                    onClick={(e) => handleDropdownAction('edit', p, e)}
+                                  >
+                                    Edit Requirement
+                                  </button>
+                                  <button
+                                    className="dropdown-item"
+                                    onClick={(e) => handleDropdownAction('delete', p, e)}
+                                  >
+                                    Delete Requirement
+                                  </button>
+                                </div>
                               )}
-                            </button>
-                            <button
-                              className="icon-action-btn"
-                              title="Edit"
-                              onClick={(e) => handleEdit(p, e)}
-                            >
-                              <span className="material-symbols-outlined">
-                                edit
-                              </span>
-                            </button>
-                            <button
-                              className="icon-action-btn danger"
-                              title="Delete"
-                              onClick={(e) => handleDelete(p.id, e)}
-                            >
-                              <span className="material-symbols-outlined">
-                                delete
-                              </span>
-                            </button>
+                            </div>
                           </td>
                         </tr>
-                      ))}
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
             </div>
-    
-            {/* Right Slide Panel */}
-            <div className={`suggestions-panel ${panelOpen ? "open" : ""}`}>
-              {selectedProject && (
-                <>
-                  <div className="panel-header">
-                    <div className="panel-header-info">
-                      <h3>{selectedProject.project_name}</h3>
-                      <span>{selectedProject.customer}</span>
-                    </div>
-                    <button
-                      className="panel-close-btn"
-                      onClick={() => setSelectedProject(null)}
-                    >
-                      <span className="material-symbols-outlined">close</span>
-                    </button>
-                  </div>
-    
-                  <div className="panel-body">
-                    {loading ? (
-                      <div className="chat-loader-new">
-                        <div className="spinner"></div>
-                      </div>
-                    ) : error ? (
-                      <div className="suggestions-empty">
-                        <span className="material-symbols-outlined">
-                          error_outline
-                        </span>
-                        <p>{error}</p>
-                      </div>
-                    ) : !selectedProject.employees?.length ? (
-                      <div className="suggestions-empty">
-                        <span className="material-symbols-outlined">
-                          auto_awesome
-                        </span>
-                        <p>
-                          No Available suggestion for this Project requirement. Edit the requirement or Click 
-                            AI Suggestion Button
-                           to Generate new AI
-                          suggestions for this project.
-                        </p>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="results-header">
-                          <h4>
-                            {displayedEmployees.length} Resource
-                            {displayedEmployees.length !== 1 ? "s" : ""} Found
-                          </h4>
-                          {activeSkill && (
-                            <button
-                              className="clear-filter-btn"
-                              onClick={() => setActiveSkill(null)}
-                            >
-                              <span className="material-symbols-outlined">
-                                close
-                              </span>{" "}
-                              {activeSkill}
-                            </button>
-                          )}
-                        </div>
-                        <div className="suggestion-cards-list">
-                          {displayedEmployees.map((emp) => (
-                            <SuggestionCard
-                              key={emp.employee_id}
-                              employee={emp}
-                              activeSkill={activeSkill}
-                              setActiveSkill={setActiveSkill}
-                              onSkillClick={handleSkillFilter}
-                            />
-                          ))}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
           </div>
-    
-          <ConfirmationModal />
 
-          {/* Add / Edit Form Modal */}
-          {showForm && (
-            <div className="form-modal-overlay" onClick={() => setShowForm(false)}>
-              <div className="form-modal" onClick={(e) => e.stopPropagation()}>
-                <div className="form-modal-header">
-                  <h3>{editingId ? "Edit Requirement" : "New Requirement"}</h3>
+          {/* Right Slide Panel */}
+          <div className={`suggestions-panel ${panelOpen ? "open" : ""}`}>
+            {selectedProject && (
+              <>
+                <div className="panel-header">
+                  <div className="panel-header-info">
+                    <h3>{selectedProject.project_name}</h3>
+                    <span>{selectedProject.customer || selectedProject.client}</span>
+                  </div>
                   <button
                     className="panel-close-btn"
-                    onClick={() => setShowForm(false)}
+                    onClick={() => setSelectedProject(null)}
                   >
                     <span className="material-symbols-outlined">close</span>
                   </button>
                 </div>
-                <form onSubmit={handleFormSubmit} className="requirement-form">
-                  <div className="project-suggestion-form-row">
-                    <div className="project-suggestion-form-group">
-                      <label>Project Name <span className="required">*</span></label>
-                      <div className="autocomplete-wrapper">
-                        <input
-                          name="project_name"
-                          value={projectSearch}
-                          onChange={(e) => {
-                            setProjectSearch(e.target.value);
-                            setForm({ ...form, project_name: e.target.value, customer: form.customer });
-                            setShowProjectDropdown(true);
-                          }}
-                          onFocus={() => setShowProjectDropdown(true)}
-                          onBlur={() => setTimeout(() => setShowProjectDropdown(false), 150)}
-                          placeholder="Eg: BPLU_DCMA"
-                          required
-                          autoComplete="off"
-                        />
-                        {showProjectDropdown && filteredProjectsList.length > 0 && (
-                          <div className="autocomplete-dropdown">
-                            {filteredProjectsList.map((p, i) => (
-                              <div
-                                key={i}
-                                className="autocomplete-option"
-                                onMouseDown={() => {
-                                  setForm({ ...form, project_name: p.project_name, customer: p.customer || form.customer });
-                                  setProjectSearch(p.project_name);
-                                  setShowProjectDropdown(false);
-                                }}
-                              >
-                                <span className="autocomplete-project-name">{p.project_name}</span>
-                                {p.customer && <span className="autocomplete-customer">{p.customer}</span>}
-                              </div>
-                            ))}
-                          </div>
+
+                <div className="panel-body">
+                  {loading ? (
+                    <div className="chat-loader-new">
+                      <div className="spinner"></div>
+                    </div>
+                  ) : error ? (
+                    <div className="suggestions-empty">
+                      <span className="material-symbols-outlined">
+                        error_outline
+                      </span>
+                      <p>{error}</p>
+                    </div>
+                  ) : !selectedProject.employees?.length ? (
+                    <div className="suggestions-empty">
+                      <span className="material-symbols-outlined">
+                        auto_awesome
+                      </span>
+                      <p>
+                        No Available suggestion for this Project requirement. Edit the requirement or Click 
+                          AI Suggestion Button
+                         to Generate new AI
+                        suggestions for this project.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="results-header">
+                        <h4>
+                          {displayedEmployees?.length || 0} Resource
+                          {displayedEmployees?.length !== 1 ? "s" : ""} Found
+                        </h4>
+                        {activeSkill && (
+                          <button
+                            className="clear-filter-btn"
+                            onClick={() => setActiveSkill(null)}
+                          >
+                            <span className="material-symbols-outlined">
+                              close
+                            </span>{" "}
+                            {activeSkill}
+                          </button>
                         )}
                       </div>
-                    </div>
-                    <div className="project-suggestion-form-group">
-                      <label>Client</label>
-                      <input
-                        name="customer"
-                        value={form.customer}
-                        onChange={handleFormChange}
-                        placeholder="Eg: Buspatrol"
-                        readOnly
-                        className="readonly-input"
-                      />
-                    </div>
-                  </div>
-                  <div className="project-suggestion-form-group">
-                    {/* <label>Required Skills <span className="required">*</span></label> */}
-                    <label>
-                      Requirements <span className="required">*</span>
-                    </label>
-                    <textarea
-                      name="requirements"
-                      value={form.requirements}
-                      onChange={handleFormChange}
-                      placeholder="React employee with 3 years experience"
-                      rows={3}
-                      required
-                    />
-                    {/* <span className="form-hint">Comma-separated</span> */}
-                  </div>
-                  {/* <div className="form-row">
-                    <div className="form-group">
-                      <label>Min Exp (yrs)</label>
-                      <input
-                        type="number"
-                        name="experience_min"
-                        value={form.experience_min}
-                        onChange={handleFormChange}
-                        placeholder="3"
-                        min="0"
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Max Exp (yrs)</label>
-                      <input
-                        type="number"
-                        name="experience_max"
-                        value={form.experience_max}
-                        onChange={handleFormChange}
-                        placeholder="8"
-                        min="0"
-                      />
-                    </div>
-                  </div>
-                  <div className="form-group">
-                    <label>Start Date</label>
-                    <input
-                      type="date"
-                      name="start_date"
-                      value={form.start_date}
-                      onChange={handleFormChange}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Description</label>
-                    <textarea
-                      name="description"
-                      value={form.description}
-                      onChange={handleFormChange}
-                      placeholder="Project details, responsibilities..."
-                      rows={3}
-                    />
-                  </div> */}
-                  <div className="form-actions">
-                    <button
-                      type="button"
-                      className="btn-cancel"
-                      onClick={() => setShowForm(false)}
-                    >
-                      Cancel
-                    </button>
-                    <button type="submit" className="btn-confirm">
-                      {editingId ? "Save Changes" : "Add Project"}
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
+                      <div className="suggestion-cards-list">
+                        {displayedEmployees?.map((emp) => (
+                          <SuggestionCard
+                            key={emp.employee_id}
+                            employee={emp}
+                            activeSkill={activeSkill}
+                            setActiveSkill={setActiveSkill}
+                            onSkillClick={setActiveSkill}
+                          />
+                        )) || []}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
         </div>
-      )
-    }
-    </>
+      </div>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <div className="loader" id="theme-loader">
+        <div className="justify-content-center jimu-primary-loading"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="ai-suggestions-wrapper">
+      {/* TAB SWITCHER */}
+      <div className="expanded-tabs justify-btwn">
+        <div className="tab-buttons">
+          <button
+            class="tab-button" 
+            className={activeTab === 'projects' ? 'active' : ''}
+            onClick={() => setActiveTab('projects')}
+          >
+            Projects
+          </button>
+          <button 
+            class="tab-button" 
+            className={activeTab === 'ai-suggestions' ? 'active' : ''}
+            onClick={() => setActiveTab('ai-suggestions')}
+          >
+            AI Resource Suggestions
+          </button>
+        </div>
+        <div className="d-flex align-center">
+          <button 
+            className="add-requirement-btn"
+            onClick={() => setShowForm(true)}
+          >
+            Add Project Requirement
+          </button>
+        </div>
+      </div>
+
+      {/* FORM MODAL - Available for both tabs */}
+      {showForm && (
+        <div className="form-modal-overlay" onClick={() => setShowForm(false)}>
+          <div className="form-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="form-modal-header">
+              <h3>{editingId ? "Edit Requirement" : "New Requirement"}</h3>
+              <button
+                className="panel-close-btn"
+                onClick={() => setShowForm(false)}
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <form onSubmit={handleFormSubmit} className="requirement-form">
+              <div className="project-suggestion-form-row">
+                <div className="project-suggestion-form-group">
+                  <label>Project Name <span className="required">*</span></label>
+                  <div className="autocomplete-wrapper">
+                    <input
+                      name="project_name"
+                      value={projectSearch}
+                      onChange={(e) => {
+                        setProjectSearch(e.target.value);
+                        setForm({ ...form, project_name: e.target.value, customer: form.customer });
+                        setShowProjectDropdown(true);
+                      }}
+                      onFocus={() => setShowProjectDropdown(true)}
+                      onBlur={() => setTimeout(() => setShowProjectDropdown(false), 150)}
+                      placeholder="Eg: BPLU_DCMA"
+                      required
+                      autoComplete="off"
+                    />
+                    {showProjectDropdown && filteredProjectsList.length > 0 && (
+                      <div className="autocomplete-dropdown">
+                        {filteredProjectsList.map((p, i) => (
+                          <div
+                            key={i}
+                            className="autocomplete-option"
+                            onMouseDown={() => {
+                              setForm({ ...form, project_name: p.project_name, customer: p.customer || form.customer });
+                              setProjectSearch(p.project_name);
+                              setShowProjectDropdown(false);
+                            }}
+                          >
+                            <span className="autocomplete-project-name">{p.project_name}</span>
+                            {p.customer && <span className="autocomplete-customer">{p.customer}</span>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="project-suggestion-form-group">
+                  <label>Client</label>
+                  <input
+                    name="customer"
+                    value={form.customer}
+                    onChange={handleFormChange}
+                    placeholder="Eg: Buspatrol"
+                    readOnly
+                    className="readonly-input"
+                  />
+                </div>
+              </div>
+              <div className="project-suggestion-form-group">
+                <label>
+                  Requirements <span className="required">*</span>
+                </label>
+                <textarea
+                  name="requirements"
+                  value={form.requirements}
+                  onChange={handleFormChange}
+                  placeholder="React employee with 3 years experience"
+                  rows={3}
+                  required
+                />
+              </div>
+              <div className="form-actions">
+                <button
+                  type="button"
+                  className="btn-cancel"
+                  onClick={() => setShowForm(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn-confirm">
+                  {editingId ? "Save Changes" : "Add Project"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* TAB CONTENT */}
+      {activeTab === 'projects' ? renderProjectsTab() : renderAISuggestionsTab()}
+      
+      <ConfirmationModal />
+      
+      {/* Candidate Profile Modal for delivery owner */}
+      <CandidateProfileModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        employee={selectedEmployee}
+        loading={modalLoading}
+        error={modalError}
+      />
+    </div>
   );
 };
 

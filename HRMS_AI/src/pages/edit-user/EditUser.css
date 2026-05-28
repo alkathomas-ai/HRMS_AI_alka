@@ -11,17 +11,22 @@
     min-height: 0;
     display: flex;
     flex-direction: column;
+    padding: 20px;
+    background-color: var(--color-bg-card);
     gap: 16px;
     overflow: hidden;
 }
 
-/* ── Toolbar ── */
+/* ── Toolbar (AI Resource Suggestion Style) ── */
 .toolbar-row {
     flex-shrink: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 20px;
+    /* gap: 20px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-bg-muted);
+    background: var(--color-bg-card); */
 }
 
 .search-box {
@@ -33,6 +38,12 @@
     border-radius: 8px;
     border: 1px solid var(--color-bg-muted);
     min-width: 400px;
+    transition: border-color 0.2s ease;
+}
+
+.search-box:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.1);
 }
 
 .search-box .material-symbols-outlined {
@@ -45,8 +56,12 @@
     outline: none;
     flex: 1;
     font-size: 14px;
-    background: var(--color-bg-card);
+    background: transparent;
     color: var(--color-text-primary);
+}
+
+.search-box input::placeholder {
+    color: var(--color-text-muted);
 }
 
 .search-results-pagination {
@@ -128,10 +143,10 @@
     font-size: 24px;
 }
 
-/* ── Table ── */
+/* ── Table (AI Resource Suggestion Style) ── */
 .material-table-container {
     background: var(--color-bg-card);
-    border-radius: 12px;
+    border-radius: 6px;
     border: 1px solid var(--color-bg-muted);
     overflow: auto;
     flex: 1;
@@ -141,54 +156,91 @@
 .material-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .material-table thead {
     position: sticky;
     top: 0;
-    z-index: 5;
+    z-index: 1;
     background: var(--color-bg-muted);
 }
 
+.edit-user-not-overflow-container {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.edit-user-not-overflow-container ::-webkit-scrollbar {
+    display: none;
+}
+
 .material-table th {
-    padding: 12px;
+    padding: 11px 16px;
     text-align: left;
     font-weight: 600;
-    color: var(--color-text-primary);
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
     border-bottom: 1px solid var(--color-bg-muted);
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 .material-table td {
-    padding: 12px;
-    border: 1px solid var(--color-bg-muted);
-    vertical-align: middle;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--color-bg-muted);
     color: var(--color-text-primary);
+    vertical-align: middle;
+}
+
+.table-row {
+    cursor: pointer;
+    transition: background 0.15s;
 }
 
 .table-row:hover {
-    background-color: var(--color-bg-page);
+    background: var(--color-bg-dashboard);
 }
 
-.table-row:last-child td {
-    border-bottom: none;
+.table-row.active-row {
+    background: var(--color-secondary-hover) !important;
 }
 
 .no-data {
     text-align: center;
-    padding: 40px;
-    color: var(--color-text-muted);
-    font-size: 16px;
+    color: var(--color-text-secondary);
+    padding: 48px !important;
+    font-size: 13px;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* ── Employee cell ── */
+.table-empty {
+    text-align: center;
+    color: var(--color-text-secondary);
+    padding: 48px !important;
+    font-size: 13px;
+}
+
+.table-loader {
+    text-align: center;
+    padding: 48px !important;
+}
+
+.table-loader-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+}
+
+/* ── Employee cell (AI Resource Suggestion Style) ── */
 .employee-cell {
     min-width: 200px;
 }
@@ -196,12 +248,13 @@
 .edit-employee-info {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+    font-weight: 600;
 }
 
-.employee-avatar {
-    width: 50px;
-    height: 50px;
+.user-employee-avatar {
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     background: var(--color-primary);
     color: white;
@@ -209,7 +262,8 @@
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    font-size: 20px;
+    font-size: 14px;
+    flex-shrink: 0;
 }
 
 .employee-name {
@@ -220,7 +274,7 @@
 .clickable-employee {
     cursor: pointer;
     transition: color 0.2s ease;
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .clickable-employee:hover {
@@ -235,7 +289,7 @@
 }
 
 .designation-cell {
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
 }
 
 /* ── Skills cell ── */
@@ -357,52 +411,94 @@
     color: var(--color-text-muted);
 }
 
-/* ── Action buttons ── */
-.action-buttons {
+/* ── Action Dropdown (AI Resource Suggestion Style) ── */
+.actions-cell {
     display: flex;
-    gap: 8px;
+    gap: 4px;
+    justify-content: center;
+    width: 60px;
 }
 
-.user-edit-btn, .save-btn, .cancel-btn {
-    width: 36px;
-    height: 36px;
+.action-dropdown-container {
+    position: relative;
+    display: inline-block;
+}
+
+.action-menu-btn {
+    background: transparent;
     border: none;
+    cursor: pointer;
+    padding: 8px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.user-edit-btn {
-    background: var(--color-bg-muted);
     color: var(--color-text-secondary);
-    font-size: 13px;
-    gap: 6px;
+    transition: all 0.2s ease;
+    width: 36px;
+    height: 36px;
 }
 
-.user-edit-btn:hover {
-    background: var(--color-primary);
-    color: white;
+.action-menu-btn:hover {
+    background: var(--color-bg-muted);
+    color: var(--color-text-primary);
 }
 
-.save-btn {
-    background: #4caf50;
-    color: white;
+.action-menu-btn .material-symbols-outlined {
+    font-size: 20px;
 }
 
-.save-btn:hover {
-    background: #45a049;
+.action-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-bg-muted);
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 120px;
+    overflow: hidden;
+    animation: dropdownSlideIn 0.2s ease;
 }
 
-.cancel-btn {
-    background: #f44336;
-    color: white;
+@keyframes dropdownSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.cancel-btn:hover {
-    background: #da190b;
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    color: var(--color-text-primary);
+    font-size: 14px;
+    transition: background 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background: var(--color-bg-muted);
+}
+
+.dropdown-item:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.dropdown-item:disabled:hover {
+    background: transparent;
 }
 
 /* ── Modal ── */
@@ -498,4 +594,16 @@
     gap: 12px;
     padding: 20px 24px;
     border-top: 1px solid var(--color-bg-muted);
+}
+
+.bottom-pagination {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: right;
+}
+
+.edit-user-header h2 {
+    font-size: 18px;
+    font-weight: 400;
 }

@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { getEmployeeDetails } from '../services/api';
+import { useToast } from '../context/ToastContext';
 
 export const useCandidateProfileModal = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { showError } = useToast();
 
   const openModal = async (employeeId) => {
     setLoading(true);
@@ -18,11 +20,15 @@ export const useCandidateProfileModal = () => {
       if (response?.status === 'success' && response?.employee) {
         setEmployee(response.employee);
       } else {
-        setError('Failed to load candidate details');
+        const errorMessage = response?.message || 'Failed to load employee details';
+        setError(errorMessage);
+        showError(errorMessage);
       }
     } catch (err) {
-      setError('Error loading candidate details');
-      console.error(err);
+      const errorMessage = err.response?.data?.message || err.message || 'Error loading employee details';
+      setError(errorMessage);
+      showError(errorMessage);
+      console.error('Employee details API error:', err);
     } finally {
       setLoading(false);
     }

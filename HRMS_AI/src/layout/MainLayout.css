@@ -5,6 +5,9 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    padding: 20px;
+    background: linear-gradient(var(--grad-angle), var(--color-bg-dashboard) 0%, var(--color-bg-dashboard) 50%, var(--color-primary-light) 100%);
+    animation: rotateGradient 10s ease-in-out infinite alternate;
 }
 
 @media (max-width: 768px) {
