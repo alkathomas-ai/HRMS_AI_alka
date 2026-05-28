@@ -332,7 +332,7 @@ const EditUser = () => {
                         <tr key={index} className="table-row">
                           <td className="employee-cell">
                             <div className="edit-employee-info">
-                              <div className="employee-avatar">
+                              <div className="user-employee-avatar">
                                 {employee.display_name?.charAt(0).toUpperCase()}
                               </div>
                               <span 

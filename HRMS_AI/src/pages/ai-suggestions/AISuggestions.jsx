@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { getProjectRequirements, addProjectRequirement, editProjectRequirement, getProjects, deleteProjectRequirement, generateResourceSuggestion, showResourceSuggestion } from "../../services/api";
-import "../D.css";
+import "../../components/dashboard/SearchAssistant.css";
 import "./AISuggestions.css";
 import { useToast } from "../../context/ToastContext";
 import useConfirmation from "../../components/common/useConfirmation";
+import CandidateProfileModal from "../../components/CandidateProfileModal";
+import { useCandidateProfileModal } from "../../hooks/useCandidateProfileModal";
 
 const SuggestionCard = ({
   employee,
@@ -199,6 +201,16 @@ const AISuggestions = () => {
   const [aiSuggestionsSearchQuery, setAiSuggestionsSearchQuery] = useState('');
   const { showSuccess, showError, showInfo } = useToast();
   const { confirm, ConfirmationModal } = useConfirmation();
+  
+  // Candidate Profile Modal for delivery owner
+  const {
+    isOpen: isModalOpen,
+    employee: selectedEmployee,
+    loading: modalLoading,
+    error: modalError,
+    openModal,
+    closeModal
+  } = useCandidateProfileModal();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -531,6 +543,23 @@ const AISuggestions = () => {
     }
   }, [openDropdownId]);
 
+  // // Helper function to extract employee ID from delivery owner
+  // const extractEmployeeId = (deliveryOwner) => {
+  //   if (!deliveryOwner) return null;
+  //   // Assuming format is "EMP123 - John Doe" or just "EMP123"
+  //   const match = deliveryOwner.match(/^([A-Z0-9]+)/);
+  //   return match ? match[1] : null;
+  // };
+
+  // Handle delivery owner click
+  const handleDeliveryOwnerClick = (deliveryOwner, e) => {
+    e.stopPropagation();
+    debugger
+    if (deliveryOwner) {
+      openModal(deliveryOwner);
+    }
+  };
+
   const renderProjectsTab = () => (
     <div className="projects-content">
       {/* <div className="ais-toolbar">
@@ -566,76 +595,90 @@ const AISuggestions = () => {
           </div>
         </div>
         
-        <table className="projects-table">
-          <thead>
-            <tr>
-              <th>Project Name</th>
-              <th>Customer</th>
-              <th>Department</th>
-              <th>Status</th>
-              <th>Delivery Owner</th>
-              <th>Project Manager</th>
-              <th>End Date</th>
-              <th>Updated At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {projectsLoading ? (
+        <div className="table-wrapper">
+          <table className="projects-table">
+            <thead>
               <tr>
-                <td colSpan={8} className="table-loader">
-                  <div className="table-loader-inner">
-                    <div className="spinner"></div>
-                    <span>Fetching projects...</span>
-                  </div>
-                </td>
+                <th>Project Name</th>
+                <th>Customer</th>
+                <th>Department</th>
+                <th>Status</th>
+                <th>Delivery Owner</th>
+                <th>Project Manager</th>
+                <th>End Date</th>
+                <th>Updated At</th>
               </tr>
-            ) : filteredProjectsForTab.length === 0 ? (
-              <tr>
-                <td colSpan={8} className="table-empty">
-                  {projectsSearchQuery ? 'No projects found matching your search.' : 'No projects found.'}
-                </td>
-              </tr>
-            ) : (
-              filteredProjectsForTab.map((project, index) => (
-                <tr
-                  key={`${project.project_name}-${index}`}
-                  className="project-row"
-                >
-                  <td>
-                    <div className="project-name-cell">
-                      <span className="material-symbols-outlined project-row-icon">
-                        folder
-                      </span>
-                      <span>{project.project_name || "—"}</span>
+            </thead>
+            <tbody>
+              {projectsLoading ? (
+                <tr>
+                  <td colSpan={8} className="table-loader">
+                    <div className="table-loader-inner">
+                      <div className="spinner"></div>
+                      <span>Fetching projects...</span>
                     </div>
                   </td>
-                  <td>{project.customer || "—"}</td>
-                  <td>{project.project_department || "—"}</td>
-                  <td>
-                    <span className={`status-badge ${project.project_status?.toLowerCase()}`}>
-                      {project.project_status || "—"}
-                    </span>
-                  </td>
-                  <td>{project.delivery_owner || "—"}</td>
-                  <td>
-                    {project.pm ? project.pm.split(' - ')[1] || project.pm : "—"}
-                  </td>
-                  <td>
-                    {project.project_extended_end_date || project.project_committed_end_date || "—"}
-                  </td>
-                  <td>
-                    {project.updated_at
-                      ? new Date(project.updated_at).toLocaleString("en-IN", {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        })
-                      : "—"}
+                </tr>
+              ) : filteredProjectsForTab.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="table-empty">
+                    {projectsSearchQuery ? 'No projects found matching your search.' : 'No projects found.'}
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                filteredProjectsForTab.map((project, index) => (
+                  <tr
+                    key={`${project.project_name}-${index}`}
+                    className="project-row"
+                  >
+                    <td>
+                      <div className="project-name-cell">
+                        <span className="material-symbols-outlined project-row-icon">
+                          folder
+                        </span>
+                        <span>{project.project_name || "—"}</span>
+                      </div>
+                    </td>
+                    <td>{project.customer || "—"}</td>
+                    <td>{project.project_department || "—"}</td>
+                    <td>
+                      <span className={`status-badge ${project.project_status?.toLowerCase()}`}>
+                        {project.project_status || "—"}
+                      </span>
+                    </td>
+                    <td>
+                      {project.delivery_owner ? (
+                        <span 
+                          className="delivery-owner-clickable"
+                          onClick={(e) => handleDeliveryOwnerClick(project.delivery_owner_emp_id, e)}
+                          title="Click to view employee profile"
+                        >
+                          {project.delivery_owner}
+                        </span>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                    <td>
+                      {project.pm ? project.pm.split(' - ')[1] || project.pm : "—"}
+                    </td>
+                    <td>
+                      {project.project_extended_end_date || project.project_committed_end_date || "—"}
+                    </td>
+                    <td>
+                      {project.updated_at
+                        ? new Date(project.updated_at).toLocaleString("en-IN", {
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                          })
+                        : "—"}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
@@ -676,119 +719,121 @@ const AISuggestions = () => {
                 </div>
               </div>
               
-              <table className="projects-table">
-                <thead>
-                  <tr>
-                    <th>Project</th>
-                    <th>Client</th>
-                    <th>Requirements</th>
-                    <th>Suggestions</th>
-                    <th>Updated At</th>
-                    <th width="40"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {projectsLoading ? (
+              <div className="table-wrapper">
+                <table className="projects-table">
+                  <thead>
                     <tr>
-                      <td colSpan={6} className="table-loader">
-                        <div className="table-loader-inner">
-                          <div className="spinner"></div>
-                          <span>Fetching projects...</span>
-                        </div>
-                      </td>
+                      <th>Project</th>
+                      <th>Client</th>
+                      <th>Requirements</th>
+                      <th>Suggestions</th>
+                      <th>Updated At</th>
+                      <th width="40"></th>
                     </tr>
-                  ) : projects.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="table-empty">
-                        No requirements added yet. Click "Add Requirement" to get started.
-                      </td>
-                    </tr>
-                  ) : filteredProjectsForAI.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="table-empty">
-                        No projects found matching your search.
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredProjectsForAI.map((p) => (
-                      <tr
-                        key={p.id}
-                        className={`project-row ${selectedProject?.id === p.id ? "active-row" : ""}`}
-                        onClick={() => getResourceSuggestion(p)}
-                      >
-                        <td>
-                          <div className="project-name-cell">
-                            <span className="material-symbols-outlined project-row-icon">
-                              folder
-                            </span>
-                            <span>{p.project_name || "—"}</span>
-                          </div>
-                        </td>
-                        <td>{p.customer || p.client || "—"}</td>
-                        <td>{p.requirements || p.required_skills || "—"}</td>
-                        <td>
-                          {p.employees?.length > 0 ? (
-                            <span className="suggestions-count">
-                              <span className="material-symbols-outlined">
-                                group
-                              </span>
-                              {p.employees.length} found
-                            </span>
-                          ) : (
-                            <span className="no-suggestions">—</span>
-                          )}
-                        </td>
-                        <td>
-                          {p.updated_at
-                            ? new Date(p.updated_at).toLocaleString("en-IN", {
-                                dateStyle: "medium",
-                                timeStyle: "short",
-                              })
-                            : "—"}
-                        </td>
-                        <td
-                          className="row-actions"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <div className="action-dropdown-container">
-                            <button
-                              className="action-menu-btn"
-                              onClick={(e) => handleDropdownToggle(p.id, e)}
-                              title="More actions"
-                            >
-                              <span className="material-symbols-outlined">more_vert</span>
-                            </button>
-                            {openDropdownId === p.id && (
-                              <div className="action-dropdown-menu">
-                                <button
-                                  className="dropdown-item"
-                                  onClick={(e) => handleDropdownAction('generate', p, e)}
-                                  disabled={loadingProjectId === p.id}
-                                >
-                                  <span className="material-symbols-outlined">auto_awesome</span>
-                                  {loadingProjectId === p.id ? 'Generating...' : 'Generate AI Suggestions'}
-                                </button>
-                                <button
-                                  className="dropdown-item"
-                                  onClick={(e) => handleDropdownAction('edit', p, e)}
-                                >
-                                  Edit Requirement
-                                </button>
-                                <button
-                                  className="dropdown-item delete-item"
-                                  onClick={(e) => handleDropdownAction('delete', p, e)}
-                                >
-                                  Delete Requirement
-                                </button>
-                              </div>
-                            )}
+                  </thead>
+                  <tbody>
+                    {projectsLoading ? (
+                      <tr>
+                        <td colSpan={6} className="table-loader">
+                          <div className="table-loader-inner">
+                            <div className="spinner"></div>
+                            <span>Fetching projects...</span>
                           </div>
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : projects.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="table-empty">
+                          No requirements added yet. Click "Add Requirement" to get started.
+                        </td>
+                      </tr>
+                    ) : filteredProjectsForAI.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="table-empty">
+                          No projects found matching your search.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredProjectsForAI.map((p) => (
+                        <tr
+                          key={p.id}
+                          className={`project-row ${selectedProject?.id === p.id ? "active-row" : ""}`}
+                          onClick={() => getResourceSuggestion(p)}
+                        >
+                          <td>
+                            <div className="project-name-cell">
+                              <span className="material-symbols-outlined project-row-icon">
+                                folder
+                              </span>
+                              <span>{p.project_name || "—"}</span>
+                            </div>
+                          </td>
+                          <td>{p.customer || p.client || "—"}</td>
+                          <td>{p.requirements || p.required_skills || "—"}</td>
+                          <td>
+                            {p.employees?.length > 0 ? (
+                              <span className="suggestions-count">
+                                <span className="material-symbols-outlined">
+                                  group
+                                </span>
+                                {p.employees.length} found
+                              </span>
+                            ) : (
+                              <span className="no-suggestions">—</span>
+                            )}
+                          </td>
+                          <td>
+                            {p.updated_at
+                              ? new Date(p.updated_at).toLocaleString("en-IN", {
+                                  dateStyle: "medium",
+                                  timeStyle: "short",
+                                })
+                              : "—"}
+                          </td>
+                          <td
+                            className="row-actions"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <div className="action-dropdown-container">
+                              <button
+                                className="action-menu-btn"
+                                onClick={(e) => handleDropdownToggle(p.id, e)}
+                                title="More actions"
+                              >
+                                <span className="material-symbols-outlined">more_vert</span>
+                              </button>
+                              {openDropdownId === p.id && (
+                                <div className="action-dropdown-menu">
+                                  <button
+                                    className="dropdown-item"
+                                    onClick={(e) => handleDropdownAction('generate', p, e)}
+                                    disabled={loadingProjectId === p.id}
+                                  >
+                                    <span className="material-symbols-outlined">auto_awesome</span>
+                                    {loadingProjectId === p.id ? 'Generating...' : 'Generate AI Suggestions'}
+                                  </button>
+                                  <button
+                                    className="dropdown-item"
+                                    onClick={(e) => handleDropdownAction('edit', p, e)}
+                                  >
+                                    Edit Requirement
+                                  </button>
+                                  <button
+                                    className="dropdown-item"
+                                    onClick={(e) => handleDropdownAction('delete', p, e)}
+                                  >
+                                    Delete Requirement
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 
@@ -1010,6 +1055,15 @@ const AISuggestions = () => {
       {activeTab === 'projects' ? renderProjectsTab() : renderAISuggestionsTab()}
       
       <ConfirmationModal />
+      
+      {/* Candidate Profile Modal for delivery owner */}
+      <CandidateProfileModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        employee={selectedEmployee}
+        loading={modalLoading}
+        error={modalError}
+      />
     </div>
   );
 };

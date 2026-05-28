@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 // import "./Dashboard.css";
 import "./D.css";
+import "../components/dashboard/SearchAssistant.css";
 import { Icons } from "../assets/icons";
 import { searchAPI } from "../services/api";
 import CandidateProfileModal from "../components/CandidateProfileModal";

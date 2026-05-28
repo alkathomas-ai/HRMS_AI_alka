@@ -161,13 +161,13 @@
 }
 
 .occupancy-badge {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
 }
 
 .duration-badge {
-  background: #dbeafe;
-  color: #1e40af;
+  background: var(--color-bg-muted);
+  color: var(--color-text-secondary);
 }
 
 .loading-state,
