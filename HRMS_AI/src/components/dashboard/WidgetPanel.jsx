@@ -20,6 +20,7 @@ import { useCandidateProfileModal } from '../../hooks/useCandidateProfileModal';
 import ProjectCarousel from './ProjectCarousel';
 import WorldMapWidget from './WorldMapWidget';
 import LowOccupancyWidget from './LowOccupancyWidget';
+import DeploymentCountWidget from './DeploymentCountWidget';
 import './LowOccupancyWidget.css';
 
 
@@ -101,6 +102,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
 
   const availableWidgets = [
     { id: 'stats-overview', label: 'Stats Overview' },
+    { id: 'deployment-count', label: 'Deployment Overview' },
     { id: 'project-carousel', label: 'Freepool Project Recommendations' },
     { id: 'project-distribution', label: 'Project Distribution' },
     { id: 'department-overview', label: 'Department Overview' },
@@ -204,7 +206,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         if (!updatedSizes[widget.id]) {
           let defaultRows = 2;
           let defaultCols = 1;
-          if (widget.id === 'stats-overview') defaultRows = 1;
+          if (widget.id === 'stats-overview' || widget.id === 'deployment-count') defaultRows = 1;
           if (widget.id === 'project-carousel') {defaultRows = 3; defaultCols = 2;}
           if (widget.id === 'employee-directory' || widget.id === 'available-employees' || widget.id === 'upskill-suggestions' || widget.id === 'low-occupancy-employees') defaultRows = 3;
           if (widget.id === 'world-map') {defaultRows = 2; defaultCols = 1;}
@@ -1019,6 +1021,28 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
 
 
 
+
+      case 'deployment-count':
+        return (
+          <>
+            <div className="grid-item-header">
+              <h4 title="Deployment Overview">Deployment Overview</h4>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <SizeSelector />
+                <button
+                  onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
+                  className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
+                >
+                  <img src={Icons.pin} alt="" />
+                </button>
+                <span className='widget-close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+              </div>
+            </div>
+            <div style={{ height: 'calc(100% - 45px)', overflow: 'hidden' }}>
+              <DeploymentCountWidget />
+            </div>
+          </>
+        );
 
       default:
         return null;

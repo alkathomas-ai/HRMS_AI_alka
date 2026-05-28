@@ -362,3 +362,13 @@ export async function getNotificationCount() {
     throw error;
   }
 }
+
+export async function getDeploymentCount() {
+  try {
+    const response = await axios.get(`${BASE_URL}/dashboard/deployment_count`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
