@@ -378,23 +378,34 @@ export async function getAllDeployment() {
     const response = await axios.get(`${BASE_URL}/get_all_deployments`);
     return response.data;
   } catch (error) {
-    console.error(error);
+    console.error("getAllDeployment error:", error);
     throw error;
   }
 }
 
 export async function getAllTechgroup() {
   try {
-    const response = await axios.get(`${BASE_URL}/get_all_techgroups'`);
+    const response = await axios.get(`${BASE_URL}/get_all_techgroups`);
     return response.data;
   } catch (error) {
-    console.error(error);
+    console.error("getAllTechgroup error:", error);
     throw error;
   }
 }
-export async function getDeploymentResources() {
+export async function getDeploymentResources(deployment, techGroup) {
   try {
-    const response = await axios.get(`${BASE_URL}/dashboard/deployment_resources?deployment=Budgeted&tech_group=Frontend%20-%20Angular`);
+    let url = `${BASE_URL}/dashboard/deployment_resources`;
+    const params = [];
+    if (deployment && deployment !== "all") {
+      params.push(`deployment=${encodeURIComponent(deployment)}`);
+    }
+    if (techGroup && techGroup !== "all") {
+      params.push(`tech_group=${encodeURIComponent(techGroup)}`);
+    }
+    if (params.length > 0) {
+      url += "?" + params.join("&");
+    }
+    const response = await axios.get(url);
     return response.data;
   } catch (error) {
     console.error(error);
@@ -402,12 +413,3 @@ export async function getDeploymentResources() {
   }
 }
 
-export async function getAllEmployees() {
-  try {
-    const response = await axios.get(`${BASE_URL}/dashboard/employee_directory`);
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-}

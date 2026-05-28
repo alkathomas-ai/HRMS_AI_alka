@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './DeploymentCountWidget.css';
-import { getDeploymentWiseCount, getAllEmployees } from '../../services/api';
+import { getDeploymentWiseCount, getEmployeeCount } from '../../services/api';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from 'chart.js';
 
@@ -26,11 +26,10 @@ const DeploymentCountWidget = () => {
         }
 
         // Fetch total employees count
-        const employeeResult = await getAllEmployees();
-        if (employeeResult && employeeResult.data) {
-          setTotalResources(employeeResult.data.length);
-        } else if (Array.isArray(employeeResult)) {
-          setTotalResources(employeeResult.length);
+        const countResult = await getEmployeeCount();
+        
+        if (countResult && countResult.employee_count) {
+          setTotalResources(countResult.employee_count);
         }
 
         setLoading(false);
