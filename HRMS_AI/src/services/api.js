@@ -362,3 +362,54 @@ export async function getNotificationCount() {
     throw error;
   }
 }
+
+export async function getDeploymentWiseCount() {
+  try {
+    const response = await axios.get(`${BASE_URL}/dashboard/deployment_count`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function getAllDeployment() {
+  try {
+    const response = await axios.get(`${BASE_URL}/get_all_deployments`);
+    return response.data;
+  } catch (error) {
+    console.error("getAllDeployment error:", error);
+    throw error;
+  }
+}
+
+export async function getAllTechgroup() {
+  try {
+    const response = await axios.get(`${BASE_URL}/get_all_techgroups`);
+    return response.data;
+  } catch (error) {
+    console.error("getAllTechgroup error:", error);
+    throw error;
+  }
+}
+export async function getDeploymentResources(deployment, techGroup) {
+  try {
+    let url = `${BASE_URL}/dashboard/deployment_resources`;
+    const params = [];
+    if (deployment && deployment !== "all") {
+      params.push(`deployment=${encodeURIComponent(deployment)}`);
+    }
+    if (techGroup && techGroup !== "all") {
+      params.push(`tech_group=${encodeURIComponent(techGroup)}`);
+    }
+    if (params.length > 0) {
+      url += "?" + params.join("&");
+    }
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
