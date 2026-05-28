@@ -363,9 +363,48 @@ export async function getNotificationCount() {
   }
 }
 
-export async function getDeploymentCount() {
+export async function getDeploymentWiseCount() {
   try {
     const response = await axios.get(`${BASE_URL}/dashboard/deployment_count`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function getAllDeployment() {
+  try {
+    const response = await axios.get(`${BASE_URL}/get_all_deployments`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function getAllTechgroup() {
+  try {
+    const response = await axios.get(`${BASE_URL}/get_all_techgroups'`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+export async function getDeploymentResources() {
+  try {
+    const response = await axios.get(`${BASE_URL}/dashboard/deployment_resources?deployment=Budgeted&tech_group=Frontend%20-%20Angular`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function getAllEmployees() {
+  try {
+    const response = await axios.get(`${BASE_URL}/dashboard/employee_directory`);
     return response.data;
   } catch (error) {
     console.error(error);

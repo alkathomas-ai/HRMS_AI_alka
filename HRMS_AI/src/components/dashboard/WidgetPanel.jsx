@@ -21,6 +21,7 @@ import ProjectCarousel from './ProjectCarousel';
 import WorldMapWidget from './WorldMapWidget';
 import LowOccupancyWidget from './LowOccupancyWidget';
 import DeploymentCountWidget from './DeploymentCountWidget';
+import DeploymentTechGroupWidget from './DeploymentTechGroupWidget';
 import './LowOccupancyWidget.css';
 
 
@@ -111,6 +112,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
     { id: 'upskill-suggestions', label: 'Upskill Suggestions' },
     { id: 'world-map', label: 'Global Employee Distribution' },
     { id: 'low-occupancy-employees', label: 'Low Occupancy Long-term Employees' },
+    { id: 'deployment-techgroup-employees', label: 'Team Composition by Deployment & Tech Group' },
   ];
 
   
@@ -1045,6 +1047,28 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
         );
 
       default:
+
+      case 'deployment-techgroup-employees':
+        return (
+          <>
+            <div className="grid-item-header">
+              <h4 title="Team Composition by Deployment & Tech Group">Team Composition by Deployment & Tech Group</h4>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <SizeSelector />
+                <button
+                  onClick={(e) => { e.stopPropagation(); togglePin(widgetId); }}
+                  className={`pin-btn ${pinnedWidgets.includes(widgetId) ? 'pinned' : ''}`}
+                >
+                  <img src={Icons.pin} alt="" />
+                </button>
+                <span className='widget-close-btn' onClick={() => removeWidget(widgetId)}>×</span>
+              </div>
+            </div>
+            <div style={{ height: 'calc(100% - 45px)', overflow: 'hidden' }}>
+              <DeploymentTechGroupWidget openModal={openModal} />
+            </div>
+          </>
+        );
         return null;
     }
   };
