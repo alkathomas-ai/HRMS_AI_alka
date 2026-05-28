@@ -1,5 +1,6 @@
 .page-content {
-    height: calc(100vh - 72px);
+    flex: 1;
+    min-height: 0;
     margin-left: 80px;
     overflow: hidden;
     display: flex;
@@ -8,7 +9,6 @@
 
 @media (max-width: 768px) {
     .page-content {
-        height: calc(100vh - 60px);
         margin-left: 70px;
         padding: 10px;
     }
