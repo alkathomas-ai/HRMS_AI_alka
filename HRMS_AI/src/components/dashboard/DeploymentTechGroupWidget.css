@@ -122,7 +122,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: var(--color-primary);
   color: white;
   display: flex;
   align-items: center;
@@ -136,7 +136,7 @@
   flex: 1;
   min-width: 0;
 }
-.deployment-emp-details-head{
+.deployment-emp-details-head {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -180,17 +180,16 @@
 }
 
 .deployment-employee-id {
-    background: var(--color-bg-muted);
-    color: var(--color-text-secondary);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 10px;
-    font-weight: 500;
-    white-space: nowrap;
-    cursor: pointer;
+  background: var(--color-bg-muted);
+  color: var(--color-text-secondary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
 }
-.deployment-employee-dept{
-
+.deployment-employee-dept {
 }
 
 .employee-designation {
