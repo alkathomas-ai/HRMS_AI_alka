@@ -8,7 +8,6 @@ import {
 import "./DeploymentTechGroupWidget.css";
 
 const DeploymentTechGroupWidget = ({ openModal }) => {
-  const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [allFetchedEmployees, setAllFetchedEmployees] = useState([]);
   const [deployments, setDeployments] = useState([]);
