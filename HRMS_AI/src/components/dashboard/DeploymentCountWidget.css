@@ -120,7 +120,7 @@
 
 .stat-percentage-bar {
   width: 100%;
-  height: 4px;
+  height: 5px;
   background: var(--color-bg-card);
   border-radius: 2px;
   overflow: hidden;

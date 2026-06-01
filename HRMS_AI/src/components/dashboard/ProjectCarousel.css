@@ -245,7 +245,7 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: var(--color-text-secondary);
+  background: var(--color-primary);
   color: white;
   display: flex;
   align-items: center;
@@ -586,6 +586,17 @@
   font-weight: 500;
   margin-bottom: 6px;
   line-height: 1.3;
+}
+
+.employee-role span {
+    background-color: var(--color-bg-muted);
+    font-size: 14px;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 6px;
+    border-radius: 4px;
+    color: var(--color-text-secondary);
+    font-style: italic;
 }
 
 .employee-skills-compact {

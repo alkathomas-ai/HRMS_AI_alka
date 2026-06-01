@@ -122,7 +122,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: var(--color-primary);
   color: white;
   display: flex;
   align-items: center;
@@ -136,7 +136,7 @@
   flex: 1;
   min-width: 0;
 }
-.deployment-emp-details-head{
+.deployment-emp-details-head {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -149,6 +149,21 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex: 1;
+}
+
+.aging-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  background: rgba(255, 107, 107, 0.15);
+  color: #ff6b6b;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .employee-meta {
@@ -165,17 +180,16 @@
 }
 
 .deployment-employee-id {
-    background: var(--color-bg-muted);
-    color: var(--color-text-secondary);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 10px;
-    font-weight: 500;
-    white-space: nowrap;
-    cursor: pointer;
+  background: var(--color-bg-muted);
+  color: var(--color-text-secondary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
 }
-.deployment-employee-dept{
-
+.deployment-employee-dept {
 }
 
 .employee-designation {
@@ -209,10 +223,10 @@
   color: #4facfe;
 }
 
-.department-tag {
+/* .department-tag {
   background: rgba(67, 233, 123, 0.15);
   color: #43e97b;
-}
+} */
 
 .loading-state,
 .no-data {
@@ -270,6 +284,11 @@
 
   .tag {
     font-size: 10px;
+    padding: 3px 6px;
+  }
+
+  .aging-badge {
+    font-size: 11px;
     padding: 3px 6px;
   }
 }

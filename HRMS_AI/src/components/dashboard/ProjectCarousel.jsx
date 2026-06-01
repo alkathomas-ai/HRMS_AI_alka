@@ -154,7 +154,7 @@ const ProjectCarousel = ({ openModal, projectsData }) => {
                                 Suggested Role :
                               </span>
                               <div className="employee-role">
-                                <i>{employee.assigned_role}</i>
+                                <span>{employee.assigned_role}</span>
                               </div>
                             </div>
                             {/* <div className="employee-skills">
