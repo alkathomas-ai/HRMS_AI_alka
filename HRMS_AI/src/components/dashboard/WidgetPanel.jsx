@@ -277,8 +277,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
           let defaultRows = 2;
           let defaultCols = 1;
           if (
-            widget.id === "stats-overview" ||
-            widget.id === "deployment-count"
+            widget.id === "stats-overview"
           )
             defaultRows = 1;
           if (widget.id === "project-carousel") {
@@ -289,7 +288,8 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
             widget.id === "employee-directory" ||
             widget.id === "available-employees" ||
             widget.id === "upskill-suggestions" ||
-            widget.id === "low-occupancy-employees"
+            widget.id === "low-occupancy-employees" ||
+            widget.id === "deployment-count"
           )
             defaultRows = 3;
           if (widget.id === "world-map") {
