@@ -1,8 +1,18 @@
 import { useState, useEffect } from "react";
-import { getProjectRequirements, addProjectRequirement, editProjectRequirement, getProjects, deleteProjectRequirement, generateResourceSuggestion, showResourceSuggestion } from "../../services/api";
+import {
+  getProjectRequirements,
+  addProjectRequirement,
+  editProjectRequirement,
+  getProjects,
+  deleteProjectRequirement,
+  generateResourceSuggestion,
+  showResourceSuggestion,
+} from "../../services/api";
 import "../../components/dashboard/SearchAssistant.css";
 import "./AISuggestions.css";
 import { useToast } from "../../context/ToastContext";
+import JDMatch from "./JDMatch";
+import ResumeMatch from "./ResumeMatch";
 import useConfirmation from "../../components/common/useConfirmation";
 import CandidateProfileModal from "../../components/CandidateProfileModal";
 import { useCandidateProfileModal } from "../../hooks/useCandidateProfileModal";
@@ -31,9 +41,13 @@ const SuggestionCard = ({
     ai_score >= 70 ? "high" : ai_score >= 50 ? "medium" : "low";
 
   return (
-    <div className={`suggestion-card ${scoreClass}-score ${expanded ? "expanded" : ""}`}>
+    <div
+      className={`suggestion-card ${scoreClass}-score ${expanded ? "expanded" : ""}`}
+    >
       <div className="suggestion-row" onClick={() => setExpanded(!expanded)}>
-        <div className={`suggestion-score-circle ${expanded ? 'expanded' : ''}`}>
+        <div
+          className={`suggestion-score-circle ${expanded ? "expanded" : ""}`}
+        >
           <svg className="score-progress" viewBox="0 0 36 36">
             <path
               className="score-bg"
@@ -50,8 +64,8 @@ const SuggestionCard = ({
             {expanded && <span className="score-label">Total score</span>}
           </div>
         </div>
-        
-        <div className={`suggestion-content ${expanded ? 'expanded' : ''}`}>
+
+        <div className={`suggestion-content ${expanded ? "expanded" : ""}`}>
           <div className="suggestion-header">
             <div className="suggestion-name-section">
               <span className="suggestion-name">{display_name}</span>
@@ -60,7 +74,7 @@ const SuggestionCard = ({
               </span>
             </div>
           </div>
-          
+
           {!expanded && (
             <div className="suggestion-skills-preview">
               {skill_set
@@ -78,39 +92,36 @@ const SuggestionCard = ({
               )}
             </div>
           )}
-          
+
           {expanded && employee.ai_criteria && (
             <div className="criteria-breakdown">
-              {Object.entries(employee.ai_criteria).map(
-                ([criteria, score]) => {
-                  const cls =
-                    score >= 70 ? "high" : score >= 50 ? "medium" : "low";
-                  return (
-                    <div key={criteria} className="criteria-row">
-                      <span className="criteria-name">{criteria}</span>
-                      <div className="criteria-bar-container">
-                        <div className="criteria-bar-bg">
-                          <div
-                            className={`criteria-bar-fill ${cls}`}
-                            style={{ width: `${score}%` }}
-                          />
-                        </div>
-                        <span className={`criteria-score ${cls}`}>
-                          {criteria === 'Confidence' ? 
-                            `${score >= 70 ? 'High' : score >= 50 ? 'Medium' : 'Low'} (${score}%)` : 
-                            score
-                          }
-                        </span>
+              {Object.entries(employee.ai_criteria).map(([criteria, score]) => {
+                const cls =
+                  score >= 70 ? "high" : score >= 50 ? "medium" : "low";
+                return (
+                  <div key={criteria} className="criteria-row">
+                    <span className="criteria-name">{criteria}</span>
+                    <div className="criteria-bar-container">
+                      <div className="criteria-bar-bg">
+                        <div
+                          className={`criteria-bar-fill ${cls}`}
+                          style={{ width: `${score}%` }}
+                        />
                       </div>
+                      <span className={`criteria-score ${cls}`}>
+                        {criteria === "Confidence"
+                          ? `${score >= 70 ? "High" : score >= 50 ? "Medium" : "Low"} (${score}%)`
+                          : score}
+                      </span>
                     </div>
-                  );
-                },
-              )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
       </div>
-      
+
       {expanded && (
         <div className="expanded-content">
           {skill_set && (
@@ -157,7 +168,7 @@ const SuggestionCard = ({
               </div>
             </div>
           )}
-          
+
           {ai_reason && (
             <div className="ai-reason-section">
               <p className="reason-text">{ai_reason}</p>
@@ -183,7 +194,7 @@ const EMPTY_PROJECT = {
 const AISuggestions = () => {
   const [projects, setProjects] = useState([]);
   const [projectsLoading, setProjectsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('projects');
+  const [activeTab, setActiveTab] = useState("projects");
   const [selectedProject, setSelectedProject] = useState(null);
   const [activeSkill, setActiveSkill] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -193,15 +204,15 @@ const AISuggestions = () => {
   const [form, setForm] = useState(EMPTY_PROJECT);
   const [editingId, setEditingId] = useState(null);
   const [projectsList, setProjectsList] = useState([]);
-  const [projectSearch, setProjectSearch] = useState('');
+  const [projectSearch, setProjectSearch] = useState("");
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [openDropdownId, setOpenDropdownId] = useState(null);
-  const [projectsSearchQuery, setProjectsSearchQuery] = useState('');
-  const [aiSuggestionsSearchQuery, setAiSuggestionsSearchQuery] = useState('');
+  const [projectsSearchQuery, setProjectsSearchQuery] = useState("");
+  const [aiSuggestionsSearchQuery, setAiSuggestionsSearchQuery] = useState("");
   const { showSuccess, showError, showInfo } = useToast();
   const { confirm, ConfirmationModal } = useConfirmation();
-  
+
   // Candidate Profile Modal for delivery owner
   const {
     isOpen: isModalOpen,
@@ -209,7 +220,7 @@ const AISuggestions = () => {
     loading: modalLoading,
     error: modalError,
     openModal,
-    closeModal
+    closeModal,
   } = useCandidateProfileModal();
 
   useEffect(() => {
@@ -222,9 +233,12 @@ const AISuggestions = () => {
           ? requirementsData
           : requirementsData?.data || requirementsData?.projects || [];
         setProjects(
-          requirementsResult.map((p) => ({ ...p, employees: p.employees || [] })),
+          requirementsResult.map((p) => ({
+            ...p,
+            employees: p.employees || [],
+          })),
         );
-        
+
         // Fetch all projects for projects tab
         await fetchProjectsList();
       } catch (err) {
@@ -238,29 +252,52 @@ const AISuggestions = () => {
   }, []);
 
   const filteredProjectsList = projectSearch
-    ? projectsList.filter((p) =>
-        p.project_name?.toLowerCase().includes(projectSearch.toLowerCase()) ||
-        p.customer?.toLowerCase().includes(projectSearch.toLowerCase())
+    ? projectsList.filter(
+        (p) =>
+          p.project_name?.toLowerCase().includes(projectSearch.toLowerCase()) ||
+          p.customer?.toLowerCase().includes(projectSearch.toLowerCase()),
       )
     : projectsList;
 
   const filteredProjectsForTab = projectsSearchQuery
-    ? projectsList.filter((p) =>
-        p.project_name?.toLowerCase().includes(projectsSearchQuery.toLowerCase()) ||
-        p.customer?.toLowerCase().includes(projectsSearchQuery.toLowerCase()) ||
-        p.project_department?.toLowerCase().includes(projectsSearchQuery.toLowerCase()) ||
-        p.project_status?.toLowerCase().includes(projectsSearchQuery.toLowerCase()) ||
-        p.delivery_owner?.toLowerCase().includes(projectsSearchQuery.toLowerCase())
+    ? projectsList.filter(
+        (p) =>
+          p.project_name
+            ?.toLowerCase()
+            .includes(projectsSearchQuery.toLowerCase()) ||
+          p.customer
+            ?.toLowerCase()
+            .includes(projectsSearchQuery.toLowerCase()) ||
+          p.project_department
+            ?.toLowerCase()
+            .includes(projectsSearchQuery.toLowerCase()) ||
+          p.project_status
+            ?.toLowerCase()
+            .includes(projectsSearchQuery.toLowerCase()) ||
+          p.delivery_owner
+            ?.toLowerCase()
+            .includes(projectsSearchQuery.toLowerCase()),
       )
     : projectsList;
 
   const filteredProjectsForAI = aiSuggestionsSearchQuery
-    ? projects.filter((p) =>
-        p.project_name?.toLowerCase().includes(aiSuggestionsSearchQuery.toLowerCase()) ||
-        p.customer?.toLowerCase().includes(aiSuggestionsSearchQuery.toLowerCase()) ||
-        p.client?.toLowerCase().includes(aiSuggestionsSearchQuery.toLowerCase()) ||
-        p.requirements?.toLowerCase().includes(aiSuggestionsSearchQuery.toLowerCase()) ||
-        p.required_skills?.toLowerCase().includes(aiSuggestionsSearchQuery.toLowerCase())
+    ? projects.filter(
+        (p) =>
+          p.project_name
+            ?.toLowerCase()
+            .includes(aiSuggestionsSearchQuery.toLowerCase()) ||
+          p.customer
+            ?.toLowerCase()
+            .includes(aiSuggestionsSearchQuery.toLowerCase()) ||
+          p.client
+            ?.toLowerCase()
+            .includes(aiSuggestionsSearchQuery.toLowerCase()) ||
+          p.requirements
+            ?.toLowerCase()
+            .includes(aiSuggestionsSearchQuery.toLowerCase()) ||
+          p.required_skills
+            ?.toLowerCase()
+            .includes(aiSuggestionsSearchQuery.toLowerCase()),
       )
     : projects;
 
@@ -272,8 +309,8 @@ const AISuggestions = () => {
       setSelectedProject(latest);
       setActiveSkill(null);
       // Only switch to AI suggestions tab if we're not already there
-      if (activeTab === 'projects') {
-        setActiveTab('ai-suggestions');
+      if (activeTab === "projects") {
+        setActiveTab("ai-suggestions");
       }
     }
   };
@@ -287,14 +324,14 @@ const AISuggestions = () => {
       const list = data?.response ?? [];
       setProjectsList(list);
     } catch (err) {
-      console.error('Failed to fetch projects list', err);
+      console.error("Failed to fetch projects list", err);
     }
   };
 
   const handleAddNew = () => {
     setForm(EMPTY_PROJECT);
     setEditingId(null);
-    setProjectSearch('');
+    setProjectSearch("");
     setShowForm(true);
     setSelectedProject(null);
     fetchProjectsList();
@@ -316,26 +353,26 @@ const AISuggestions = () => {
         if (response) {
           // Update the project in the list
           const updatedProject = { ...original, ...form, id: editingId };
-          setProjects(projects.map((p) =>
-            p.id === editingId ? updatedProject : p
-          ));
-          showSuccess('Project Requirement updated successfully!');
+          setProjects(
+            projects.map((p) => (p.id === editingId ? updatedProject : p)),
+          );
+          showSuccess("Project Requirement updated successfully!");
           // Close the modal immediately
           setShowForm(false);
           setForm(EMPTY_PROJECT);
           setEditingId(null);
-          
+
           // Show loader in the table row's Get AI Suggestions button and call API
           setLoadingProjectId(editingId);
           if (selectedProject?.id === editingId) {
             setSelectedProject(updatedProject);
             setLoading(true);
           }
-          
+
           handlegeneratedResponse(updatedProject)
-            .catch(err => {
-              console.error('Failed to refresh suggestions after edit', err);
-              showError('Failed to refresh suggestions!');
+            .catch((err) => {
+              console.error("Failed to refresh suggestions after edit", err);
+              showError("Failed to refresh suggestions!");
             })
             .finally(() => {
               setLoadingProjectId(null);
@@ -345,10 +382,12 @@ const AISuggestions = () => {
             });
         }
       } catch (err) {
-        console.error('Edit failed, updating locally', err);
-        setProjects(projects.map((p) =>
-          p.id === editingId ? { ...original, ...form, id: editingId } : p
-        ));
+        console.error("Edit failed, updating locally", err);
+        setProjects(
+          projects.map((p) =>
+            p.id === editingId ? { ...original, ...form, id: editingId } : p,
+          ),
+        );
         // Close modal even on error
         setShowForm(false);
         setForm(EMPTY_PROJECT);
@@ -358,7 +397,7 @@ const AISuggestions = () => {
       let newId = null;
       try {
         const res = await addProjectRequirement(form);
-        newId = res?.id || res?.project_requirement_id || null; 
+        newId = res?.id || res?.project_requirement_id || null;
         const newProject = { ...form, id: newId, employees: [] };
         setProjects((prev) => [...prev, newProject]);
         setShowForm(false);
@@ -374,21 +413,26 @@ const AISuggestions = () => {
             const suggestions = await generateResourceSuggestion(newId);
             const employees = suggestions?.response?.[0]?.response ?? [];
             const updated = { ...newProject, employees };
-            setProjects((prev) => prev.map((p) => p.id === newId ? updated : p));
+            setProjects((prev) =>
+              prev.map((p) => (p.id === newId ? updated : p)),
+            );
             setSelectedProject(updated);
           } catch (err) {
-            console.error('Failed to fetch suggestions', err);
+            console.error("Failed to fetch suggestions", err);
           } finally {
             setLoadingProjectId(null);
             setLoading(false);
           }
         }
-        showSuccess('Project Requirement added successfully!');
+        showSuccess("Project Requirement added successfully!");
         return;
       } catch (err) {
-        console.error('Add failed, adding locally', err);
-        showError('Failed to add Project Requirement!');
-        setProjects((prev) => [...prev, { ...form, id: Date.now(), employees: [] }]);
+        console.error("Add failed, adding locally", err);
+        showError("Failed to add Project Requirement!");
+        setProjects((prev) => [
+          ...prev,
+          { ...form, id: Date.now(), employees: [] },
+        ]);
       }
     }
     setShowForm(false);
@@ -397,17 +441,21 @@ const AISuggestions = () => {
   };
 
   const handleDelete = async (id) => {
-    const confirmed = await confirm('Are you sure you want to delete this project?');
+    const confirmed = await confirm(
+      "Are you sure you want to delete this project?",
+    );
     if (!confirmed) return;
-    
+
     try {
       await deleteProjectRequirement(id);
-      showSuccess('Project deleted successfully');
+      showSuccess("Project deleted successfully");
       const data = await getProjectRequirements();
-      const result = Array.isArray(data) ? data : data?.data || data?.projects || [];
+      const result = Array.isArray(data)
+        ? data
+        : data?.data || data?.projects || [];
       setProjects(result.map((p) => ({ ...p, employees: p.employees || [] })));
     } catch (err) {
-      showError('Failed to delete project');
+      showError("Failed to delete project");
     }
   };
 
@@ -430,7 +478,7 @@ const AISuggestions = () => {
 
   const handleShowResourceSuggestion = async (project) => {
     const response = await showResourceSuggestion(project.id);
-    console.log('Suggestions response:', response);
+    console.log("Suggestions response:", response);
     const result = response?.response?.[0].suggestion ?? [];
     if (result.length > 0) {
       const updated = projects.map((p) =>
@@ -479,7 +527,7 @@ const AISuggestions = () => {
     e.stopPropagation();
     setForm({ ...project });
     setEditingId(project.id);
-    setProjectSearch(project.project_name || '');
+    setProjectSearch(project.project_name || "");
     setShowForm(true);
     setSelectedProject(null);
     fetchProjectsList();
@@ -488,21 +536,25 @@ const AISuggestions = () => {
   const handleDeleteProject = async (id, e) => {
     e.stopPropagation();
     const confirmed = await confirm({
-      title: 'Delete Requirement',
-      message: 'Are you sure you want to delete this project requirement? This action cannot be undone.',
+      title: "Delete Requirement",
+      message:
+        "Are you sure you want to delete this project requirement? This action cannot be undone.",
     });
     if (!confirmed) return;
     try {
       await deleteProjectRequirement(id);
       setProjects(projects.filter((p) => p.id !== id));
       if (selectedProject?.id === id) setSelectedProject(null);
-      showSuccess('Project requirement deleted successfully!');
+      showSuccess("Project requirement deleted successfully!");
     } catch (err) {
-      const msg = err.response?.data?.detail || '';
-      if (msg.includes('ForeignKeyViolation') || msg.includes('still referenced')) {
-        showError('Cannot delete: this requirement has linked suggestions.');
+      const msg = err.response?.data?.detail || "";
+      if (
+        msg.includes("ForeignKeyViolation") ||
+        msg.includes("still referenced")
+      ) {
+        showError("Cannot delete: this requirement has linked suggestions.");
       } else {
-        showError('Failed to delete. Please try again.');
+        showError("Failed to delete. Please try again.");
       }
     }
   };
@@ -515,15 +567,15 @@ const AISuggestions = () => {
   const handleDropdownAction = (action, project, event) => {
     event.stopPropagation();
     setOpenDropdownId(null);
-    
+
     switch (action) {
-      case 'edit':
+      case "edit":
         handleEditProject(project, event);
         break;
-      case 'delete':
+      case "delete":
         handleDeleteProject(project.id, event);
         break;
-      case 'generate':
+      case "generate":
         handleGetSuggestions(project, event);
         break;
       default:
@@ -536,10 +588,10 @@ const AISuggestions = () => {
     const handleClickOutside = () => {
       setOpenDropdownId(null);
     };
-    
+
     if (openDropdownId) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
     }
   }, [openDropdownId]);
 
@@ -554,7 +606,6 @@ const AISuggestions = () => {
   // Handle delivery owner click
   const handleDeliveryOwnerClick = (deliveryOwner, e) => {
     e.stopPropagation();
-    debugger
     if (deliveryOwner) {
       openModal(deliveryOwner);
     }
@@ -562,25 +613,21 @@ const AISuggestions = () => {
 
   const renderProjectsTab = () => (
     <div className="projects-content">
-      {/* <div className="ais-toolbar">
-        <div>
-          <h1 className="welcome-title">All Projects</h1>
-        </div>
-      </div> */}
-      
       {/* Project Count Tile */}
       <div className="project-count-tile">
         <div className="count-tile-icon">
           <span className="material-symbols-outlined">folder</span>
         </div>
         <div className="count-tile-content">
-          <div className="count-tile-number">{filteredProjectsForTab.length}</div>
+          <div className="count-tile-number">
+            {filteredProjectsForTab.length}
+          </div>
           <div className="count-tile-label">
-            {projectsSearchQuery ? 'Filtered Projects' : 'Total Projects'}
+            {projectsSearchQuery ? "Filtered Projects" : "Total Projects"}
           </div>
         </div>
       </div>
-      
+
       <div className="projects-table-card">
         {/* Search box integrated with table */}
         <div className="table-search-header">
@@ -594,7 +641,7 @@ const AISuggestions = () => {
             />
           </div>
         </div>
-        
+
         <div className="table-wrapper">
           <table className="projects-table">
             <thead>
@@ -622,7 +669,9 @@ const AISuggestions = () => {
               ) : filteredProjectsForTab.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="table-empty">
-                    {projectsSearchQuery ? 'No projects found matching your search.' : 'No projects found.'}
+                    {projectsSearchQuery
+                      ? "No projects found matching your search."
+                      : "No projects found."}
                   </td>
                 </tr>
               ) : (
@@ -642,15 +691,22 @@ const AISuggestions = () => {
                     <td>{project.customer || "—"}</td>
                     <td>{project.project_department || "—"}</td>
                     <td>
-                      <span className={`status-badge ${project.project_status?.toLowerCase()}`}>
+                      <span
+                        className={`status-badge ${project.project_status?.toLowerCase()}`}
+                      >
                         {project.project_status || "—"}
                       </span>
                     </td>
                     <td>
                       {project.delivery_owner ? (
-                        <span 
+                        <span
                           className="delivery-owner-clickable"
-                          onClick={(e) => handleDeliveryOwnerClick(project.delivery_owner_emp_id, e)}
+                          onClick={(e) =>
+                            handleDeliveryOwnerClick(
+                              project.delivery_owner_emp_id,
+                              e,
+                            )
+                          }
                           title="Click to view employee profile"
                         >
                           {project.delivery_owner}
@@ -660,10 +716,14 @@ const AISuggestions = () => {
                       )}
                     </td>
                     <td>
-                      {project.pm ? project.pm.split(' - ')[1] || project.pm : "—"}
+                      {project.pm
+                        ? project.pm.split(" - ")[1] || project.pm
+                        : "—"}
                     </td>
                     <td>
-                      {project.project_extended_end_date || project.project_committed_end_date || "—"}
+                      {project.project_extended_end_date ||
+                        project.project_committed_end_date ||
+                        "—"}
                     </td>
                     <td>
                       {project.updated_at
@@ -714,11 +774,13 @@ const AISuggestions = () => {
                     type="text"
                     placeholder="Search by project, client, requirements..."
                     value={aiSuggestionsSearchQuery}
-                    onChange={(e) => setAiSuggestionsSearchQuery(e.target.value)}
+                    onChange={(e) =>
+                      setAiSuggestionsSearchQuery(e.target.value)
+                    }
                   />
                 </div>
               </div>
-              
+
               <div className="table-wrapper">
                 <table className="projects-table">
                   <thead>
@@ -744,7 +806,8 @@ const AISuggestions = () => {
                     ) : projects.length === 0 ? (
                       <tr>
                         <td colSpan={6} className="table-empty">
-                          No requirements added yet. Click "Add Requirement" to get started.
+                          No requirements added yet. Click "Add Requirement" to
+                          get started.
                         </td>
                       </tr>
                     ) : filteredProjectsForAI.length === 0 ? (
@@ -800,27 +863,39 @@ const AISuggestions = () => {
                                 onClick={(e) => handleDropdownToggle(p.id, e)}
                                 title="More actions"
                               >
-                                <span className="material-symbols-outlined">more_vert</span>
+                                <span className="material-symbols-outlined">
+                                  more_vert
+                                </span>
                               </button>
                               {openDropdownId === p.id && (
                                 <div className="action-dropdown-menu">
                                   <button
                                     className="dropdown-item"
-                                    onClick={(e) => handleDropdownAction('generate', p, e)}
+                                    onClick={(e) =>
+                                      handleDropdownAction("generate", p, e)
+                                    }
                                     disabled={loadingProjectId === p.id}
                                   >
-                                    <span className="material-symbols-outlined">auto_awesome</span>
-                                    {loadingProjectId === p.id ? 'Generating...' : 'Generate AI Suggestions'}
+                                    <span className="material-symbols-outlined">
+                                      auto_awesome
+                                    </span>
+                                    {loadingProjectId === p.id
+                                      ? "Generating..."
+                                      : "Generate AI Suggestions"}
                                   </button>
                                   <button
                                     className="dropdown-item"
-                                    onClick={(e) => handleDropdownAction('edit', p, e)}
+                                    onClick={(e) =>
+                                      handleDropdownAction("edit", p, e)
+                                    }
                                   >
                                     Edit Requirement
                                   </button>
                                   <button
                                     className="dropdown-item"
-                                    onClick={(e) => handleDropdownAction('delete', p, e)}
+                                    onClick={(e) =>
+                                      handleDropdownAction("delete", p, e)
+                                    }
                                   >
                                     Delete Requirement
                                   </button>
@@ -844,7 +919,9 @@ const AISuggestions = () => {
                 <div className="panel-header">
                   <div className="panel-header-info">
                     <h3>{selectedProject.project_name}</h3>
-                    <span>{selectedProject.customer || selectedProject.client}</span>
+                    <span>
+                      {selectedProject.customer || selectedProject.client}
+                    </span>
                   </div>
                   <button
                     className="panel-close-btn"
@@ -872,10 +949,9 @@ const AISuggestions = () => {
                         auto_awesome
                       </span>
                       <p>
-                        No Available suggestion for this Project requirement. Edit the requirement or Click 
-                          AI Suggestion Button
-                         to Generate new AI
-                        suggestions for this project.
+                        No Available suggestion for this Project requirement.
+                        Edit the requirement or Click AI Suggestion Button to
+                        Generate new AI suggestions for this project.
                       </p>
                     </div>
                   ) : (
@@ -933,27 +1009,39 @@ const AISuggestions = () => {
       <div className="expanded-tabs justify-btwn">
         <div className="tab-buttons">
           <button
-            class="tab-button" 
-            className={activeTab === 'projects' ? 'active' : ''}
-            onClick={() => setActiveTab('projects')}
+            className={`tab-button ${activeTab === "projects" ? "active" : ""}`}
+            onClick={() => setActiveTab("projects")}
           >
             Projects
           </button>
-          <button 
-            class="tab-button" 
-            className={activeTab === 'ai-suggestions' ? 'active' : ''}
-            onClick={() => setActiveTab('ai-suggestions')}
+          <button
+            className={`tab-button ${activeTab === "ai-suggestions" ? "active" : ""}`}
+            onClick={() => setActiveTab("ai-suggestions")}
           >
             AI Resource Suggestions
           </button>
+          <button
+            className={`tab-button ${activeTab === "jd-match" ? "active" : ""}`}
+            onClick={() => setActiveTab("jd-match")}
+          >
+            Job Description Match
+          </button>
+          <button
+            className={`tab-button ${activeTab === "similar-profiles" ? "active" : ""}`}
+            onClick={() => setActiveTab("similar-profiles")}
+          >
+            Similar Profile Suggestions
+          </button>
         </div>
         <div className="d-flex align-center">
-          <button 
-            className="add-requirement-btn"
-            onClick={() => setShowForm(true)}
-          >
-            Add Project Requirement
-          </button>
+          {activeTab == "ai-suggestions" && (
+            <button
+              className="add-requirement-btn"
+              onClick={() => setShowForm(true)}
+            >
+              Add Project Requirement
+            </button>
+          )}
         </div>
       </div>
 
@@ -973,18 +1061,26 @@ const AISuggestions = () => {
             <form onSubmit={handleFormSubmit} className="requirement-form">
               <div className="project-suggestion-form-row">
                 <div className="project-suggestion-form-group">
-                  <label>Project Name <span className="required">*</span></label>
+                  <label>
+                    Project Name <span className="required">*</span>
+                  </label>
                   <div className="autocomplete-wrapper">
                     <input
                       name="project_name"
                       value={projectSearch}
                       onChange={(e) => {
                         setProjectSearch(e.target.value);
-                        setForm({ ...form, project_name: e.target.value, customer: form.customer });
+                        setForm({
+                          ...form,
+                          project_name: e.target.value,
+                          customer: form.customer,
+                        });
                         setShowProjectDropdown(true);
                       }}
                       onFocus={() => setShowProjectDropdown(true)}
-                      onBlur={() => setTimeout(() => setShowProjectDropdown(false), 150)}
+                      onBlur={() =>
+                        setTimeout(() => setShowProjectDropdown(false), 150)
+                      }
                       placeholder="Eg: BPLU_DCMA"
                       required
                       autoComplete="off"
@@ -996,13 +1092,23 @@ const AISuggestions = () => {
                             key={i}
                             className="autocomplete-option"
                             onMouseDown={() => {
-                              setForm({ ...form, project_name: p.project_name, customer: p.customer || form.customer });
+                              setForm({
+                                ...form,
+                                project_name: p.project_name,
+                                customer: p.customer || form.customer,
+                              });
                               setProjectSearch(p.project_name);
                               setShowProjectDropdown(false);
                             }}
                           >
-                            <span className="autocomplete-project-name">{p.project_name}</span>
-                            {p.customer && <span className="autocomplete-customer">{p.customer}</span>}
+                            <span className="autocomplete-project-name">
+                              {p.project_name}
+                            </span>
+                            {p.customer && (
+                              <span className="autocomplete-customer">
+                                {p.customer}
+                              </span>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -1052,10 +1158,22 @@ const AISuggestions = () => {
       )}
 
       {/* TAB CONTENT */}
-      {activeTab === 'projects' ? renderProjectsTab() : renderAISuggestionsTab()}
-      
+      {activeTab === "projects" ? (
+        renderProjectsTab()
+      ) : activeTab === "ai-suggestions" ? (
+        renderAISuggestionsTab()
+      ) : activeTab === "similar-profiles" ? (
+        <div className="ai-suggestions-content">
+          <ResumeMatch/>
+        </div>
+      ) : (
+        <div className="ai-suggestions-content">
+          <JDMatch />
+        </div>
+      )}
+
       <ConfirmationModal />
-      
+
       {/* Candidate Profile Modal for delivery owner */}
       <CandidateProfileModal
         isOpen={isModalOpen}
