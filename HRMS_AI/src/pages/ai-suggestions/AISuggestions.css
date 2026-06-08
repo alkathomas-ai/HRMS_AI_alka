@@ -328,33 +328,32 @@
 .suggestion-cards-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .suggestion-card {
-  background: #f8fafc;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-card);
+  border-radius: 10px;
+  border: 1px solid var(--color-bg-muted);
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
   cursor: pointer;
 }
 
 .suggestion-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border-color: var(--color-primary-soft);
 }
 
 .suggestion-card.expanded {
-  background: white;
+  border-color: var(--color-primary);
 }
 
 .suggestion-row {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  padding: 16px;
-  transition: all 0.3s ease;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
 }
 
 .suggestion-card.expanded .suggestion-row {
@@ -368,12 +367,12 @@
   width: 48px;
   height: 48px;
   flex-shrink: 0;
-  transition: all 0.3s ease;
+  transition: width 0.3s ease, height 0.3s ease;
 }
 
 .suggestion-score-circle.expanded {
-  width: 80px;
-  height: 80px;
+  width: 72px;
+  height: 72px;
 }
 
 .score-progress {
@@ -384,7 +383,7 @@
 
 .score-bg {
   fill: none;
-  stroke: #e2e8f0;
+  stroke: var(--color-bg-muted);
   stroke-width: 2;
 }
 
@@ -392,12 +391,11 @@
   fill: none;
   stroke-width: 2;
   stroke-linecap: round;
-  transition: stroke-dasharray 0.3s ease;
 }
 
-.score-fill.high { stroke: #6366f1; }
-.score-fill.medium { stroke: #f59e0b; }
-.score-fill.low { stroke: #ef4444; }
+.score-fill.high { stroke: var(--color-primary); }
+.score-fill.medium { stroke: var(--color-primary-medium); }
+.score-fill.low { stroke: var(--color-primary-low); }
 
 .score-center {
   position: absolute;
@@ -405,32 +403,30 @@
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  transition: all 0.3s ease;
 }
 
 .score-text {
   display: block;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   line-height: 1;
-  transition: font-size 0.3s ease;
 }
 
 .suggestion-score-circle.expanded .score-text {
-  font-size: 20px;
+  font-size: 17px;
 }
 
-.score-text.high { color: #6366f1; }
-.score-text.medium { color: #f59e0b; }
-.score-text.low { color: #ef4444; }
+.score-text.high { color: var(--color-primary); }
+.score-text.medium { color: var(--color-primary-medium); }
+.score-text.low { color: var(--color-primary-low); }
 
 .score-label {
   display: block;
-  font-size: 11px;
-  color: #64748b;
+  font-size: 10px;
+  color: var(--color-text-secondary);
   margin-top: 2px;
   opacity: 0;
-  animation: fadeIn 0.3s ease 0.2s forwards;
+  animation: fadeIn 0.3s ease 0.15s forwards;
 }
 
 @keyframes fadeIn {
@@ -441,17 +437,16 @@
 .suggestion-content {
   flex: 1;
   min-width: 0;
-  transition: all 0.3s ease;
 }
 
 .suggestion-content.expanded {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 }
 
 .suggestion-header {
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .suggestion-card.expanded .suggestion-header {
@@ -461,116 +456,104 @@
 .suggestion-name-section {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .suggestion-name {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  color: #1e293b;
-  margin: 0;
+  color: var(--color-text-primary);
 }
 
 .suggestion-meta-inline {
-  font-size: 13px;
-  color: #64748b;
+  font-size: 12px;
+  color: var(--color-text-secondary);
 }
 
 /* Skills Preview (collapsed state) */
 .suggestion-skills-preview {
   display: flex;
-  gap: 6px;
+  gap: 5px;
   flex-wrap: wrap;
-  opacity: 1;
-  transition: opacity 0.2s ease;
+  margin-top: 4px;
 }
 
 .skill-badge-preview {
-  background: #e2e8f0;
-  color: #475569;
-  padding: 4px 8px;
-  border-radius: 6px;
+  background: var(--color-bg-muted);
+  color: var(--color-text-secondary);
+  padding: 3px 8px;
+  border-radius: 5px;
   font-size: 11px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.15s ease;
 }
 
 .skill-badge-preview:hover {
-  background: #cbd5e1;
+  background: var(--color-secondary-hover);
+  color: var(--color-primary);
 }
 
 .skill-badge-preview.more {
-  background: #6366f1;
-  color: white;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
 }
 
 .skill-badge-preview.active-skill-badge-preview {
-  background: #6366f1;
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
 }
 
 .skill-more-btn-preview {
   background: transparent;
-  border: 1px solid #cbd5e1;
-  color: #64748b;
-  padding: 4px 8px;
-  border-radius: 6px;
+  border: 1px solid var(--color-bg-muted);
+  color: var(--color-text-secondary);
+  padding: 3px 8px;
+  border-radius: 5px;
   font-size: 11px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .skill-more-btn-preview:hover {
-  background: #f1f5f9;
-  border-color: #94a3b8;
+  background: var(--color-bg-muted);
+  color: var(--color-text-primary);
 }
 
 /* Criteria Breakdown (expanded state) */
 .criteria-breakdown {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   opacity: 0;
-  animation: slideInFade 0.4s ease 0.1s forwards;
-}
-
-@keyframes slideInFade {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  animation: fadeIn 0.3s ease 0.1s forwards;
 }
 
 .criteria-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
 }
 
 .criteria-name {
-  font-size: 13px;
-  color: #475569;
-  min-width: 80px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  min-width: 90px;
   flex-shrink: 0;
 }
 
 .criteria-bar-container {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex: 1;
 }
 
 .criteria-bar-bg {
-  background: #e2e8f0;
+  background: var(--color-bg-muted);
   border-radius: 4px;
-  height: 6px;
+  height: 5px;
   flex: 1;
   overflow: hidden;
 }
@@ -578,91 +561,89 @@
 .criteria-bar-fill {
   height: 100%;
   border-radius: 4px;
-  transition: width 0.5s ease 0.3s;
+  transition: width 0.5s ease 0.2s;
 }
 
-.criteria-bar-fill.high { background: #6366f1; }
-.criteria-bar-fill.medium { background: #f59e0b; }
-.criteria-bar-fill.low { background: #ef4444; }
+.criteria-bar-fill.high { background: var(--color-primary); }
+.criteria-bar-fill.medium { background: var(--color-primary-medium); }
+.criteria-bar-fill.low { background: var(--color-primary-low); }
 
 .criteria-score {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  min-width: 60px;
+  min-width: 55px;
   text-align: right;
 }
 
-.criteria-score.high { color: #6366f1; }
-.criteria-score.medium { color: #f59e0b; }
-.criteria-score.low { color: #ef4444; }
+.criteria-score.high { color: var(--color-primary); }
+.criteria-score.medium { color: var(--color-primary-medium); }
+.criteria-score.low { color: var(--color-primary-low); }
 
-/* Expanded Content (skills section below) */
+/* Expanded Content */
 .expanded-content {
-  padding: 0 16px 16px 16px;
-  /* border-top: 1px solid #e2e8f0;
-  margin-top: 8px; */
+  padding: 0 16px 14px;
   opacity: 0;
-  animation: slideInFade 0.4s ease 0.2s forwards;
+  animation: fadeIn 0.3s ease 0.15s forwards;
 }
 
-.skills-section {
-  /* margin-bottom: 16px; */
-}
+.skills-section { }
 
 .skills-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 5px;
 }
 
 .skill-badge {
-  background: #e2e8f0;
-  color: #475569;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 12px;
+  background: var(--color-bg-muted);
+  color: var(--color-text-secondary);
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 11px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.15s ease;
 }
 
 .skill-badge:hover {
-  background: #cbd5e1;
+  background: var(--color-secondary-hover);
+  color: var(--color-primary);
 }
 
 .skill-badge.active-skill-badge {
-  background: #6366f1;
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
 }
 
 .skill-more-btn {
   background: transparent;
-  border: 1px solid #cbd5e1;
-  color: #64748b;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 12px;
+  border: 1px solid var(--color-bg-muted);
+  color: var(--color-text-secondary);
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 11px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .skill-more-btn:hover {
-  background: #f1f5f9;
-  border-color: #94a3b8;
+  background: var(--color-bg-muted);
+  color: var(--color-text-primary);
 }
 
 /* AI Reason */
-.ai-reason-section {
-  /* padding-top: 12px; */
-  /* border-top: 1px solid #e2e8f0; */
-}
+.ai-reason-section { }
 
 .reason-text {
-  font-size: 13px;
-  color: #475569;
-  line-height: 1.5;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
   margin: 0;
   font-style: italic;
+  background: var(--color-bg-dashboard);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border-left: 3px solid var(--color-primary-light);
 }
 
 /* ── Add/Edit Modal ── */
@@ -2166,3 +2147,264 @@
   color: var(--color-text-primary);
   margin: 0 0 8px 0;
 }
+
+
+
+/* ── Similar Profiles Tab ── */
+.similar-profiles-page {
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-bg-card);
+  padding: 24px;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  min-height: 0;
+}
+
+.similar-profiles-left {
+  width: 400px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+}
+
+.similar-profiles-right {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 4px 8px;
+  gap: 12px;
+}
+
+.similar-profiles-right .projects-table-card {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 6px;
+  border: 1px solid var(--color-bg-muted);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Upload Card */
+.sp-upload-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-bg-muted);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.sp-upload-icon-wrap {
+  width: 44px;
+  height: 44px;
+  background: var(--color-primary-light);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sp-upload-icon-wrap .material-symbols-outlined {
+  font-size: 22px;
+  color: var(--color-primary);
+}
+
+.sp-upload-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.sp-upload-hint {
+  margin: 0;
+  margin-top: -8px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.sp-file-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px dashed var(--color-bg-muted);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+  overflow: hidden;
+}
+
+.sp-file-label span:not(.material-symbols-outlined) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sp-file-label:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.sp-file-label.has-file { border-style: solid; border-color: var(--color-primary); color: var(--color-text-primary); }
+.sp-file-label .material-symbols-outlined { font-size: 16px; flex-shrink: 0; }
+
+/* Resume Summary Card */
+.sp-summary-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-bg-muted);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 12px;
+}
+
+.sp-summary-header {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.sp-summary-avatar {
+  width: 38px;
+  height: 38px;
+  background: var(--color-primary-light);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sp-summary-avatar .material-symbols-outlined { font-size: 18px; color: var(--color-primary); }
+
+.sp-summary-designation {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 5px;
+  line-height: 1.3;
+}
+
+.sp-summary-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.sp-matches-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  /* color: #166534;
+  background: #dcfce7; */
+  padding: 6px 10px;
+  margin: 10px;
+  border-radius: 8px;
+  width: fit-content;
+}
+
+.sp-matches-badge .material-symbols-outlined { font-size: 15px; }
+
+.sp-skills-section {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-bg-muted);
+}
+
+.sp-skills-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--color-text-secondary);
+}
+
+.sp-skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+/* Employee avatar in table */
+.sp-emp-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* Skill badges */
+.primary-skill-badge {
+  background: var(--color-primary-light) !important;
+  color: var(--color-primary) !important;
+}
+
+/* Resume info chips */
+.resume-info-chip {
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--color-bg-muted);
+  color: var(--color-text-secondary);
+  text-transform: capitalize;
+}
+
+.resume-info-chip.primary { background: var(--color-primary-light); color: var(--color-primary); }
+.resume-info-chip.muted { background: transparent; border: 1px solid var(--color-bg-muted); }
+
+/* AI Score badge */
+.similar-score-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.similar-score-badge.high   { background: #ede9fe; color: #6366f1; }
+.similar-score-badge.medium { background: #fef3c7; color: #d97706; }
+.similar-score-badge.low    { background: #fee2e2; color: #ef4444; }
+
+/* Empty / loading states */
+.similar-profiles-loading,
+.sp-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 100%;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  text-align: center;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-bg-muted);
+  border-radius: 6px;
+}
+
+.sp-empty-state .material-symbols-outlined { font-size: 44px; opacity: 0.25; }
+.sp-empty-state p,
+.similar-profiles-loading p { margin: 0; }
