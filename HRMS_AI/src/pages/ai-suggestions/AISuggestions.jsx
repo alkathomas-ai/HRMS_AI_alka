@@ -1157,20 +1157,19 @@ const AISuggestions = () => {
         </div>
       )}
 
-      {/* TAB CONTENT */}
-      {activeTab === "projects" ? (
-        renderProjectsTab()
-      ) : activeTab === "ai-suggestions" ? (
-        renderAISuggestionsTab()
-      ) : activeTab === "similar-profiles" ? (
-        <div className="ai-suggestions-content">
-          <ResumeMatch/>
-        </div>
-      ) : (
-        <div className="ai-suggestions-content">
-          <JDMatch />
-        </div>
-      )}
+      {/* TAB CONTENT - always mounted to preserve state */}
+      <div style={{ display: activeTab === "projects" ? "block" : "none" }}>
+        {renderProjectsTab()}
+      </div>
+      <div style={{ display: activeTab === "ai-suggestions" ? "block" : "none" }}>
+        {renderAISuggestionsTab()}
+      </div>
+      <div style={{ display: activeTab === "similar-profiles" ? "block" : "none" }} className="ai-suggestions-content">
+        <ResumeMatch showError={showError} />
+      </div>
+      <div style={{ display: activeTab === "jd-match" ? "block" : "none" }} className="ai-suggestions-content">
+        <JDMatch />
+      </div>
 
       <ConfirmationModal />
 

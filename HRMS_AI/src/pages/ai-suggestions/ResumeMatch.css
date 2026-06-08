@@ -1,0 +1,10 @@
+.remove-file {
+    font-size: 18px;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.2s;
+}
+
+.remove-file:hover {
+    color: #e53935;
+}
