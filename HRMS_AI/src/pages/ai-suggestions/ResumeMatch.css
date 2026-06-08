@@ -1,10 +1,150 @@
-.remove-file {
-    font-size: 18px;
-    cursor: pointer;
-    color: #666;
-    transition: color 0.2s;
+.sp-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 2px;
 }
 
-.remove-file:hover {
-    color: #e53935;
+/* ── Profile Card ── */
+.sp-profile-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-bg-muted);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.sp-profile-card:hover {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+}
+
+.sp-profile-card--high  { border-left: 3px solid var(--color-primary); }
+.sp-profile-card--medium { border-left: 3px solid var(--color-primary-medium); }
+.sp-profile-card--low   { border-left: 3px solid var(--color-primary-low); }
+
+/* Top row: avatar + name + score */
+.sp-card-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sp-card-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sp-card-identity {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sp-card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sp-card-id {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+/* Score badge */
+.sp-card-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.sp-card-score--high   { background: var(--color-primary-light); }
+.sp-card-score--medium { background: rgba(225, 136, 137, 0.15); }
+.sp-card-score--low    { background: rgba(229, 175, 120, 0.15); }
+
+.sp-card-score-num {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.sp-card-score--high   .sp-card-score-num { color: var(--color-primary); }
+.sp-card-score--medium .sp-card-score-num { color: var(--color-primary-medium); }
+.sp-card-score--low    .sp-card-score-num { color: var(--color-primary-low); }
+
+.sp-card-score-label {
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--color-text-secondary);
+  margin-top: 1px;
+}
+
+/* Meta row */
+.sp-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sp-card-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.sp-card-meta-item .material-symbols-outlined {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.sp-avail-free { color: #16a34a; font-weight: 500; }
+.sp-avail-busy { color: var(--color-text-secondary); }
+
+/* Skills */
+.sp-card-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding-top: 4px;
+  border-top: 1px solid var(--color-bg-muted);
+}
+
+.sp-card-skill {
+  background: var(--color-bg-muted);
+  color: var(--color-text-secondary);
+  padding: 3px 9px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.sp-card-skill--more {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
 }

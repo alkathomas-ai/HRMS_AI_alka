@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { uploadResumeForSimilarProfiles } from "../../services/api";
+import "./ResumeMatch.css";
 
 const ResumeMatch = ({ showError }) => {
   const [resumeFile, setResumeFile] = useState(null);
@@ -164,92 +165,67 @@ const ResumeMatch = ({ showError }) => {
           </div>
         )}
         {similarProfiles && !resumeUploading && (
-          <div className="projects-table-card">
-            <div className="sp-matches-badge">
-              <span className="material-symbols-outlined">group</span>
-              {similarProfiles.total_matches} similar profiles found
+          similarProfiles.similar_profiles.length === 0 ? (
+            <div className="sp-empty-state">
+              <span className="material-symbols-outlined">person_search</span>
+              <p>No similar profiles found for this resume.</p>
             </div>
-            <div className="table-wrapper">
-              <table className="projects-table">
-                <thead>
-                  <tr>
-                    <th>Employee</th>
-                    <th>Designation</th>
-                    <th>Tech Group</th>
-                    <th>Experience</th>
-                    <th>Availability</th>
-                    <th>AI Score</th>
-                    <th>Primary Skills</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {similarProfiles.similar_profiles.map((emp) => {
-                    const scoreClass =
-                      emp.ai_score >= 70
-                        ? "high"
-                        : emp.ai_score >= 50
-                          ? "medium"
-                          : "low";
-                    return (
-                      <tr key={emp.employee_id} className="project-row">
-                        <td>
-                          <div className="project-name-cell">
-                            <div className="sp-emp-avatar">
-                              {emp.display_name?.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                              <div style={{ fontWeight: 600, fontSize: 13 }}>
-                                {emp.display_name}
-                              </div>
-                              <div
-                                style={{
-                                  fontSize: 11,
-                                  color: "var(--color-text-secondary)",
-                                }}
-                              >
-                                {emp.employee_id}
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td>{emp.designation}</td>
-                        <td>{emp.tech_group}</td>
-                        <td>{emp.total_exp}</td>
-                        <td>
-                          <span
-                            className={`status-badge ${emp.availability_pct > 0 ? "started" : "cancelled"}`}
-                          >
-                            {emp.availability_pct > 0
-                              ? `${emp.availability_pct}% free`
-                              : "Engaged"}
-                          </span>
-                        </td>
-                        <td>
-                          <span className={`similar-score-badge ${scoreClass}`}>
-                            {emp.ai_score}
-                          </span>
-                        </td>
-                        <td>
-                          <div className="table-skills">
-                            {emp.primary_skills.slice(0, 3).map((s, i) => (
-                              <span key={i} className="skill-badge">
-                                {s}
-                              </span>
-                            ))}
-                            {emp.primary_skills.length > 3 && (
-                              <span className="skill-badge">
-                                +{emp.primary_skills.length - 3}
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+          ) : (
+            <div className="sp-cards-container">
+              {similarProfiles.similar_profiles.map((emp) => {
+                const score = emp.ai_score || 0;
+                const scoreClass = score >= 70 ? 'high' : score >= 50 ? 'medium' : 'low';
+                const avail = emp.availability_pct;
+                return (
+                  <div key={emp.employee_id} className={`sp-profile-card sp-profile-card--${scoreClass}`}>
+                    <div className="sp-card-top">
+                      <div className="sp-card-avatar">{emp.display_name?.charAt(0).toUpperCase()}</div>
+                      <div className="sp-card-identity">
+                        <span className="sp-card-name">{emp.display_name}</span>
+                        <span className="sp-card-id">{emp.employee_id}</span>
+                      </div>
+                      <div className={`sp-card-score sp-card-score--${scoreClass}`}>
+                        <span className="sp-card-score-num">{score}</span>
+                        <span className="sp-card-score-label">score</span>
+                      </div>
+                    </div>
+
+                    <div className="sp-card-meta">
+                      <div className="sp-card-meta-item">
+                        <span className="material-symbols-outlined">work</span>
+                        <span>{emp.designation || '—'}</span>
+                      </div>
+                      <div className="sp-card-meta-item">
+                        <span className="material-symbols-outlined">laptop</span>
+                        <span>{emp.tech_group || '—'}</span>
+                      </div>
+                      <div className="sp-card-meta-item">
+                        <span className="material-symbols-outlined">schedule</span>
+                        <span>{emp.total_exp || '—'}</span>
+                      </div>
+                      <div className="sp-card-meta-item">
+                        <span className="material-symbols-outlined">circle</span>
+                        <span className={avail > 0 ? 'sp-avail-free' : 'sp-avail-busy'}>
+                          {avail > 0 ? `${avail}% free` : 'Engaged'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {emp.primary_skills?.length > 0 && (
+                      <div className="sp-card-skills">
+                        {emp.primary_skills.slice(0, 5).map((s, i) => (
+                          <span key={i} className="sp-card-skill">{s}</span>
+                        ))}
+                        {emp.primary_skills.length > 5 && (
+                          <span className="sp-card-skill sp-card-skill--more">+{emp.primary_skills.length - 5}</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          </div>
+          )
         )}
       </div>
     </div>
