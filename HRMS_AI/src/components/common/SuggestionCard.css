@@ -1,0 +1,38 @@
+.suggestion-emp-id{
+    margin-left: 8px;
+    font-size: 11px;
+    color: var(--color-text-secondary);
+}
+
+.sc-projects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-bottom: 8px;
+}
+
+.sc-project-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--color-bg-pages-primary);
+  color: var(--color-text-secondary);
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.sc-project-chip .material-symbols-outlined {
+  font-size: 13px;
+  color: var(--color-primary);
+}
+
+.sc-occupancy {
+  margin-left: 4px;
+  background: var(--color-bg-card);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+}

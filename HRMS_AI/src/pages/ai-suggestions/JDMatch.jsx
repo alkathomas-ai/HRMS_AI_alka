@@ -152,7 +152,7 @@ const CandidateCard = ({ emp, index }) => {
     >
       <div className="jdm-card-row" onClick={() => setExpanded(!expanded)}>
         {/* Rank */}
-        <div className="jdm-rank">#{index + 1}</div>
+        {/* <div className="jdm-rank">#{index + 1}</div> */}
 
         {/* Avatar */}
         <div className="jdm-avatar">{emp.display_name.charAt(0)}</div>
@@ -175,18 +175,18 @@ const CandidateCard = ({ emp, index }) => {
               <span className="material-symbols-outlined">schedule</span>
               {emp.total_exp}
             </span>
-            <span>
+            {/* <span>
               <span className="material-symbols-outlined">
                 workspace_premium
               </span>
               {emp.seniority}
-            </span>
-            <span
+            </span> */}
+            {/* <span
               className={`jdm-avail ${emp.availability_pct === 100 ? "full" : "partial"}`}
             >
               <span className="material-symbols-outlined">circle</span>
               {emp.availability_pct}% available
-            </span>
+            </span> */}
           </div>
         </div>
 
@@ -212,10 +212,10 @@ const CandidateCard = ({ emp, index }) => {
 
             <div className="jdm-score-center">
               <span className={`jdm-score-num ${cls}`}>
-                {Math.round(emp.ai_score)}
+                {Math.round(emp.ai_score) || 0}%
               </span>
 
-              <span className="jdm-score-label">Match</span>
+              {/* <span className="jdm-score-label">Match</span> */}
             </div>
           </div>
         </div>

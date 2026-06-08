@@ -37,18 +37,18 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
   // AI-powered UI with scores and criteria
   if (ai_reason) {
     return (
-      <div className={`employee-card ${scoreClass}-score`}>
-        {ai_score && <div className={`match-badge ${scoreClass}`}>
-          <div className="score-text"><span>{ai_score || 0}%</span> match</div>
+      <div className={`sa-employee-card ${scoreClass}-score`}>
+        {ai_score && <div className={`sa-match-badge ${scoreClass}`}>
+          <div className="sa-score-text"><span>{ai_score || 0}%</span> match</div>
         </div>}
-        <div className="employee-card-content">
-          <div className="employee-name-row">
-            <h2 className="employee-name-search">{display_name}</h2>
-            <span className="employee-designation-badge">{designation}</span>
+        <div className="sa-employee-card-content">
+          <div className="sa-employee-name-row">
+            <h2 className="sa-employee-name-search">{display_name}</h2>
+            <span className="sa-employee-designation-badge">{designation}</span>
           </div>
-          <div className="employee-info-section">
-            <div className="employee-header">
-              <div className="employee-details-text">
+          <div className="sa-employee-info-section">
+            <div className="sa-employee-header">
+              <div className="sa-employee-details-text">
                 <p>
                   <i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;
                 </p>
@@ -69,17 +69,17 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
               </div>
             </div>
 
-            <div className="employee-skill-description">
+            <div className="sa-employee-skill-description">
               {employee.projects && employee.projects.length > 0 && (
-                <div className="employee-projects-section">
-                  <span className="projects-label">Projects: </span>
-                  <span className="projects-text">
+                <div className="sa-employee-projects-section">
+                  <span className="sa-projects-label">Projects: </span>
+                  <span className="sa-projects-text">
                     {employee.projects.map((project, projectIndex) => (
                       <span key={projectIndex}>
-                        <span className="project-name">
+                        <span className="sa-project-name">
                           {project.project_name}
                         </span>
-                        <span className="project-customer">
+                        <span className="sa-project-customer">
                           {" "}
                           ({project.customer})
                         </span>
@@ -92,9 +92,9 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                 </div>
               )}
               {skill_set && (
-                <div className="employee-skills-section">
-                  <span className="skills-label">Skills:</span>
-                  <div className="skills-container">
+                <div className="sa-employee-skills-section">
+                  <span className="sa-skills-label">Skills:</span>
+                  <div className="sa-skills-container">
                     {skill_set
                       .split(",")
                       .slice(0, showAllSkills ? undefined : 5)
@@ -112,8 +112,8 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                             }}
                             className={
                               isActive
-                                ? "skill-badge active-skill-badge"
-                                : "skill-badge"
+                                ? "sa-skill-badge active-sa-skill-badge"
+                                : "sa-skill-badge"
                             }
                           >
                             {trimmedSkill}
@@ -123,7 +123,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                     {skill_set.split(",").length > 5 && (
                       <button
                         onClick={() => setShowAllSkills(!showAllSkills)}
-                        className="skill-more-btn"
+                        className="sa-skill-more-btn"
                       >
                         {showAllSkills
                           ? "Show Less"
@@ -136,22 +136,22 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
 
               
 
-              <div className="ai-reason-section">
+              <div className="sa-ai-reason-section">
                 <button
                   onClick={() => setShowReason(!showReason)}
-                  className="reason-toggle-btn"
+                  className="sa-reason-toggle-btn"
                 >
-                  <span className="reason-label">Why this match?</span>
+                  <span className="sa-reason-label">Why this match?</span>
                   <i
                     className={`fa-solid fa-chevron-${showReason ? "up" : "down"}`}
                   ></i>
                 </button>
-                {!showReason && <p className="reason-text">{ai_reason}</p>}
+                {!showReason && <p className="sa-reason-text">{ai_reason}</p>}
               </div>
             </div>
-            <div className="employee-score-section">
+            <div className="sa-employee-score-section">
               {employee.ai_criteria && (
-                <div className="criteria-list">
+                <div className="sa-criteria-list">
                   {Object.entries(employee.ai_criteria).map(
                     ([criteria, criteriaScore]) => {
                       const criteriaClass =
@@ -161,16 +161,16 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                             ? "medium"
                             : "low";
                       return (
-                        <div key={criteria} className="criteria-item">
-                          <div className="criteria-header">
-                            <span className="criteria-name">{criteria}</span>
-                            <span className="criteria-score">
+                        <div key={criteria} className="sa-criteria-item">
+                          <div className="sa-criteria-header">
+                            <span className="sa-criteria-name">{criteria}</span>
+                            <span className="sa-criteria-score">
                               {criteriaScore}%
                             </span>
                           </div>
-                          <div className="criteria-bar-bg">
+                          <div className="sa-criteria-bar-bg">
                             <div
-                              className={`criteria-bar-fill ${criteriaClass}`}
+                              className={`sa-criteria-bar-fill ${criteriaClass}`}
                               style={{ width: `${criteriaScore}%` }}
                             />
                           </div>
@@ -189,15 +189,15 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
 
   // Simple UI without AI features
   return (
-    <div className="employee-card">
-      <div className="employee-card-content">
-        <div className="employee-name-row">
-          <h2 className="employee-name-search">{display_name}</h2>
-          <span className="employee-designation-badge">{designation}</span>
+    <div className="sa-employee-card">
+      <div className="sa-employee-card-content">
+        <div className="sa-employee-name-row">
+          <h2 className="sa-employee-name-search">{display_name}</h2>
+          <span className="sa-employee-designation-badge">{designation}</span>
         </div>
-        <div className="employee-info-section-plain">
-          <div className="employee-header">
-            <div className="employee-details-text">
+        <div className="sa-employee-info-section-plain">
+          <div className="sa-employee-header">
+            <div className="sa-employee-details-text">
               <p>
                 <i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;
               </p>
@@ -218,11 +218,11 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
             </div>
           </div>
 
-          <div className="employee-skill-description">
+          <div className="sa-employee-skill-description">
             {skill_set && (
-              <div className="employee-skills-section">
-                <span className="skills-label">Skills:</span>
-                <div className="skills-container">
+              <div className="sa-employee-skills-section">
+                <span className="sa-skills-label">Skills:</span>
+                <div className="sa-skills-container">
                   {skill_set
                     .split(",")
                     .slice(0, showAllSkills ? undefined : 5)
@@ -240,8 +240,8 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                           }}
                           className={
                             isActive
-                              ? "skill-badge active-skill-badge"
-                              : "skill-badge"
+                              ? "sa-skill-badge active-sa-skill-badge"
+                              : "sa-skill-badge"
                           }
                         >
                           {trimmedSkill}
@@ -251,7 +251,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
                   {skill_set.split(",").length > 5 && (
                     <button
                       onClick={() => setShowAllSkills(!showAllSkills)}
-                      className="skill-more-btn"
+                      className="sa-skill-more-btn"
                     >
                       {showAllSkills
                         ? "Show Less"
@@ -263,15 +263,15 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
             )}
 
             {employee.projects && employee.projects.length > 0 && (
-              <div className="employee-projects-section">
-                <span className="projects-label">Projects: </span>
-                <span className="projects-text">
+              <div className="sa-employee-projects-section">
+                <span className="sa-projects-label">Projects: </span>
+                <span className="sa-projects-text">
                   {employee.projects.map((project, projectIndex) => (
                     <span key={projectIndex}>
-                      <span className="project-name">
+                      <span className="sa-project-name">
                         {project.project_name}
                       </span>
-                      <span className="project-customer">
+                      <span className="sa-project-customer">
                         {" "}
                         ({project.customer})
                       </span>
@@ -804,9 +804,9 @@ function filterOnSearch(skill) {
                           <p><b>Location:</b> {employee.emp_location}</p>
                           <p><b>Total Exp:</b> {employee.total_exp}</p>
 
-                          <div className="skills-container">
+                          <div className="sa-skills-container">
                             {employee.skill_set?.split(",").map((skill, i) => (
-                              <span key={i} className="skill-badge">
+                              <span key={i} className="sa-skill-badge">
                                 {skill.trim()}
                               </span>
                             ))}
@@ -921,7 +921,7 @@ function filterOnSearch(skill) {
         ) : searchResult?.result?.length === 0 ? (
           <p>No employees found.</p>
         ) : (
-          <div className="employee-cards-list">
+          <div className="sa-employee-cards-list">
             {searchResult?.result?.map((employee) => (
               <RequirementCard
                 key={employee.employee_id}

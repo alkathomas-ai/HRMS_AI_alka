@@ -320,7 +320,7 @@ const AISuggestions = () => {
   const handleShowResourceSuggestion = async (project) => {
     const response = await showResourceSuggestion(project.id);
     console.log("Suggestions response:", response);
-    const result = response?.response?.[0].suggestion ?? [];
+    const result = response?.response?.[0]?.suggestion ?? [];
     if (result.length > 0) {
       const updated = projects.map((p) =>
         p.id === project.id ? { ...p, employees: result } : p,
@@ -455,7 +455,24 @@ const AISuggestions = () => {
   const renderProjectsTab = () => (
     <div className="projects-content">
       {/* Project Count Tile */}
-      <div className="project-count-tile">
+      {/* <div className="project-count-tile">
+        <div className="count-tile-icon">
+          <span className="material-symbols-outlined">folder</span>
+        </div>
+        <div className="count-tile-content">
+          <div className="count-tile-number">
+            {filteredProjectsForTab.length}
+          </div>
+          <div className="count-tile-label">
+            {projectsSearchQuery ? "Filtered Projects" : "Total Projects"}
+          </div>
+        </div>
+      </div> */}
+
+      <div className="projects-table-card">
+        {/* Search box integrated with table */}
+        <div className="table-search-header">
+          <div className="project-count-tile">
         <div className="count-tile-icon">
           <span className="material-symbols-outlined">folder</span>
         </div>
@@ -468,10 +485,6 @@ const AISuggestions = () => {
           </div>
         </div>
       </div>
-
-      <div className="projects-table-card">
-        {/* Search box integrated with table */}
-        <div className="table-search-header">
           <div className="search-box">
             <span className="material-symbols-outlined">search</span>
             <input

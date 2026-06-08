@@ -389,7 +389,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
             )}
           </div>
       </div>
-      <div className={`employee-cards-list ${viewMode === 'scroll' ? 'scrollable-results' : ''}`}>
+      <div className={`sa-employee-cards-list ${viewMode === 'scroll' ? 'scrollable-results' : ''}`}>
       {(viewMode === 'scroll' ? filteredResults : paginatedResults).map((employee) => {
         const {
           display_name,
@@ -417,18 +417,18 @@ const NavbarSearchResults = ({ searchQuery }) => {
   // AI-powered UI with scores and criteria
   if (ai_reason) {
     return (
-      <div className={`employee-card ${scoreClass}-score`}>
-        {ai_score && <div className={`match-badge ${scoreClass}`}>
-          <div className="score-text"><span>{ai_score || 0}%</span> match</div>
+      <div className={`sa-employee-card ${scoreClass}-score`}>
+        {ai_score && <div className={`sa-match-badge ${scoreClass}`}>
+          <div className="sa-score-text"><span>{ai_score || 0}%</span> match</div>
         </div>}
-        <div className="employee-card-content">
-          <div className="employee-name-row">
-            <h2 className="employee-name-search">{display_name}</h2>
-            <span className="employee-designation-badge">{designation}</span>
+        <div className="sa-employee-card-content">
+          <div className="sa-employee-name-row">
+            <h2 className="sa-employee-name-search">{display_name}</h2>
+            <span className="sa-employee-designation-badge">{designation}</span>
           </div>
-          <div className="employee-info-section">
-            <div className="employee-header">
-              <div className="employee-details-text">
+          <div className="sa-employee-info-section">
+            <div className="sa-employee-header">
+              <div className="sa-employee-details-text">
                 <p>
                   <i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;
                 </p>
@@ -449,23 +449,23 @@ const NavbarSearchResults = ({ searchQuery }) => {
               </div>
             </div>
 
-            <div className="employee-skill-description">
+            <div className="sa-employee-skill-description">
               {employee.projects && employee.projects.length > 0 && (
-                <div className="employee-projects-section">
-                  {/* <span className="projects-label">Projects:</span> */}
-                  <div className="results-projects-container">
+                <div className="sa-employee-projects-section">
+                  {/* <span className="sa-projects-label">Projects:</span> */}
+                  <div className="sa-results-projects-container">
                     {employee.projects.map((project, projectIndex) => (
-                      <span key={projectIndex} className="project-badge">
-                        <span className="project-name">{project.project_name}</span> ({project.customer}) - {project.occupancy}%
+                      <span key={projectIndex} className="sa-project-badge">
+                        <span className="sa-project-name">{project.project_name}</span> ({project.customer}) - {project.occupancy}%
                       </span>
                     ))}
                   </div>
                 </div>
               )}
               {skill_set && (
-                <div className="employee-skills-section">
-                  <span className="skills-label">Skills:</span>
-                  <div className="skills-container">
+                <div className="sa-employee-skills-section">
+                  <span className="sa-skills-label">Skills:</span>
+                  <div className="sa-skills-container">
                     {skill_set
                       .split(",")
                       .slice(0, showAllSkills ? undefined : 8)
@@ -485,8 +485,8 @@ const NavbarSearchResults = ({ searchQuery }) => {
                             }}
                             className={
                               activeSkill.includes(trimmedSkill)
-                                ? "skill-badge active-skill-badge"
-                                : "skill-badge"
+                                ? "sa-skill-badge active-sa-skill-badge"
+                                : "sa-skill-badge"
                             }
                           >
                             {trimmedSkill}
@@ -508,22 +508,22 @@ const NavbarSearchResults = ({ searchQuery }) => {
               )}
 
 
-              <div className="ai-reason-section">
+              <div className="sa-ai-reason-section">
                 <button
                   onClick={() => setShowReason(!showReason)}
-                  className="reason-toggle-btn"
+                  className="sa-reason-toggle-btn"
                 >
-                  <span className="reason-label">Why this match?</span>
+                  <span className="sa-reason-label">Why this match?</span>
                   <i
                     className={`fa-solid fa-chevron-${showReason ? "up" : "down"}`}
                   ></i>
                 </button>
-                {!showReason && <p className="reason-text">{ai_reason}</p>}
+                {!showReason && <p className="sa-reason-text">{ai_reason}</p>}
               </div>
             </div>
-            <div className="employee-score-section">
+            <div className="sa-employee-score-section">
               {employee.ai_criteria && (
-                <div className="criteria-list">
+                <div className="sa-criteria-list">
                   {Object.entries(employee.ai_criteria).map(
                     ([criteria, criteriaScore]) => {
                       const criteriaClass =
@@ -533,16 +533,16 @@ const NavbarSearchResults = ({ searchQuery }) => {
                             ? "medium"
                             : "low";
                       return (
-                        <div key={criteria} className="criteria-item">
-                          <div className="criteria-header">
-                            <span className="criteria-name">{criteria}</span>
-                            <span className="criteria-score">
+                        <div key={criteria} className="sa-criteria-item">
+                          <div className="sa-criteria-header">
+                            <span className="sa-criteria-name">{criteria}</span>
+                            <span className="sa-criteria-score">
                               {criteriaScore}%
                             </span>
                           </div>
-                          <div className="criteria-bar-bg">
+                          <div className="sa-criteria-bar-bg">
                             <div
-                              className={`criteria-bar-fill ${criteriaClass}`}
+                              className={`sa-criteria-bar-fill ${criteriaClass}`}
                               style={{ width: `${criteriaScore}%` }}
                             />
                           </div>
@@ -561,15 +561,15 @@ const NavbarSearchResults = ({ searchQuery }) => {
 
   // Simple UI without AI features
   return (
-    <div key={employee_id} className="employee-card-list">
-      <div className="employee-card-content">
-        <div className="employee-name-row">
-          <h2 className="employee-name-search">{display_name}</h2>
-          <span className="employee-designation-badge">{designation}</span>
+    <div key={employee_id} className="sa-employee-card-list">
+      <div className="sa-employee-card-content">
+        <div className="sa-employee-name-row">
+          <h2 className="sa-employee-name-search">{display_name}</h2>
+          <span className="sa-employee-designation-badge">{designation}</span>
         </div>
-        <div className="employee-info-section-plain">
-          <div className="employee-header">
-            <div className="employee-details-text">
+        <div className="sa-employee-info-section-plain">
+          <div className="sa-employee-header">
+            <div className="sa-employee-details-text">
               <p><i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;</p>
               <p><i className="fa-solid fa-building"></i> {employee_department} &nbsp;</p>
               <p><i className="fa-solid fa-location-dot"></i> {emp_location} &nbsp;</p>
@@ -577,12 +577,12 @@ const NavbarSearchResults = ({ searchQuery }) => {
               <p><i className="fa-solid fa-business-time"></i> {total_exp}</p>
             </div>
           </div>
-          <div className="employee-skill-description">
+          <div className="sa-employee-skill-description">
             {employee.projects && employee.projects.length > 0 && (
-              <div className="employee-projects-section">
-                <div className="result-projects-container">
+              <div className="sa-employee-projects-section">
+                <div className="sa-result-projects-container">
                   {employee.projects.map((project, projectIndex) => (
-                    <span key={projectIndex} className="project-badge">
+                    <span key={projectIndex} className="sa-project-badge">
                       {project.project_name} ({project.customer}) - {project.occupancy}%
                     </span>
                   ))}
@@ -590,9 +590,9 @@ const NavbarSearchResults = ({ searchQuery }) => {
               </div>
             )}
             {skill_set && (
-              <div className="employee-skills-section">
-                <span className="skills-label">Skills:</span>
-                <div className="skills-container">
+              <div className="sa-employee-skills-section">
+                <span className="sa-skills-label">Skills:</span>
+                <div className="sa-skills-container">
                   {skill_set.split(",").slice(0, showSkills ? undefined : 8).map((skill, skillIndex) => {
                     const trimmedSkill = skill.trim();
                     return (
@@ -606,7 +606,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
                           );
                           if (viewMode === 'pagination') setCurrentPage(1);
                         }}
-                        className={activeSkill.includes(trimmedSkill) ? "skill-badge active-skill-badge" : "skill-badge"}
+                        className={activeSkill.includes(trimmedSkill) ? "sa-skill-badge active-sa-skill-badge" : "sa-skill-badge"}
                       >
                         {trimmedSkill}
                       </span>
