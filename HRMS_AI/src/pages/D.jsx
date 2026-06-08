@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 // import "./Dashboard.css";
 import "./D.css";
+import "../components/dashboard/SearchAssistant.css";
 import { Icons } from "../assets/icons";
 import { searchAPI } from "../services/api";
+import CandidateProfileModal from "../components/CandidateProfileModal";
+import { useCandidateProfileModal } from "../hooks/useCandidateProfileModal";
 
-const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill }) => {
+const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill, onEmployeeClick }) => {
   const [showAllSkills, setShowAllSkills] = useState(false);
   const [showReason, setShowReason] = useState(false);
 
@@ -32,7 +35,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
   const scoreClass = getScoreClass();
 
   return (
-    <div className={`employee-card ${scoreClass}-score`}>
+    <div className={`employee-card ${scoreClass}-score`} onClick={() => onEmployeeClick(employee.employee_id)}>
       <div className={`match-badge ${scoreClass}`}>
         <div className="score-text"><span>{ai_score || 0}%</span> match</div>
       </div>
@@ -188,6 +191,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
 };
 
 const D = () => {
+  const { isOpen, employee, loading: modalLoading, error, openModal, closeModal } = useCandidateProfileModal();
   const [activeSkill, setActiveSkill] = useState(null);
   const [allEmployees, setAllEmployees] = useState([
     {
@@ -379,12 +383,21 @@ const D = () => {
                 employee={employee}
                 filterFunction={filterOnSearch}
                 activeSkill={activeSkill}   
-                setActiveSkill={setActiveSkill}  
+                setActiveSkill={setActiveSkill}
+                onEmployeeClick={openModal}
               />
             ))}
           </div>
         )}
       </div>
+      
+      <CandidateProfileModal
+        isOpen={isOpen}
+        onClose={closeModal}
+        employee={employee}
+        loading={modalLoading}
+        error={error}
+      />
     </div>
   );
 };

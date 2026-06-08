@@ -1,108 +1,28 @@
-import { useState, useMemo, useEffect } from "react";
-import { Icons } from "../../assets/icons";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import "./Dashboard.css";
 import "./Schedule.css";
+import { useScheduleNotification } from "../../context/scheduleNotificationContext";
 
-const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTabChange }) => {
-  // --- STATE FOR COMPACT VIEW ---
-  const [activeTab, setActiveTab] = useState('Screening');
-  const [selectedDateIndex, setSelectedDateIndex] = useState(null);
-
+const Schedule = () => {
+  const { notifications, fetchNotifications, markAsRead, markAsUnread, deleteNotifications, markMultipleAsRead } = useScheduleNotification();
+  const location = useLocation();
+  
   // --- STATE FOR EXPANDED VIEW ---
   const [currentDate, setCurrentDate] = useState(new Date());
   const [expandedTab, setExpandedTab] = useState('schedule');
-  const [notifications, setNotifications] = useState([
-    { id: 1, title: 'Interview Reminder', text: 'Interview with Habibur Rahman at 09:30 AM', time: '2h ago', read: false },
-    { id: 2, title: 'Schedule Updated', text: "Willem van Helden's interview rescheduled", time: '5h ago', read: false },
-    { id: 3, title: 'Task Completed', text: 'Design Task Review completed', time: '1d ago', read: true },
-    { id: 4, title: 'New Application', text: 'New application received for Chef position', time: '2d ago', read: false },
-    { id: 5, title: 'Meeting Reminder', text: 'Team standup meeting in 30 minutes', time: '1h ago', read: false },
-    { id: 6, title: 'Document Uploaded', text: 'Employee handbook updated by HR', time: '3h ago', read: false },
-    { id: 7, title: 'Leave Request', text: 'John Doe submitted leave request for approval', time: '4h ago', read: true },
-    { id: 8, title: 'Payroll Processed', text: 'Monthly payroll has been processed successfully', time: '1d ago', read: true },
-    { id: 9, title: 'New Message', text: 'You have a new message from Sarah Johnson', time: '6h ago', read: false },
-    { id: 10, title: 'Training Session', text: 'Mandatory safety training scheduled for tomorrow', time: '2d ago', read: true },
-    { id: 11, title: 'Performance Review', text: 'Q4 performance reviews are now open', time: '3d ago', read: false },
-    { id: 12, title: 'System Update', text: 'HRMS system will be updated tonight at 10 PM', time: '5h ago', read: true },
-  ]);
   const [selectedNotifs, setSelectedNotifs] = useState([]);
 
-  // Sync with external tab
+  // Handle navigation state to switch to notification tab
   useEffect(() => {
-    if (externalTab) setExpandedTab(externalTab);
-  }, [externalTab]);
-
-  // --- SHARED DATA ---
-  const scheduleData = {
-    Screening: [
-      { time: '09:30', text: 'Interview with Habibur Rahman', role: "Kitchen Staff" },
-      { time: '11:00', text: 'Design Task Review & QA', role: "Chef" },
-      { time: '12:30', text: 'Design Task Review', role: "Manager" },
-      { time: '14:00', text: 'Team Meeting', role: "Staff" },
-      { time: '15:30', text: 'Client Call - ABC Corp', role: "Client" }
-    ],
-    'Design Task': [
-      { time: '10:00', text: 'UI/UX Design Review', role: "Designer" },
-      { time: '14:00', text: 'Prototype Presentation', role: "Product Owner" }
-    ],
-    Interview: [
-      { time: '09:00', text: 'Technical Interview - John Doe', role: "Lead Dev" },
-      { time: '13:00', text: 'HR Interview - Jane Smith', role: "HR" },
-      { time: '15:30', text: 'Final Round - Mike Johnson', role: "CTO" }
-    ]
-  };
-
-  // --- EXPANDED VIEW DATA (matching the design) ---
-  const expandedScheduleData = [
-    { 
-      time: '08:00 AM', 
-      name: 'James Williams', 
-      role: 'Kitchen Staff Local',
-      category: 'staff'
-    },
-    { 
-      time: '09:00 AM', 
-      name: 'Willem van Helden', 
-      role: 'Dishwasher',
-      status: 'Rescheduled',
-      originalTime: '09:00 AM',
-      category: 'rescheduled'
-    },
-    { 
-      time: '09:30 AM', 
-      name: 'Dianne Russell', 
-      role: 'Dishwasher',
-      category: 'staff'
-    },
-    { 
-      time: '10:30 AM', 
-      name: 'Theresa Webb', 
-      role: 'Operational Manager Regional',
-      category: 'manager'
+    if (location.state?.scheduleTab === 'notification') {
+      setExpandedTab('notification');
     }
-  ];
+  }, [location.state]);
 
-  // --- LOGIC FOR COMPACT VIEW (Week Days) ---
-  const weekDays = useMemo(() => {
-    const today = new Date();
-    const currentDay = today.getDay();
-    const sunday = new Date(today);
-    sunday.setDate(today.getDate() - currentDay);
-    
-    return Array.from({ length: 7 }, (_, i) => {
-      const date = new Date(sunday);
-      date.setDate(sunday.getDate() + i);
-      const isToday = date.toDateString() === today.toDateString();
-      if (isToday && selectedDateIndex === null) {
-        setSelectedDateIndex(i);
-      }
-      return {
-        day: ['S', 'M', 'T', 'W', 'T', 'F', 'S'][i],
-        date: date.getDate(),
-        isToday
-      };
-    });
-  }, [selectedDateIndex]);
+  useEffect(() => {
+    if (expandedTab === 'notification') fetchNotifications();
+  }, [expandedTab]);
 
   // --- LOGIC FOR EXPANDED VIEW (Calendar) ---
   const renderCalendarDays = () => {
@@ -148,81 +68,34 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
     return `${months[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
   };
 
-  const parseTime = (timeStr) => {
-    const [time, period] = timeStr.split(' ');
-    const [hours, minutes] = time.split(':');
-    let hour = parseInt(hours);
-    if (period === 'PM' && hour !== 12) hour += 12;
-    if (period === 'AM' && hour === 12) hour = 0;
-    return hour;
-  };
-
   // Get current time for red line indicator
-  const getCurrentTime = () => {
+  const [currentTime, setCurrentTime] = useState(() => {
     const now = new Date();
     return {
       hour: now.getHours(),
       minute: now.getMinutes(),
-      // Calculate position within the hour (0-100%)
       percentage: (now.getMinutes() / 60) * 100
     };
-  };
+  });
 
-  const currentTime = getCurrentTime();
+  useEffect(() => {
+    // Only update time when in expanded schedule view
+    if (expandedTab !== 'schedule') return;
+
+    const interval = setInterval(() => {
+      const now = new Date();
+      setCurrentTime({
+        hour: now.getHours(),
+        minute: now.getMinutes(),
+        percentage: (now.getMinutes() / 60) * 100
+      });
+    }, 60000);
+    
+    return () => clearInterval(interval);
+  }, [expandedTab]);
 
   // Generate all 24 hours
   const allHours = Array.from({ length: 24 }, (_, i) => i);
-
-  // =========================================================
-  // RENDER: COMPACT VIEW (Original Design)
-  // =========================================================
-  if (!isExpanded) {
-    return (
-      <div className="schedule-card compact">
-        <div className="header">
-          <h3>Schedule</h3>
-          <span className="expand-icon" onClick={onExpand}>
-            <span className="material-symbols-outlined">open_in_full</span>
-          </span>
-        </div>
-
-        <div className="dates">
-          {weekDays.map((day, idx) => (
-            <div 
-              key={idx} 
-              className={`${selectedDateIndex === idx ? 'active' : ''} ${day.isToday ? 'today' : ''}`}
-              onClick={() => setSelectedDateIndex(idx)}
-              style={{ cursor: 'pointer' }}
-            >
-              <span>{day.day}</span>
-              <p>{day.date}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="tabs">
-          {Object.keys(scheduleData).map(tab => (
-            <span 
-              key={tab}
-              className={activeTab === tab ? 'active' : ''}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </span>
-          ))}
-        </div>
-
-        <div className="schedule-list">
-          {scheduleData[activeTab].map((item, idx) => (
-            <div key={idx} className="item">
-              <span className="time">{item.time}</span>
-              <span className="text">{item.text}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   // =========================================================
   // RENDER: EXPANDED VIEW (Matching the Design)
@@ -233,19 +106,13 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
       <div className="expanded-tabs">
         <button 
           className={expandedTab === 'schedule' ? 'active' : ''}
-          onClick={() => {
-            setExpandedTab('schedule');
-            onTabChange?.('schedule');
-          }}
+          onClick={() => setExpandedTab('schedule')}
         >
           Schedule
         </button>
         <button 
           className={expandedTab === 'notification' ? 'active' : ''}
-          onClick={() => {
-            setExpandedTab('notification');
-            onTabChange?.('notification');
-          }}
+          onClick={() => setExpandedTab('notification')}
         >
           Notification
         </button>
@@ -256,7 +123,7 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
           {/* HEADER AT TOP */}
           <header className="timeline-header">
             <div className="date-title">
-              <h2>September 18, Tuesday <span className="text-light">2022</span></h2>
+              <h2>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} <span className="text-light">{new Date().getFullYear()}</span></h2>
             </div>
             <div className="header-actions">
               <button className="btn-nav">‹</button>
@@ -292,25 +159,6 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
                     </div>
                   )}
 
-                  {/* Events */}
-                  {expandedScheduleData
-                    .filter((e) => parseTime(e.time) === hour)
-                    .map((event, idx) => (
-                      <div 
-                        key={idx} 
-                        className={`event-card ${event.category} ${event.status ? 'rescheduled' : ''}`}
-                      >
-                        <div className="event-header-row">
-                          <div className="event-title">{event.name}</div>
-                          {event.status && (
-                            <span className="event-status">{event.status}</span>
-                          )}
-                        </div>
-                        <div className="event-meta">
-                          {event.time} · {event.role}
-                        </div>
-                      </div>
-                    ))}
                 </div>
               </div>
             ))}
@@ -336,12 +184,7 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
 
           <div className="day-summary-list">
             <h4>Scheduled for this day:</h4>
-            {expandedScheduleData.map((event, idx) => (
-              <div key={idx} className="summary-card">
-                <h5>{event.name}</h5>
-                <p>{event.time} · {event.role}</p>
-              </div>
-            ))}
+            <div className="notif-empty">No schedule data available</div>
           </div>
         </div>
       </div>
@@ -360,7 +203,7 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
               {selectedNotifs.length > 0 && (
                 <>
                   <button className="icon-btn" onClick={() => {
-                    setNotifications(notifications.filter(n => !selectedNotifs.includes(n.id)));
+                    deleteNotifications(selectedNotifs);
                     setSelectedNotifs([]);
                   }} title="Delete">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -368,7 +211,7 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
                     </svg>
                   </button>
                   <button className="icon-btn" onClick={() => {
-                    setNotifications(notifications.map(n => selectedNotifs.includes(n.id) ? {...n, read: true} : n));
+                    markMultipleAsRead(selectedNotifs, true);
                     setSelectedNotifs([]);
                   }} title="Mark as read">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -376,7 +219,7 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
                     </svg>
                   </button>
                   <button className="icon-btn" onClick={() => {
-                    setNotifications(notifications.map(n => selectedNotifs.includes(n.id) ? {...n, read: false} : n));
+                    markMultipleAsRead(selectedNotifs, false);
                     setSelectedNotifs([]);
                   }} title="Mark as unread">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -393,11 +236,6 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
               <div 
                 key={notif.id} 
                 className={`notif-row ${notif.read ? 'read' : 'unread'} ${selectedNotifs.includes(notif.id) ? 'selected' : ''}`}
-                onClick={(e) => {
-                  if (e.target.type !== 'checkbox') {
-                    setNotifications(notifications.map(n => n.id === notif.id ? {...n, read: true} : n));
-                  }
-                }}
               >
                 <label className="checkbox-wrapper" onClick={(e) => e.stopPropagation()}>
                   <input 
@@ -412,8 +250,23 @@ const Schedule = ({ isExpanded, onExpand, onClose, activeTab: externalTab, onTab
                 <div className="notif-body">
                   <h4>{notif.title}</h4>
                   <p>{notif.text}</p>
-                  <span className="notif-time">{notif.time}</span>
+                  <span className="notif-time">{notif.time
+                              ? new Date(notif.time + "Z").toLocaleString("en-IN", {
+                                  dateStyle: "medium",
+                                  timeStyle: "short",
+                                  timeZone: "Asia/Kolkata",
+                                })
+                              : "—"}</span>
                 </div>
+                <button
+                  className="icon-btn notif-toggle-btn"
+                  title={notif.read ? 'Mark as unread' : 'Mark as read'}
+                  onClick={() => notif.read ? markAsUnread(notif.id) : markAsRead(notif.id)}
+                >
+                  <span className="material-symbols-outlined">
+                    {notif.read ? 'mark_email_unread' : 'mark_email_read'}
+                  </span>
+                </button>
               </div>
             ))}
           </div>
