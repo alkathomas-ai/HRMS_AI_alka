@@ -235,10 +235,10 @@ const EditUser = () => {
         ))}
         {!expanded && (
           <button className="more-skills-btn" style={{ flexShrink: 0 }} onClick={(e) => { e.stopPropagation(); onToggle(); }}>
-            {remaining > 0 ? `+${remaining}` : `+0`}
+            {remaining > 0 ? `+${remaining}` : ``}
           </button>
         )}
-        {expanded && (
+        {expanded && remaining > 0 && (
           <button className="more-skills-btn" style={{ flexShrink: 0 }} onClick={(e) => { e.stopPropagation(); onToggle(); }}>Less</button>
         )}
       </div>

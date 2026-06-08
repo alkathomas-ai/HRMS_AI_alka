@@ -324,14 +324,14 @@
 .suggestions-empty .material-symbols-outlined { font-size: 40px; opacity: 0.35; }
 .suggestions-empty p { margin: 0; font-size: 15px; }
 
-/* ── Suggestion Cards ── */
-.suggestion-cards-list {
+/* ── AI Resource Suggestion Cards ── */
+.ai-resource-suggestion-cards-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.suggestion-card {
+.ai-resource-suggestion-card {
   background: #f8fafc;
   border-radius: 12px;
   border: 1px solid #e2e8f0;
@@ -340,16 +340,16 @@
   cursor: pointer;
 }
 
-.suggestion-card:hover {
+.ai-resource-suggestion-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transform: translateY(-1px);
 }
 
-.suggestion-card.expanded {
+.ai-resource-suggestion-card.expanded {
   background: white;
 }
 
-.suggestion-row {
+.ai-resource-suggestion-row {
   display: flex;
   align-items: flex-start;
   gap: 16px;
@@ -357,13 +357,13 @@
   transition: all 0.3s ease;
 }
 
-.suggestion-card.expanded .suggestion-row {
+.ai-resource-suggestion-card.expanded .ai-resource-suggestion-row {
   align-items: flex-start;
   padding-bottom: 8px;
 }
 
-/* Circular Progress Score */
-.suggestion-score-circle {
+/* AI Resource Suggestion Circular Progress Score */
+.ai-resource-suggestion-score-circle {
   position: relative;
   width: 48px;
   height: 48px;
@@ -371,35 +371,35 @@
   transition: all 0.3s ease;
 }
 
-.suggestion-score-circle.expanded {
+.ai-resource-suggestion-score-circle.expanded {
   width: 80px;
   height: 80px;
 }
 
-.score-progress {
+.ai-resource-score-progress {
   width: 100%;
   height: 100%;
   transform: rotate(-90deg);
 }
 
-.score-bg {
+.ai-resource-score-bg {
   fill: none;
   stroke: #e2e8f0;
   stroke-width: 2;
 }
 
-.score-fill {
+.ai-resource-score-fill {
   fill: none;
   stroke-width: 2;
   stroke-linecap: round;
   transition: stroke-dasharray 0.3s ease;
 }
 
-.score-fill.high { stroke: #6366f1; }
-.score-fill.medium { stroke: #f59e0b; }
-.score-fill.low { stroke: #ef4444; }
+.ai-resource-score-fill.high { stroke: #6366f1; }
+.ai-resource-score-fill.medium { stroke: #f59e0b; }
+.ai-resource-score-fill.low { stroke: #ef4444; }
 
-.score-center {
+.ai-resource-score-center {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -408,7 +408,7 @@
   transition: all 0.3s ease;
 }
 
-.score-text {
+.ai-resource-score-text {
   display: block;
   font-size: 14px;
   font-weight: 700;
@@ -416,15 +416,15 @@
   transition: font-size 0.3s ease;
 }
 
-.suggestion-score-circle.expanded .score-text {
+.ai-resource-suggestion-score-circle.expanded .ai-resource-score-text {
   font-size: 20px;
 }
 
-.score-text.high { color: #6366f1; }
-.score-text.medium { color: #f59e0b; }
-.score-text.low { color: #ef4444; }
+.ai-resource-score-text.high { color: #6366f1; }
+.ai-resource-score-text.medium { color: #f59e0b; }
+.ai-resource-score-text.low { color: #ef4444; }
 
-.score-label {
+.ai-resource-score-label {
   display: block;
   font-size: 11px;
   color: #64748b;
@@ -437,47 +437,47 @@
   to { opacity: 1; }
 }
 
-/* Content Area */
-.suggestion-content {
+/* AI Resource Suggestion Content Area */
+.ai-resource-suggestion-content {
   flex: 1;
   min-width: 0;
   transition: all 0.3s ease;
 }
 
-.suggestion-content.expanded {
+.ai-resource-suggestion-content.expanded {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.suggestion-header {
+.ai-resource-suggestion-header {
   margin-bottom: 8px;
 }
 
-.suggestion-card.expanded .suggestion-header {
+.ai-resource-suggestion-card.expanded .ai-resource-suggestion-header {
   margin-bottom: 0;
 }
 
-.suggestion-name-section {
+.ai-resource-suggestion-name-section {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.suggestion-name {
+.ai-resource-suggestion-name {
   font-size: 16px;
   font-weight: 600;
   color: #1e293b;
   margin: 0;
 }
 
-.suggestion-meta-inline {
+.ai-resource-suggestion-meta-inline {
   font-size: 13px;
   color: #64748b;
 }
 
-/* Skills Preview (collapsed state) */
-.suggestion-skills-preview {
+/* AI Resource Skills Preview (collapsed state) */
+.ai-resource-suggestion-skills-preview {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
@@ -485,7 +485,7 @@
   transition: opacity 0.2s ease;
 }
 
-.skill-badge-preview {
+.ai-resource-skill-badge-preview {
   background: #e2e8f0;
   color: #475569;
   padding: 4px 8px;
@@ -496,21 +496,21 @@
   transition: all 0.2s ease;
 }
 
-.skill-badge-preview:hover {
+.ai-resource-skill-badge-preview:hover {
   background: #cbd5e1;
 }
 
-.skill-badge-preview.more {
+.ai-resource-skill-badge-preview.more {
   background: #6366f1;
   color: white;
 }
 
-.skill-badge-preview.active-skill-badge-preview {
+.ai-resource-skill-badge-preview.active-skill-badge-preview {
   background: #6366f1;
   color: white;
 }
 
-.skill-more-btn-preview {
+.ai-resource-skill-more-btn-preview {
   background: transparent;
   border: 1px solid #cbd5e1;
   color: #64748b;
@@ -521,13 +521,13 @@
   transition: all 0.2s ease;
 }
 
-.skill-more-btn-preview:hover {
+.ai-resource-skill-more-btn-preview:hover {
   background: #f1f5f9;
   border-color: #94a3b8;
 }
 
-/* Criteria Breakdown (expanded state) */
-.criteria-breakdown {
+/* AI Resource Criteria Breakdown (expanded state) */
+.ai-resource-criteria-breakdown {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -546,28 +546,28 @@
   }
 }
 
-.criteria-row {
+.ai-resource-criteria-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
 }
 
-.criteria-name {
+.ai-resource-criteria-name {
   font-size: 13px;
   color: #475569;
   min-width: 80px;
   flex-shrink: 0;
 }
 
-.criteria-bar-container {
+.ai-resource-criteria-bar-container {
   display: flex;
   align-items: center;
   gap: 12px;
   flex: 1;
 }
 
-.criteria-bar-bg {
+.ai-resource-criteria-bar-bg {
   background: #e2e8f0;
   border-radius: 4px;
   height: 6px;
@@ -575,29 +575,29 @@
   overflow: hidden;
 }
 
-.criteria-bar-fill {
+.ai-resource-criteria-bar-fill {
   height: 100%;
   border-radius: 4px;
   transition: width 0.5s ease 0.3s;
 }
 
-.criteria-bar-fill.high { background: #6366f1; }
-.criteria-bar-fill.medium { background: #f59e0b; }
-.criteria-bar-fill.low { background: #ef4444; }
+.ai-resource-criteria-bar-fill.high { background: #6366f1; }
+.ai-resource-criteria-bar-fill.medium { background: #f59e0b; }
+.ai-resource-criteria-bar-fill.low { background: #ef4444; }
 
-.criteria-score {
+.ai-resource-criteria-score {
   font-size: 13px;
   font-weight: 600;
   min-width: 60px;
   text-align: right;
 }
 
-.criteria-score.high { color: #6366f1; }
-.criteria-score.medium { color: #f59e0b; }
-.criteria-score.low { color: #ef4444; }
+.ai-resource-criteria-score.high { color: #6366f1; }
+.ai-resource-criteria-score.medium { color: #f59e0b; }
+.ai-resource-criteria-score.low { color: #ef4444; }
 
-/* Expanded Content (skills section below) */
-.expanded-content {
+/* AI Resource Expanded Content (skills section below) */
+.ai-resource-expanded-content {
   padding: 0 16px 16px 16px;
   /* border-top: 1px solid #e2e8f0;
   margin-top: 8px; */
@@ -605,17 +605,17 @@
   animation: slideInFade 0.4s ease 0.2s forwards;
 }
 
-.skills-section {
+.ai-resource-skills-section {
   /* margin-bottom: 16px; */
 }
 
-.skills-container {
+.ai-resource-skills-container {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
 
-.skill-badge {
+.ai-resource-skill-badge {
   background: #e2e8f0;
   color: #475569;
   padding: 6px 10px;
@@ -626,16 +626,16 @@
   transition: all 0.2s ease;
 }
 
-.skill-badge:hover {
+.ai-resource-skill-badge:hover {
   background: #cbd5e1;
 }
 
-.skill-badge.active-skill-badge {
+.ai-resource-skill-badge.active-skill-badge {
   background: #6366f1;
   color: white;
 }
 
-.skill-more-btn {
+.ai-resource-skill-more-btn {
   background: transparent;
   border: 1px solid #cbd5e1;
   color: #64748b;
@@ -646,18 +646,18 @@
   transition: all 0.2s ease;
 }
 
-.skill-more-btn:hover {
+.ai-resource-skill-more-btn:hover {
   background: #f1f5f9;
   border-color: #94a3b8;
 }
 
-/* AI Reason */
-.ai-reason-section {
+/* AI Resource Reason */
+.ai-resource-reason-section {
   /* padding-top: 12px; */
   /* border-top: 1px solid #e2e8f0; */
 }
 
-.reason-text {
+.ai-resource-reason-text {
   font-size: 13px;
   color: #475569;
   line-height: 1.5;
@@ -1601,7 +1601,7 @@
   font-size: 15px;
 }
 
-.ai-suggestions-content .suggestion-cards-list {
+.ai-suggestions-content .ai-resource-suggestion-cards-list {
   display: flex;
   flex-direction: column;
   gap: 12px;

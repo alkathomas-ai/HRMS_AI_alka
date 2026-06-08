@@ -650,26 +650,7 @@
   justify-content: center;
   font-size: 12px;
 }
-.search-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.search-header {
-  display: flex;
-  align-items: center;
-  /* justify-content: space-between; */
-  justify-content: center;
-  gap: 20px;
-  width: 100%;
-  height: 45px;
-}
 
-.search-header .assistant-control {
-  flex: 0 0 70%;
-  max-width: 70%;
-  height: 100%;
-}
 
 /* Upload Modal Styles */
 .upload-modal-overlay {
@@ -859,56 +840,7 @@
   border-radius: 8px;
   transition: background 0.2s;
 }
-.search-card-header {
-  margin-top: 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  color: black;
-  width: 100%;
-}
 
-.search-card {
-  background-color: white;
-  border-radius: 10px;
-  position: relative;
-}
-.search-card-layout {
-  position: relative;
-  display: flex;
-  height: 150px;
-  border-radius: 20px;
-  background-color: white;
-  padding: 20px;
-
-  .search-card-layout-container {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    border: 1px solid rgb(224, 224, 224);
-    padding: 0 20px;
-    border-radius: 20px;
-
-    .search-card-avatar {
-      display: flex;
-      align-items: center;
-      gap: 40px;
-      width: calc(100% / 5);
-
-      .search-card-avatar-img {
-        color: var(--color-primary);
-        /* height: 40px;
-          width: 40px; */
-        font-size: 50px;
-      }
-
-      .name-header {
-        display: flex;
-      }
-    }
-  }
-}
 
 /* popup */
 .employee-hover-popup {
@@ -1135,17 +1067,6 @@
 }
 
 @media (max-width: 768px) {
-  .search-header {
-    flex-direction: column;
-    height: auto;
-    gap: 10px;
-  }
-
-  .search-header .assistant-control {
-    flex: 1;
-    max-width: 100%;
-  }
-
   .assistant-btns {
     width: 100%;
     justify-content: stretch;
@@ -1198,9 +1119,7 @@
     align-items: flex-start;
   }
 }
-.search-container {
-  width: 100%;
-}
+
 /* Quick Filters Section */
 .quick-filters {
     /* margin-top: 24px; */
@@ -1285,13 +1204,7 @@
 }
 /* --- */
 /* Search Hints Container */
-.search-hints {
-    margin-top: 24px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
-}
+
 
 /* Label */
 .hint-label {
@@ -1465,11 +1378,7 @@
 .match-badge.medium { background: #ce6d07; }
 .match-badge.low { background: #871f1f; }
 
-.employee-card-content {
-  /* display: flex;
-  flex-direction: column;
-  gap: 16px; */
-}
+
 
 .employee-info-section {
   display: grid;

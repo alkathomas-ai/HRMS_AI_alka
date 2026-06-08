@@ -131,9 +131,9 @@ const NavbarSearchResults = ({ searchQuery }) => {
 
   return (
     <>
-      <div className="search-results-toolbar">
+      <div className="navbar-search-results-toolbar">
           <div className="toolbar-left">
-            <div className="search-filter">
+            <div className="navbar-search-filter">
               <span className="material-symbols-outlined">search</span>
               <input
                 type="text"
@@ -163,7 +163,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
             </div>
             <div className="quick-filters">
               <div className="custom-select-wrapper" ref={deptDropdownRef}>
-                <div className="select-trigger search-result-filter" onClick={() => setShowDeptDropdown(!showDeptDropdown)}>
+                <div className="select-trigger navbar-search-result-filter" onClick={() => setShowDeptDropdown(!showDeptDropdown)}>
                   <span>Department</span>
                   <i className="fa-solid fa-chevron-down"></i>
                 </div>
@@ -180,7 +180,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
               </div>
   
               <div className="custom-select-wrapper" ref={expDropdownRef}>
-                <div className="select-trigger search-result-filter" onClick={() => setShowExpDropdown(!showExpDropdown)}>
+                <div className="select-trigger navbar-search-result-filter" onClick={() => setShowExpDropdown(!showExpDropdown)}>
                   <span>{expFilter || "Experience"}</span>
                   <i className="fa-solid fa-chevron-down"></i>
                 </div>
@@ -196,7 +196,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
               </div>
   
               <div className="custom-select-wrapper" ref={locDropdownRef}>
-                <div className="select-trigger search-result-filter" onClick={() => setShowLocDropdown(!showLocDropdown)}>
+                <div className="select-trigger navbar-search-result-filter" onClick={() => setShowLocDropdown(!showLocDropdown)}>
                   <span>Location</span>
                   <i className="fa-solid fa-chevron-down"></i>
                 </div>
@@ -213,7 +213,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
               </div>
 
               <div className="custom-select-wrapper" ref={techDropdownRef}>
-                <div className="select-trigger search-result-filter" onClick={() => setShowTechDropdown(!showTechDropdown)}>
+                <div className="select-trigger navbar-search-result-filter" onClick={() => setShowTechDropdown(!showTechDropdown)}>
                   <span>Tech Group</span>
                   <i className="fa-solid fa-chevron-down"></i>
                 </div>
@@ -335,11 +335,11 @@ const NavbarSearchResults = ({ searchQuery }) => {
           <div className="view-controls">
             
             {viewMode === 'scroll' ? (
-              <div className="search-results-info">
+              <div className="navbar-search-results-info">
                 <span className="results-count">{filteredResults.length} results found</span>
               </div>
             ) : (
-              <div className="search-results-pagination">
+              <div className="navbar-search-results-pagination">
                 <div className="rows-selector">
                   <span>Rows per page:</span>
                   <div className="custom-select-wrapper" ref={dropdownRef}>
