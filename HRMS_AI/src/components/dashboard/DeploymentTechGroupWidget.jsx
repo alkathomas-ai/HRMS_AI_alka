@@ -68,27 +68,24 @@ const DeploymentTechGroupWidget = ({ openModal }) => {
   }, []);
 
   const fetchAllDeploymentsData = useCallback(
-    async (deploymentsList, techGroup) => {
+    async () => {
       try {
         setIsLoading(true);
         let allEmployees = [];
 
-        // Fetch data for each deployment
-        for (const dep of deploymentsList) {
           try {
             const resourcesResult = await getDeploymentResources(
-              dep.deployment,
-              techGroup,
+              selectedDeployment,
+              selectedTechGroup,
             );
             const resourceData = resourcesResult?.data || [];
             allEmployees = [...allEmployees, ...resourceData];
           } catch (error) {
             console.error(
-              `Error fetching data for deployment ${dep.deployment}:`,
+              `Error fetching data for deployment }:`,
               error,
             );
           }
-        }
 
         // Remove duplicates based on employee_id
         const uniqueEmployees = Array.from(
