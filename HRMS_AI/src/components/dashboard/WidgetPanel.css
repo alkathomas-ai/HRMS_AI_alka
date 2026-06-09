@@ -1010,7 +1010,7 @@
 .timeline-date-item.active {
   font-weight: 500;
   color: var(--color-text-primary);
-  background-color: var(--assistant-base-start);
+  background-color: var(--assistant-base-end);
 }
 
 .timeline-content {
