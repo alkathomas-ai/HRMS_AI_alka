@@ -123,7 +123,7 @@ const ResumeMatch = ({ showError }) => {
               <div className="sp-skills-label">Primary Skills</div>
               <div className="sp-skills-list">
                 {similarProfiles.resume_profile.primary_skills.map((s, i) => (
-                  <span key={i} className="skill-badge primary-skill-badge">
+                  <span key={i} className="ai-suggestions-skill-badge primary-skill-badge">
                     {s}
                   </span>
                 ))}
@@ -133,7 +133,7 @@ const ResumeMatch = ({ showError }) => {
               <div className="sp-skills-label">Secondary Skills</div>
               <div className="sp-skills-list">
                 {similarProfiles.resume_profile.secondary_skills.map((s, i) => (
-                  <span key={i} className="skill-badge">
+                  <span key={i} className="ai-suggestions-skill-badge">
                     {s}
                   </span>
                 ))}

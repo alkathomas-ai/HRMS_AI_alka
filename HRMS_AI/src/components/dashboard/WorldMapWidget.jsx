@@ -133,7 +133,7 @@ const WorldMapWidget = () => {
     <div className="world-map-widget">
       <div className="widget-header">
         <div className="total-employees">
-          <span className="total-count">{totalEmployees}</span>
+          <span className="map-total-count">{totalEmployees}</span>
           <span className="total-label">Total Employees</span>
         </div>
         <div className="country-selector" ref={dropdownRef}>

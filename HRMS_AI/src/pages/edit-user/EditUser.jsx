@@ -233,12 +233,12 @@ const EditUser = () => {
         {(expanded ? skillsArray : skillsArray.slice(0, count)).map((skill, i) => (
           <span key={i} className='skill-chip'>{skill}</span>
         ))}
-        {!expanded && (
+        {!expanded && remaining > 0 && (
           <button className="more-skills-btn" style={{ flexShrink: 0 }} onClick={(e) => { e.stopPropagation(); onToggle(); }}>
-            {remaining > 0 ? `+${remaining}` : `+0`}
+            {remaining > 0 ? `+${remaining}` : ``}
           </button>
         )}
-        {expanded && (
+        {expanded && remaining > 0 && (
           <button className="more-skills-btn" style={{ flexShrink: 0 }} onClick={(e) => { e.stopPropagation(); onToggle(); }}>Less</button>
         )}
       </div>
@@ -434,7 +434,7 @@ const EditUser = () => {
                 <div className='bottom-pagination'>
                   <div className="rows-selector">
                     <span>Rows per page:</span>
-                    <div className="custom-select-wrapper">
+                    <div className="user-select-wrapper">
                       <div 
                         className="select-trigger"
                         onClick={() => setIsRowsDropdownOpen(!isRowsDropdownOpen)}
@@ -445,7 +445,7 @@ const EditUser = () => {
                         </span>
                       </div>
                       {isRowsDropdownOpen && (
-                        <div className="dropdown-menu">
+                        <div className="user-dropdown-menu">
                           {[10, 15, 25].map(value => (
                             <div 
                               key={value}

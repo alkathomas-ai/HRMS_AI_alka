@@ -96,8 +96,8 @@
   align-items: flex-start;
 }
 
-.total-count {
-  font-size: 32px;
+.map-total-count {
+  font-size: 28px;
   font-weight: 600;
   color: #1f2937;
   line-height: 1;

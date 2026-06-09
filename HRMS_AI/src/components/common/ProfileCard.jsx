@@ -23,47 +23,47 @@ export default function ProfileCard({
 
   return (
     <div
-      className={`suggestion-card ${scoreClass}-score ${
+      className={`ai-resource-suggestion-card ${scoreClass}-score ${
         expanded ? "expanded" : ""
       }`}
     >
-      <div className="suggestion-row" onClick={() => setExpanded(!expanded)}>
+      <div className="ai-resource-suggestion-row" onClick={() => setExpanded(!expanded)}>
         <div
-          className={`suggestion-score-circle ${
+          className={`ai-resource-suggestion-score-circle ${
             expanded ? "expanded" : ""
           }`}
         >
-          <svg className="score-progress" viewBox="0 0 36 36">
+          <svg className="ai-resource-score-progress" viewBox="0 0 36 36">
             <path
-              className="score-bg"
+              className="ai-resource-score-bg"
               d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
             />
             <path
-              className={`score-fill ${scoreClass}`}
+              className={`ai-resource-score-fill ${scoreClass}`}
               strokeDasharray={`${ai_score}, 100`}
               d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
             />
           </svg>
 
-          <div className="score-center">
-            <span className={`score-text ${scoreClass}`}>
+          <div className="ai-resource-score-center">
+            <span className={`ai-resource-score-text ${scoreClass}`}>
               {ai_score}
             </span>
           </div>
         </div>
 
-        <div className="suggestion-content">
+        <div className="ai-resource-suggestion-content">
           <div className="project-name-cell">
             <div className="sp-emp-avatar">
               {display_name?.charAt(0).toUpperCase()}
             </div>
 
             <div>
-              <div className="suggestion-name">
+              <div className="ai-resource-suggestion-name">
                 {display_name}
               </div>
 
-              <div className="suggestion-meta-inline">
+              <div className="ai-resource-suggestion-meta-inline">
                 {designation} • {tech_group}
               </div>
 
@@ -92,11 +92,11 @@ export default function ProfileCard({
           </div>
 
           {expanded && (
-            <div className="skills-container" style={{ marginTop: 12 }}>
+            <div className="ai-resource-skills-container" style={{ marginTop: 12 }}>
               {primary_skills.map((skill, i) => (
                 <span
                   key={i}
-                  className="skill-badge-preview"
+                  className="ai-resource-skill-badge"
                 >
                   {skill}
                 </span>

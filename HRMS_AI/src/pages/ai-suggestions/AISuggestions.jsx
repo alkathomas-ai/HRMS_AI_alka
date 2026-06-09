@@ -51,6 +51,9 @@ const AISuggestions = () => {
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [projectsSearchQuery, setProjectsSearchQuery] = useState("");
   const [aiSuggestionsSearchQuery, setAiSuggestionsSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [isRowsDropdownOpen, setIsRowsDropdownOpen] = useState(false);
   const { showSuccess, showError, showInfo } = useToast();
   const { confirm, ConfirmationModal } = useConfirmation();
 
@@ -120,6 +123,17 @@ const AISuggestions = () => {
             .includes(projectsSearchQuery.toLowerCase()),
       )
     : projectsList;
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredProjectsForTab.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentProjects = filteredProjectsForTab.slice(startIndex, endIndex);
+
+  // Reset page when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [projectsSearchQuery]);
 
   const filteredProjectsForAI = aiSuggestionsSearchQuery
     ? projects.filter(
@@ -408,6 +422,7 @@ const AISuggestions = () => {
   const handleDropdownAction = (action, project, event) => {
     event.stopPropagation();
     setOpenDropdownId(null);
+    setIsRowsDropdownOpen(false);
 
     switch (action) {
       case "edit":
@@ -426,15 +441,18 @@ const AISuggestions = () => {
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = () => {
-      setOpenDropdownId(null);
+    const handleClickOutside = (event) => {
+      // Check if click is outside both dropdowns
+      if (!event.target.closest('.action-dropdown-container') && 
+          !event.target.closest('.user-select-wrapper')) {
+        setOpenDropdownId(null);
+        setIsRowsDropdownOpen(false);
+      }
     };
 
-    if (openDropdownId) {
-      document.addEventListener("click", handleClickOutside);
-      return () => document.removeEventListener("click", handleClickOutside);
-    }
-  }, [openDropdownId]);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
 
   // // Helper function to extract employee ID from delivery owner
   // const extractEmployeeId = (deliveryOwner) => {
@@ -454,21 +472,6 @@ const AISuggestions = () => {
 
   const renderProjectsTab = () => (
     <div className="projects-content">
-      {/* Project Count Tile */}
-      <div className="project-count-tile">
-        <div className="count-tile-icon">
-          <span className="material-symbols-outlined">folder</span>
-        </div>
-        <div className="count-tile-content">
-          <div className="count-tile-number">
-            {filteredProjectsForTab.length}
-          </div>
-          <div className="count-tile-label">
-            {projectsSearchQuery ? "Filtered Projects" : "Total Projects"}
-          </div>
-        </div>
-      </div>
-
       <div className="projects-table-card">
         {/* Search box integrated with table */}
         <div className="table-search-header">
@@ -516,7 +519,7 @@ const AISuggestions = () => {
                   </td>
                 </tr>
               ) : (
-                filteredProjectsForTab.map((project, index) => (
+                currentProjects.map((project, index) => (
                   <tr
                     key={`${project.project_name}-${index}`}
                     className="project-row"
@@ -580,6 +583,66 @@ const AISuggestions = () => {
             </tbody>
           </table>
         </div>
+        
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="bottom-pagination">
+            <div className="rows-selector">
+              <span>Rows per page:</span>
+              <div className="user-select-wrapper">
+                <div 
+                  className="select-trigger"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsRowsDropdownOpen(!isRowsDropdownOpen);
+                  }}
+                >
+                  <span>{itemsPerPage}</span>
+                  <span className="material-symbols-outlined">
+                    {isRowsDropdownOpen ? 'expand_less' : 'expand_more'}
+                  </span>
+                </div>
+                {isRowsDropdownOpen && (
+                  <div className="user-dropdown-menu">
+                    {[10, 15, 25].map(value => (
+                      <div 
+                        key={value}
+                        className="option"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setItemsPerPage(value);
+                          setCurrentPage(1);
+                          setIsRowsDropdownOpen(false);
+                        }}
+                      >
+                        {value}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="pagination-info">
+              Showing {startIndex + 1}-{Math.min(endIndex, filteredProjectsForTab.length)} of {filteredProjectsForTab.length} projects
+            </div>
+            <div className="pagination-controls">
+              <button
+                className="page-btn"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                <span className="material-symbols-outlined">chevron_left</span>
+              </button>
+              <button
+                className="page-btn"
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+              >
+                <span className="material-symbols-outlined">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -620,6 +683,12 @@ const AISuggestions = () => {
                     }
                   />
                 </div>
+                <button
+                  className="add-requirement-btn"
+                  onClick={() => setShowForm(true)}
+                >
+                  Add Project Requirement
+                </button>
               </div>
 
               <div className="table-wrapper">
@@ -814,7 +883,7 @@ const AISuggestions = () => {
                           </button>
                         )}
                       </div>
-                      <div className="suggestion-cards-list">
+                      <div className="ai-resource-suggestion-cards-list">
                         {displayedEmployees?.map((emp) => (
                           // <ProfileCard
                           <SuggestionCard
@@ -874,16 +943,6 @@ const AISuggestions = () => {
           >
             Similar Profile Suggestions
           </button>
-        </div>
-        <div className="d-flex align-center">
-          {activeTab == "ai-suggestions" && (
-            <button
-              className="add-requirement-btn"
-              onClick={() => setShowForm(true)}
-            >
-              Add Project Requirement
-            </button>
-          )}
         </div>
       </div>
 

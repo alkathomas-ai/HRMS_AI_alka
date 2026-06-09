@@ -115,7 +115,7 @@ const CreateWidgetModal = ({ isOpen, onClose, onGenerate, editingWidget }) => {
                 <i className="fa-solid fa-circle-info info-icon" title="Preferred representation may change if it doesn't match the data structure"></i>
               </label>
               <div className="chart-type-wrapper" ref={dropdownRef}>
-                <div className="select-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                <div className={`select-trigger ${isDropdownOpen ? 'open' : ''}`} onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
                   <i className={`fa-solid ${chartTypes.find(t => t.value === chartType)?.icon}`}></i>
                   <span>{chartTypes.find(t => t.value === chartType)?.label}</span>
                   <i className="fa-solid fa-chevron-down"></i>

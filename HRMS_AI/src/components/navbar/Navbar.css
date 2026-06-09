@@ -750,7 +750,7 @@
 .search-results-content {
   /* padding: 0 24px; */
   overflow-y: auto;
-  height: calc(100% - 53px);
+  height: calc(100% - 40px);
   color: var(--color-text-secondary);
 }
 

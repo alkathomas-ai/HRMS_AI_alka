@@ -78,12 +78,12 @@
     color: var(--color-text-secondary);
 }
 
-.custom-select-wrapper {
+.user-select-wrapper {
     position: relative;
     min-width: 80px;
 }
 
-.custom-select-wrapper .select-trigger {
+.user-select-wrapper .select-trigger {
     padding: 7px 12px;
     border: 1px solid var(--color-bg-muted);
     border-radius: 6px;
@@ -98,14 +98,14 @@
     transition: all 0.2s ease;
 }
 
-.custom-select-wrapper .select-trigger:hover,
-.custom-select-wrapper .select-trigger:focus {
+.user-select-wrapper .select-trigger:hover,
+.user-select-wrapper .select-trigger:focus {
     box-shadow: 0 0 2px 1px var(--color-primary-soft);
 }
 
-.custom-select-wrapper .dropdown-menu {
+.user-select-wrapper .user-dropdown-menu {
     position: absolute;
-    top: calc(100% + 4px);
+    top: -122px;
     left: 0;
     right: 0;
     background: var(--color-bg-card);
@@ -117,7 +117,7 @@
     overflow-y: auto;
 }
 
-.custom-select-wrapper .option {
+.user-select-wrapper .option {
     padding: 10px 12px;
     cursor: pointer;
     font-size: 14px;
@@ -125,7 +125,7 @@
     transition: background 0.2s;
 }
 
-.custom-select-wrapper .option:hover {
+.user-select-wrapper .option:hover {
     background: var(--color-bg-muted);
 }
 
@@ -604,6 +604,6 @@
 }
 
 .edit-user-header h2 {
-    font-size: 18px;
-    font-weight: 400;
+    font-size: 20px;
+    font-weight: 500;
 }

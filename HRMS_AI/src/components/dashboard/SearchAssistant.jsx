@@ -41,7 +41,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
         {ai_score && <div className={`match-badge ${scoreClass}`}>
           <div className="score-text"><span>{ai_score || 0}%</span> match</div>
         </div>}
-        <div className="employee-card-content">
+        <div className="ai-search-employee-card-content">
           <div className="employee-name-row">
             <h2 className="employee-name-search">{display_name}</h2>
             <span className="employee-designation-badge">{designation}</span>
@@ -190,7 +190,7 @@ const RequirementCard = ({ employee, filterFunction, activeSkill, setActiveSkill
   // Simple UI without AI features
   return (
     <div className="employee-card">
-      <div className="employee-card-content">
+      <div className="ai-search-employee-card-content">
         <div className="employee-name-row">
           <h2 className="employee-name-search">{display_name}</h2>
           <span className="employee-designation-badge">{designation}</span>

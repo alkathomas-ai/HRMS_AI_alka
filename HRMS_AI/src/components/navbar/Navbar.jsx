@@ -177,8 +177,7 @@ const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
       {/* Left section  */}
       <div className="topbar-left">
         <div className="logo">
-          <img src="./bubbles.svg" className="logo-icon" />
-          <span className="logo-text">HRMS.<span className="logo-ai">ai</span></span>
+          <span className="logo-text">HRMS<span className="logo-dot">.</span><span className="logo-ai">ai</span></span>
         </div>
       </div>
 
@@ -236,10 +235,8 @@ const Navbar = ({ onCSVUpload, isUploading, onCloseSearchResults }) => {
               }}
               className="search-input"
               prompts={[
-                "Ask me anything...",
                 "Search employees...",
-                "Find projects...",
-                "Explore departments..."
+                "Find employees by occupancy ranking, skills, and more",
               ]}
             />
           </div>

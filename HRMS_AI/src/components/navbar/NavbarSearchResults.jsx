@@ -8,10 +8,6 @@ const NavbarSearchResults = ({ searchQuery }) => {
   const [activeSkill, setActiveSkill] = useState([]);
   const [showAllSkills, setShowAllSkills] = useState({});
   const [filterText, setFilterText] = useState('');
-  const [viewMode, setViewMode] = useState('scroll'); // 'scroll' or 'pagination'
-  const [rowsPerPage, setRowsPerPage] = useState(20);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showDeptDropdown, setShowDeptDropdown] = useState(false);
   const [showExpDropdown, setShowExpDropdown] = useState(false);
   const [showLocDropdown, setShowLocDropdown] = useState(false);
@@ -20,7 +16,6 @@ const NavbarSearchResults = ({ searchQuery }) => {
   const [expFilter, setExpFilter] = useState("");
   const [locFilters, setLocFilters] = useState({});
   const [techFilters, setTechFilters] = useState({});
-  const dropdownRef = useRef(null);
   const deptDropdownRef = useRef(null);
   const expDropdownRef = useRef(null);
   const locDropdownRef = useRef(null);
@@ -32,9 +27,6 @@ const NavbarSearchResults = ({ searchQuery }) => {
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setIsDropdownOpen(false);
-      }
       if (deptDropdownRef.current && !deptDropdownRef.current.contains(e.target)) {
         setShowDeptDropdown(false);
       }
@@ -124,16 +116,16 @@ const NavbarSearchResults = ({ searchQuery }) => {
   }, [searchResult?.result, filterText, deptFilters, locFilters, techFilters, expFilter, activeSkill]);
 
   // Pagination calculations (only used when viewMode is 'pagination')
-  const totalPages = Math.ceil(filteredResults.length / rowsPerPage);
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const paginatedResults = filteredResults.slice(startIndex, startIndex + rowsPerPage);
+  // const totalPages = Math.ceil(filteredResults.length / rowsPerPage);
+  // const startIndex = (currentPage - 1) * rowsPerPage;
+  // const paginatedResults = filteredResults.slice(startIndex, startIndex + rowsPerPage);
 
 
   return (
     <>
-      <div className="search-results-toolbar">
+      <div className="navbar-search-results-toolbar">
           <div className="toolbar-left">
-            <div className="search-filter">
+            <div className="navbar-search-filter">
               <span className="material-symbols-outlined">search</span>
               <input
                 type="text"
@@ -141,29 +133,12 @@ const NavbarSearchResults = ({ searchQuery }) => {
                 value={filterText}
                 onChange={(e) => {
                   setFilterText(e.target.value.replace(/\s+/g, ' ').trimStart());
-                  if (viewMode === 'pagination') setCurrentPage(1);
                 }}
               />
             </div>
-            <div className="view-mode-toggle">
-              <button 
-                className={`view-btn ${viewMode === 'scroll' ? 'active' : ''}`}
-                onClick={() => setViewMode('scroll')}
-                title="Scroll view"
-              >
-                <i className="fa-solid fa-list"></i>
-              </button>
-              <button 
-                className={`view-btn ${viewMode === 'pagination' ? 'active' : ''}`}
-                onClick={() => setViewMode('pagination')}
-                title="Pagination view"
-              >
-                <i className="fa-solid fa-table-list"></i>
-              </button>
-            </div>
             <div className="quick-filters">
               <div className="custom-select-wrapper" ref={deptDropdownRef}>
-                <div className="select-trigger search-result-filter" onClick={() => setShowDeptDropdown(!showDeptDropdown)}>
+                <div className={`select-trigger navbar-search-result-filter ${showDeptDropdown ? 'open' : ''}`} onClick={() => setShowDeptDropdown(!showDeptDropdown)}>
                   <span>Department</span>
                   <i className="fa-solid fa-chevron-down"></i>
                 </div>
@@ -180,7 +155,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
               </div>
   
               <div className="custom-select-wrapper" ref={expDropdownRef}>
-                <div className="select-trigger search-result-filter" onClick={() => setShowExpDropdown(!showExpDropdown)}>
+                <div className={`select-trigger navbar-search-result-filter ${showExpDropdown ? 'open' : ''}`} onClick={() => setShowExpDropdown(!showExpDropdown)}>
                   <span>{expFilter || "Experience"}</span>
                   <i className="fa-solid fa-chevron-down"></i>
                 </div>
@@ -196,7 +171,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
               </div>
   
               <div className="custom-select-wrapper" ref={locDropdownRef}>
-                <div className="select-trigger search-result-filter" onClick={() => setShowLocDropdown(!showLocDropdown)}>
+                <div className={`select-trigger navbar-search-result-filter ${showLocDropdown ? 'open' : ''}`} onClick={() => setShowLocDropdown(!showLocDropdown)}>
                   <span>Location</span>
                   <i className="fa-solid fa-chevron-down"></i>
                 </div>
@@ -213,7 +188,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
               </div>
 
               <div className="custom-select-wrapper" ref={techDropdownRef}>
-                <div className="select-trigger search-result-filter" onClick={() => setShowTechDropdown(!showTechDropdown)}>
+                <div className={`select-trigger navbar-search-result-filter ${showTechDropdown ? 'open' : ''}`} onClick={() => setShowTechDropdown(!showTechDropdown)}>
                   <span>Tech Group</span>
                   <i className="fa-solid fa-chevron-down"></i>
                 </div>
@@ -333,64 +308,13 @@ const NavbarSearchResults = ({ searchQuery }) => {
           </div> */}
 
           <div className="view-controls">
-            
-            {viewMode === 'scroll' ? (
-              <div className="search-results-info">
-                <span className="results-count">{filteredResults.length} results found</span>
-              </div>
-            ) : (
-              <div className="search-results-pagination">
-                <div className="rows-selector">
-                  <span>Rows per page:</span>
-                  <div className="custom-select-wrapper" ref={dropdownRef}>
-                    <div className="select-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-                      <span>{rowsPerPage}</span>
-                      <i className="fa-solid fa-chevron-down"></i>
-                    </div>
-                    {isDropdownOpen && (
-                      <div className="dropdown-menu" style={{ display: 'block' }}>
-                        {[5, 10, 20, 50].map(num => (
-                          <div 
-                            key={num} 
-                            className="option" 
-                            onClick={() => { 
-                              setRowsPerPage(num); 
-                              setCurrentPage(1); 
-                              setIsDropdownOpen(false); 
-                            }}
-                          >
-                            {num}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="pagination-info">
-                  {startIndex + 1}-{Math.min(startIndex + rowsPerPage, filteredResults.length)} of {filteredResults.length}
-                </div>
-                <div className="pagination-controls">
-                  <button
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                    disabled={currentPage === 1}
-                    className="page-btn"
-                  >
-                    <span className="material-symbols-outlined">chevron_left</span>
-                  </button>
-                  <button
-                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                    disabled={currentPage === totalPages}
-                    className="page-btn"
-                  >
-                    <span className="material-symbols-outlined">chevron_right</span>
-                  </button>
-                </div>
-              </div>
-            )}
+            <div className="navbar-search-results-info">
+              <span className="results-count">{filteredResults.length} results found</span>
+            </div>
           </div>
       </div>
-      <div className={`employee-cards-list ${viewMode === 'scroll' ? 'scrollable-results' : ''}`}>
-      {(viewMode === 'scroll' ? filteredResults : paginatedResults).map((employee) => {
+      <div className="navbar-employee-cards-list scrollable-results">
+      {filteredResults.map((employee) => {
         const {
           display_name,
           designation,
@@ -417,18 +341,18 @@ const NavbarSearchResults = ({ searchQuery }) => {
   // AI-powered UI with scores and criteria
   if (ai_reason) {
     return (
-      <div className={`employee-card ${scoreClass}-score`}>
-        {ai_score && <div className={`match-badge ${scoreClass}`}>
-          <div className="score-text"><span>{ai_score || 0}%</span> match</div>
+      <div className={`navbar-employee-card ${scoreClass}-score`}>
+        {ai_score && <div className={`navbar-match-badge ${scoreClass}`}>
+          <div className="navbar-score-text"><span>{ai_score || 0}%</span> match</div>
         </div>}
-        <div className="employee-card-content">
-          <div className="employee-name-row">
-            <h2 className="employee-name-search">{display_name}</h2>
-            <span className="employee-designation-badge">{designation}</span>
+        <div className="navbar-employee-card-content">
+          <div className="navbar-employee-name-row">
+            <h2 className="navbar-employee-name-search">{display_name}</h2>
+            <span className="navbar-employee-designation-badge">{designation}</span>
           </div>
-          <div className="employee-info-section">
-            <div className="employee-header">
-              <div className="employee-details-text">
+          <div className="navbar-employee-info-section">
+            <div className="navbar-employee-header">
+              <div className="navbar-employee-details-text">
                 <p>
                   <i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;
                 </p>
@@ -449,22 +373,21 @@ const NavbarSearchResults = ({ searchQuery }) => {
               </div>
             </div>
 
-            <div className="employee-skill-description">
+            <div className="navbar-employee-skill-description">
               {employee.projects && employee.projects.length > 0 && (
-                <div className="employee-projects-section">
-                  {/* <span className="projects-label">Projects:</span> */}
+                <div className="navbar-employee-projects-section">
                   <div className="results-projects-container">
                     {employee.projects.map((project, projectIndex) => (
                       <span key={projectIndex} className="project-badge">
-                        <span className="project-name">{project.project_name}</span> ({project.customer}) - {project.occupancy}%
+                        <span className="navbar-project-name">{project.project_name}</span> ({project.customer}) - {project.occupancy}%
                       </span>
                     ))}
                   </div>
                 </div>
               )}
               {skill_set && (
-                <div className="employee-skills-section">
-                  <span className="skills-label">Skills:</span>
+                <div className="navbar-employee-skills-section">
+                  {/* <span className="navbar-skills-label">Skills:</span> */}
                   <div className="skills-container">
                     {skill_set
                       .split(",")
@@ -481,12 +404,11 @@ const NavbarSearchResults = ({ searchQuery }) => {
                                   ? prev.filter(skill => skill !== trimmedSkill)
                                   : [...prev, trimmedSkill]
                               );
-                              if (viewMode === 'pagination') setCurrentPage(1);
                             }}
                             className={
                               activeSkill.includes(trimmedSkill)
-                                ? "skill-badge active-skill-badge"
-                                : "skill-badge"
+                                ? "navbar-skill-badge active-skill-badge"
+                                : "navbar-skill-badge"
                             }
                           >
                             {trimmedSkill}
@@ -496,7 +418,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
                     {skill_set.split(",").length > 8 && (
                       <button
                         onClick={() => setShowAllSkills(!showAllSkills)}
-                        className="skill-more-btn"
+                        className="navbar-skill-more-btn"
                       >
                         {showAllSkills
                           ? "Show Less"
@@ -508,22 +430,22 @@ const NavbarSearchResults = ({ searchQuery }) => {
               )}
 
 
-              <div className="ai-reason-section">
+              <div className="navbar-ai-reason-section">
                 <button
                   onClick={() => setShowReason(!showReason)}
-                  className="reason-toggle-btn"
+                  className="navbar-reason-toggle-btn"
                 >
-                  <span className="reason-label">Why this match?</span>
+                  <span className="navbar-reason-label">Why this match?</span>
                   <i
                     className={`fa-solid fa-chevron-${showReason ? "up" : "down"}`}
                   ></i>
                 </button>
-                {!showReason && <p className="reason-text">{ai_reason}</p>}
+                {!showReason && <p className="navbar-reason-text">{ai_reason}</p>}
               </div>
             </div>
-            <div className="employee-score-section">
+            <div className="navbar-employee-score-section">
               {employee.ai_criteria && (
-                <div className="criteria-list">
+                <div className="navbar-criteria-list">
                   {Object.entries(employee.ai_criteria).map(
                     ([criteria, criteriaScore]) => {
                       const criteriaClass =
@@ -533,16 +455,16 @@ const NavbarSearchResults = ({ searchQuery }) => {
                             ? "medium"
                             : "low";
                       return (
-                        <div key={criteria} className="criteria-item">
-                          <div className="criteria-header">
-                            <span className="criteria-name">{criteria}</span>
-                            <span className="criteria-score">
+                        <div key={criteria} className="navbar-criteria-item">
+                          <div className="navbar-criteria-header">
+                            <span className="navbar-criteria-name">{criteria}</span>
+                            <span className="navbar-criteria-score">
                               {criteriaScore}%
                             </span>
                           </div>
-                          <div className="criteria-bar-bg">
+                          <div className="navbar-criteria-bar-bg">
                             <div
-                              className={`criteria-bar-fill ${criteriaClass}`}
+                              className={`navbar-criteria-bar-fill ${criteriaClass}`}
                               style={{ width: `${criteriaScore}%` }}
                             />
                           </div>
@@ -561,15 +483,15 @@ const NavbarSearchResults = ({ searchQuery }) => {
 
   // Simple UI without AI features
   return (
-    <div key={employee_id} className="employee-card-list">
-      <div className="employee-card-content">
-        <div className="employee-name-row">
-          <h2 className="employee-name-search">{display_name}</h2>
-          <span className="employee-designation-badge">{designation}</span>
+    <div key={employee_id} className="navbar-employee-card-list">
+      <div className="navbar-employee-card-content">
+        <div className="navbar-employee-name-row">
+          <h2 className="navbar-employee-name-search">{display_name}</h2>
+          <span className="navbar-employee-designation-badge">{designation}</span>
         </div>
-        <div className="employee-info-section-plain">
-          <div className="employee-header">
-            <div className="employee-details-text">
+        <div className="navbar-employee-info-section-plain">
+          <div className="navbar-employee-header">
+            <div className="navbar-employee-details-text">
               <p><i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;</p>
               <p><i className="fa-solid fa-building"></i> {employee_department} &nbsp;</p>
               <p><i className="fa-solid fa-location-dot"></i> {emp_location} &nbsp;</p>
@@ -577,9 +499,9 @@ const NavbarSearchResults = ({ searchQuery }) => {
               <p><i className="fa-solid fa-business-time"></i> {total_exp}</p>
             </div>
           </div>
-          <div className="employee-skill-description">
+          <div className="navbar-employee-skill-description">
             {employee.projects && employee.projects.length > 0 && (
-              <div className="employee-projects-section">
+              <div className="navbar-employee-projects-section">
                 <div className="result-projects-container">
                   {employee.projects.map((project, projectIndex) => (
                     <span key={projectIndex} className="project-badge">
@@ -590,8 +512,8 @@ const NavbarSearchResults = ({ searchQuery }) => {
               </div>
             )}
             {skill_set && (
-              <div className="employee-skills-section">
-                <span className="skills-label">Skills:</span>
+              <div className="navbar-employee-skills-section">
+                {/* <span className="navbar-skills-label">Skills:</span> */}
                 <div className="skills-container">
                   {skill_set.split(",").slice(0, showSkills ? undefined : 8).map((skill, skillIndex) => {
                     const trimmedSkill = skill.trim();
@@ -604,9 +526,8 @@ const NavbarSearchResults = ({ searchQuery }) => {
                               ? prev.filter(skill => skill !== trimmedSkill)
                               : [...prev, trimmedSkill]
                           );
-                          if (viewMode === 'pagination') setCurrentPage(1);
                         }}
-                        className={activeSkill.includes(trimmedSkill) ? "skill-badge active-skill-badge" : "skill-badge"}
+                        className={activeSkill.includes(trimmedSkill) ? "navbar-skill-badge active-skill-badge" : "navbar-skill-badge"}
                       >
                         {trimmedSkill}
                       </span>
@@ -615,7 +536,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
                   {skill_set.split(",").length > 8 && (
                     <button
                       onClick={() => setShowAllSkills({...showAllSkills, [employee_id]: !showSkills})}
-                      className="skill-more-btn"
+                      className="navbar-skill-more-btn"
                     >
                       {showSkills ? "Show Less" : `+${skill_set.split(",").length - 8} More`}
                     </button>
