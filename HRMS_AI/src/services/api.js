@@ -461,16 +461,7 @@ export async function getAllTechgroup() {
 export async function getDeploymentResources(deployment, techGroup) {
   try {
     let url = `${BASE_URL}/dashboard/deployment_resources`;
-    const params = [];
-    if (deployment && deployment !== "all") {
-      params.push(`deployment=${encodeURIComponent(deployment)}`);
-    }
-    if (techGroup && techGroup !== "all") {
-      params.push(`tech_group=${encodeURIComponent(techGroup)}`);
-    }
-    if (params.length > 0) {
-      url += "?" + params.join("&");
-    }
+    url += "?" + `deployment=${encodeURIComponent(deployment)}` + `&tech_group=${encodeURIComponent(techGroup)}`;
     const response = await axios.get(url);
     return response.data;
   } catch (error) {
