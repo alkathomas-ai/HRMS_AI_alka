@@ -563,13 +563,14 @@
   box-shadow: 0 0 1px 1px var(--color-primary-soft);
 }
 
-.select-trigger i {
+.select-trigger i.fa-chevron-down {
   color: #666;
   font-size: 12px;
   transition: transform 0.2s ease;
 }
 
-.select-trigger.active i {
+.select-trigger.open i.fa-chevron-down,
+.select-trigger.active i.fa-chevron-down {
   transform: rotate(180deg);
 }
 

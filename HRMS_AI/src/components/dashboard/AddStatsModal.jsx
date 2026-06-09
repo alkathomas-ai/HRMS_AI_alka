@@ -118,7 +118,7 @@ const AddStatsModal = ({ isOpen, onClose, onAdd }) => {
                 <i className="fa-solid fa-circle-info info-icon" title="Choose an icon for your stat"></i>
               </label>
               <div className="chart-type-wrapper">
-                <div className="select-trigger" onClick={() => setIsIconDropdownOpen(!isIconDropdownOpen)}>
+                <div className={`select-trigger ${isIconDropdownOpen ? 'open' : ''}`} onClick={() => setIsIconDropdownOpen(!isIconDropdownOpen)}>
                   <i className={selectedIcon}></i>
                   <span>{iconOptions.find(icon => icon.value === selectedIcon)?.label}</span>
                   <i className="fa-solid fa-chevron-down"></i>

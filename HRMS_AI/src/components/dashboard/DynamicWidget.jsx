@@ -166,7 +166,7 @@ const DynamicWidget = ({ widgetData }) => {
                 <i className="fa-solid fa-search"></i>
               </div>
               <div className="custom-select-wrapper" ref={dropdownRef}>
-                <div className="select-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                <div className={`select-trigger ${isDropdownOpen ? 'open' : ''}`} onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
                   <span>{rowsPerPage} rows</span>
                   <i className="fa-solid fa-chevron-down"></i>
                 </div>

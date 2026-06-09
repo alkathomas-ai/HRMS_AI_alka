@@ -37,6 +37,14 @@
     font-size: 14px;
 }
 
+.custom-select-wrapper .select-trigger i.fa-chevron-down {
+    transition: transform 0.2s ease;
+}
+
+.custom-select-wrapper .select-trigger.open i.fa-chevron-down {
+    transform: rotate(180deg);
+}
+
 .custom-select-wrapper .select-trigger:hover {
     border-color: var(--color-primary);
 }

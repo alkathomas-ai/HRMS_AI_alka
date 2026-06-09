@@ -233,7 +233,7 @@ const EditUser = () => {
         {(expanded ? skillsArray : skillsArray.slice(0, count)).map((skill, i) => (
           <span key={i} className='skill-chip'>{skill}</span>
         ))}
-        {!expanded && (
+        {!expanded && remaining > 0 && (
           <button className="more-skills-btn" style={{ flexShrink: 0 }} onClick={(e) => { e.stopPropagation(); onToggle(); }}>
             {remaining > 0 ? `+${remaining}` : ``}
           </button>

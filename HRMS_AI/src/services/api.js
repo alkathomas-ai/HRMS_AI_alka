@@ -324,6 +324,72 @@ export async function getAllNotifications() {
   }
 }
 
+export async function jdMatchAPI(formData) {
+  try {
+    const response = await axios.post(`${BASE_URL}/jd-match`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+export async function jdRankCandidatesByText(jdText) {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/jd_rank_candidates`,
+      {
+        jd_text: jdText,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function jdRankCandidatesByPdf(file) {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await axios.post(
+      `${BASE_URL}/jd_rank_candidates/upload`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function uploadResumeForSimilarProfiles(formData) {
+  try {
+    const response = await axios.post(`${BASE_URL}/resume_match_profiles/upload`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
 export async function markAsReadNotifications(ids) {
   try {
     const response = await axios.patch(`${BASE_URL}/notification/mark_as_read`, { ids });

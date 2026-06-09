@@ -1619,7 +1619,7 @@ const WidgetPanel = ({ isExpanded, onExpand, onClose }) => {
 
                 <div className="multi-select" ref={dropdownRef}>
                   <div
-                    className="select-trigger"
+                    className={`select-trigger ${isDropdownOpen ? 'open' : ''}`}
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   >
                     <span className="placeholder">Select Widgets</span>
