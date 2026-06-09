@@ -737,7 +737,7 @@
 .navbar-criteria-bar-bg {
   background: var(--color-bg-muted);
   border-radius: 4px;
-  height: 10px;
+  height: 8px;
   overflow: hidden;
 }
 
