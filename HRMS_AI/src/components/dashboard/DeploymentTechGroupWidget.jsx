@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   getEmployeeDirectory,
   getAllDeployment,
@@ -16,6 +16,10 @@ const DeploymentTechGroupWidget = ({ openModal }) => {
   const [selectedTechGroup, setSelectedTechGroup] = useState("all");
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isDeploymentDropdownOpen, setIsDeploymentDropdownOpen] = useState(false);
+  const [isTechGroupDropdownOpen, setIsTechGroupDropdownOpen] = useState(false);
+  const deploymentDropdownRef = useRef(null);
+  const techGroupDropdownRef = useRef(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -49,6 +53,19 @@ const DeploymentTechGroupWidget = ({ openModal }) => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (deploymentDropdownRef.current && !deploymentDropdownRef.current.contains(event.target)) {
+        setIsDeploymentDropdownOpen(false);
+      }
+      if (techGroupDropdownRef.current && !techGroupDropdownRef.current.contains(event.target)) {
+        setIsTechGroupDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const fetchAllDeploymentsData = useCallback(
     async (deploymentsList, techGroup) => {
@@ -124,10 +141,10 @@ const DeploymentTechGroupWidget = ({ openModal }) => {
     [],
   );
 
-  const handleDeploymentChange = (e) => {
-    const value = e.target.value;
+  const handleDeploymentChange = (value) => {
     setSelectedDeployment(value);
     setSearchTerm("");
+    setIsDeploymentDropdownOpen(false);
 
     if (value === "all" && selectedTechGroup === "all") {
       fetchAllDeploymentsData(deployments, "all");
@@ -138,10 +155,10 @@ const DeploymentTechGroupWidget = ({ openModal }) => {
     }
   };
 
-  const handleTechGroupChange = (e) => {
-    const value = e.target.value;
+  const handleTechGroupChange = (value) => {
     setSelectedTechGroup(value);
     setSearchTerm("");
+    setIsTechGroupDropdownOpen(false);
 
     if (selectedDeployment === "all" && value === "all") {
       fetchAllDeploymentsData(deployments, "all");
@@ -171,64 +188,110 @@ const DeploymentTechGroupWidget = ({ openModal }) => {
 
   return (
     <div className="deployment-techgroup-widget">
+      {/* <div className="search-section">
+        <div className="filter-group search-group">
+          <div className="search-input-wrapper">
+            <input
+              type="text"
+              placeholder="Search by name or ID..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="dynamic-table-search"
+            />
+            <i className="fa-solid fa-search"></i>
+          </div>
+        </div>
+      </div> */}
+      
       <div className="filter-section">
         <div className="filter-group">
           <label>Deployment</label>
-          <select
-            value={selectedDeployment}
-            onChange={handleDeploymentChange}
-            className="filter-select"
-          >
-            <option value="all">All Deployments ({deployments.length})</option>
-            {deployments.map((dep) => (
-              <option key={dep.deployment} value={dep.deployment}>
-                {dep.deployment}
-              </option>
-            ))}
-          </select>
+          <div className="custom-select-wrapper" ref={deploymentDropdownRef}>
+            <div 
+              className={`select-trigger ${isDeploymentDropdownOpen ? 'open' : ''}`} 
+              onClick={() => setIsDeploymentDropdownOpen(!isDeploymentDropdownOpen)}
+            >
+              <span>
+                {selectedDeployment === "all" 
+                  ? `All Deployments (${deployments.length})` 
+                  : selectedDeployment
+                }
+              </span>
+              <i className="fa-solid fa-chevron-down"></i>
+            </div>
+            {isDeploymentDropdownOpen && (
+              <div className="dropdown-menu show">
+                <div 
+                  className="option" 
+                  onClick={() => handleDeploymentChange("all")}
+                >
+                  All Deployments ({deployments.length})
+                </div>
+                {deployments.map((dep) => (
+                  <div 
+                    key={dep.deployment} 
+                    className="option" 
+                    onClick={() => handleDeploymentChange(dep.deployment)}
+                  >
+                    {dep.deployment}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="filter-group">
           <label>Tech Group</label>
-          <select
-            value={selectedTechGroup}
-            onChange={handleTechGroupChange}
-            className="filter-select"
-          >
-            <option value="all">All Tech Groups ({techGroups.length})</option>
-            {techGroups.map((tg) => (
-              <option key={tg.tech_group} value={tg.tech_group}>
-                {tg.tech_group}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="filter-group search-group">
-          <label>Search</label>
-          <input
-            type="text"
-            placeholder="Search by name or ID..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="search-input"
-          />
+          <div className="custom-select-wrapper" ref={techGroupDropdownRef}>
+            <div 
+              className={`select-trigger ${isTechGroupDropdownOpen ? 'open' : ''}`} 
+              onClick={() => setIsTechGroupDropdownOpen(!isTechGroupDropdownOpen)}
+            >
+              <span>
+                {selectedTechGroup === "all" 
+                  ? `All Tech Groups (${techGroups.length})` 
+                  : selectedTechGroup
+                }
+              </span>
+              <i className="fa-solid fa-chevron-down"></i>
+            </div>
+            {isTechGroupDropdownOpen && (
+              <div className="dropdown-menu show">
+                <div 
+                  className="option" 
+                  onClick={() => handleTechGroupChange("all")}
+                >
+                  All Tech Groups ({techGroups.length})
+                </div>
+                {techGroups.map((tg) => (
+                  <div 
+                    key={tg.tech_group} 
+                    className="option" 
+                    onClick={() => handleTechGroupChange(tg.tech_group)}
+                  >
+                    {tg.tech_group}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {isLoading ? (
         <div className="loading-state">Loading...</div>
       ) : (
-        <div className="employees-list">
+        <div className="deployment-employees-list">
           {filteredEmployees.length === 0 ? (
             <div className="no-data">
               No employees found with current filters
             </div>
           ) : (
             <>
-              <div className="results-count">
+              {/* <div className="results-count">
                 Showing {filteredEmployees.length} employees
-              </div>
+              </div> */}
               {filteredEmployees.map((employee) => (
                 <div
                   key={employee.employee_id}

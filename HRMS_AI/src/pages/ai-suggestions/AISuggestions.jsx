@@ -206,7 +206,7 @@ const AISuggestions = () => {
       try {
         const response = await editProjectRequirement(editingId, form);
         if (response) {
-          // Update the project in the list
+          // Update the project in the list with edited data
           const updatedProject = { ...original, ...form, id: editingId };
           setProjects(
             projects.map((p) => (p.id === editingId ? updatedProject : p)),
@@ -217,14 +217,15 @@ const AISuggestions = () => {
           setForm(EMPTY_PROJECT);
           setEditingId(null);
 
-          // Show loader in the table row's Get AI Suggestions button and call API
+          // Show loader and refresh AI suggestions without overwriting the edited data
           setLoadingProjectId(editingId);
           if (selectedProject?.id === editingId) {
             setSelectedProject(updatedProject);
             setLoading(true);
           }
 
-          handlegeneratedResponse(updatedProject)
+          // Generate new suggestions while preserving the edited project data
+          handlegeneratedResponsePreserveData(updatedProject)
             .catch((err) => {
               console.error("Failed to refresh suggestions after edit", err);
               showError("Failed to refresh suggestions!");
@@ -375,6 +376,20 @@ const AISuggestions = () => {
       setSelectedProject({ ...project, employees: result });
     } else {
       setSelectedProject(project);
+    }
+  };
+
+  const handlegeneratedResponsePreserveData = async (editedProject) => {
+    const response = await generateResourceSuggestion(editedProject.id);
+    const result = response?.response?.[0]?.response ?? [];
+    if (result.length > 0) {
+      const updated = projects.map((p) =>
+        p.id === editedProject.id ? { ...editedProject, employees: result } : p,
+      );
+      setProjects(updated);
+      setSelectedProject({ ...editedProject, employees: result });
+    } else {
+      setSelectedProject(editedProject);
     }
   };
 

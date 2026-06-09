@@ -5,10 +5,21 @@
   gap: 12px;
 }
 
+.search-section {
+  display: flex;
+  padding: 12px;
+  background: var(--color-bg-secondary);
+  border-radius: 8px;
+}
+
+.search-section .filter-group {
+  width: 100%;
+}
+
 .filter-section {
   display: flex;
   gap: 12px;
-  padding: 12px;
+  /* padding: 12px; */
   background: var(--color-bg-secondary);
   border-radius: 8px;
   flex-wrap: wrap;
@@ -19,15 +30,15 @@
   flex-direction: column;
   gap: 6px;
   flex: 1;
-  min-width: 150px;
+  max-width: 280px;
 }
 
 .filter-group label {
   font-size: 12px;
-  font-weight: 600;
-  color: var(--color-text-primary);
+  font-weight: 500;
+  /* color: var(--color-text-primary);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.5px; */
 }
 
 .filter-select,
@@ -53,11 +64,103 @@
 }
 
 .search-group {
-  flex: 1.5;
+  flex: 1;
 }
 
 .search-input {
   width: 100%;
+}
+
+.search-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.search-input-wrapper .dynamic-table-search {
+  padding: 10px 40px 10px 13px;
+  border: 1px solid var(--color-bg-muted);
+  border-radius: 6px;
+  font-size: 14px;
+  width: 100%;
+  outline: none;
+  background: var(--color-bg-muted);
+  color: var(--color-text-primary);
+  box-sizing: border-box;
+}
+
+.search-input-wrapper .dynamic-table-search:hover,
+.search-input-wrapper .dynamic-table-search:focus,
+.search-input-wrapper .dynamic-table-search:active {
+  box-shadow: 0 0 2px 1px var(--color-primary-soft);
+}
+
+.search-input-wrapper .fa-search {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+/* Custom Select Styles */
+.custom-select-wrapper {
+  position: relative;
+  min-width: 150px;
+}
+
+.custom-select-wrapper .select-trigger {
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.custom-select-wrapper .select-trigger i.fa-chevron-down {
+  transition: transform 0.2s ease;
+  font-size: 12px;
+}
+
+.custom-select-wrapper .select-trigger.open i.fa-chevron-down {
+  transform: rotate(180deg);
+}
+
+.custom-select-wrapper .select-trigger:hover {
+  border-color: var(--color-primary-soft);
+}
+
+.custom-select-wrapper .dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 100;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.custom-select-wrapper .option {
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--color-text-primary);
+  transition: background 0.2s;
+}
+
+.custom-select-wrapper .option:hover {
+  background: var(--color-bg-muted);
 }
 
 .search-input::placeholder {
@@ -72,29 +175,29 @@
   font-weight: 500;
 }
 
-.employees-list {
+.deployment-employees-list {
   flex: 1;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding-right: 4px;
+  /* padding-right: 4px; */
 }
 
-.employees-list::-webkit-scrollbar {
+.deployment-employees-list::-webkit-scrollbar {
   width: 6px;
 }
 
-.employees-list::-webkit-scrollbar-track {
+.deployment-employees-list::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.employees-list::-webkit-scrollbar-thumb {
+.deployment-employees-list::-webkit-scrollbar-thumb {
   background: var(--color-bg-muted);
   border-radius: 3px;
 }
 
-.employees-list::-webkit-scrollbar-thumb:hover {
+.deployment-employees-list::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-secondary);
 }
 
@@ -239,6 +342,10 @@
 }
 
 @media (max-width: 1024px) {
+  .search-section {
+    margin-bottom: 0;
+  }
+  
   .filter-section {
     flex-direction: column;
   }
@@ -253,6 +360,11 @@
 }
 
 @media (max-width: 768px) {
+  .search-section {
+    gap: 8px;
+    padding: 10px;
+  }
+  
   .filter-section {
     gap: 8px;
     padding: 10px;
