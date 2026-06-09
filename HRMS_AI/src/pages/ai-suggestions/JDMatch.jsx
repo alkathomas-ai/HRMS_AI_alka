@@ -152,7 +152,7 @@ const CandidateCard = ({ emp, index }) => {
     >
       <div className="jdm-card-row" onClick={() => setExpanded(!expanded)}>
         {/* Rank */}
-        <div className="jdm-rank">#{index + 1}</div>
+        {/* <div className="jdm-rank">#{index + 1}</div> */}
 
         {/* Avatar */}
         <div className="jdm-avatar">{emp.display_name.charAt(0)}</div>
@@ -175,7 +175,7 @@ const CandidateCard = ({ emp, index }) => {
               <span className="material-symbols-outlined">schedule</span>
               {emp.total_exp}
             </span>
-            <span>
+            {/* <span>
               <span className="material-symbols-outlined">
                 workspace_premium
               </span>
@@ -186,7 +186,7 @@ const CandidateCard = ({ emp, index }) => {
             >
               <span className="material-symbols-outlined">circle</span>
               {emp.availability_pct}% available
-            </span>
+            </span> */}
           </div>
         </div>
 
@@ -215,7 +215,7 @@ const CandidateCard = ({ emp, index }) => {
                 {Math.round(emp.ai_score)}
               </span>
 
-              <span className="jdm-score-label">Match</span>
+              {/* <span className="jdm-score-label">Match</span> */}
             </div>
           </div>
         </div>
@@ -499,16 +499,16 @@ const JDMatch = () => {
                     </span>
                   </div>
                   <div className="jdm-jd-skills">
-                    {parsed.primary_skills?.slice(0, 6).map((s, i) => (
+                    {parsed.primary_skills?.map((s, i) => (
                       <span key={i} className="jdm-jd-skill">
                         {s}
                       </span>
                     ))}
-                    {parsed.primary_skills?.length > 6 && (
+                    {/* {parsed.primary_skills?.length > 6 && (
                       <span className="jdm-jd-skill more">
                         +{parsed.primary_skills.length - 6}
                       </span>
-                    )}
+                    )} */}
                   </div>
                 </div>
               </div>
