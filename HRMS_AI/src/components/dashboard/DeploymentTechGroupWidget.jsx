@@ -185,20 +185,6 @@ const DeploymentTechGroupWidget = ({ openModal }) => {
 
   return (
     <div className="deployment-techgroup-widget">
-      {/* <div className="search-section">
-        <div className="filter-group search-group">
-          <div className="search-input-wrapper">
-            <input
-              type="text"
-              placeholder="Search by name or ID..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="dynamic-table-search"
-            />
-            <i className="fa-solid fa-search"></i>
-          </div>
-        </div>
-      </div> */}
       
       <div className="filter-section">
         <div className="filter-group">
@@ -274,6 +260,20 @@ const DeploymentTechGroupWidget = ({ openModal }) => {
             )}
           </div>
         </div>
+        {/* <div className="search-section">
+        <div className="filter-group search-group">
+          <div className="search-input-wrapper">
+            <input
+              type="text"
+              placeholder="Search by name or ID..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="dynamic-table-search"
+            />
+            <i className="fa-solid fa-search"></i>
+          </div>
+        </div>
+      </div> */}
       </div>
 
       {isLoading ? (
@@ -286,9 +286,9 @@ const DeploymentTechGroupWidget = ({ openModal }) => {
             </div>
           ) : (
             <>
-              {/* <div className="results-count">
-                Showing {filteredEmployees.length} employees
-              </div> */}
+              <div className="deployement-results-count">
+                {filteredEmployees.length} employees found
+              </div>
               {filteredEmployees.map((employee) => (
                 <div
                   key={employee.employee_id}

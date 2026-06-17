@@ -310,7 +310,9 @@ export async function showResourceSuggestion(id) {
 // http://172.25.247.7:8000/api/project_requirement_suggestion?project_requirement_id=2
 
 export async function loginApi(credentials) {
-  const response = await axios.post(`${BASE_URL}/login`, credentials);
+  const response = await axios.post(`${BASE_URL}/login`, credentials, {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    });
   return response.data;
 }
 
