@@ -1759,9 +1759,9 @@ play: grid;
   transition: background 0.2s ease;
 }
 
-.btn-confirm:hover {
+/* .btn-confirm:hover {
   background: var(--color-primary-dark);
-}
+} */
 
 .btn-spinner {
   width: 14px;
