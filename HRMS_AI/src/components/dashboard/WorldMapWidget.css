@@ -2,6 +2,19 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   height: 100%;
   position: relative;
+  
+  /* Theme-aware marker colors using primary color variations */
+  --marker-color-high: var(--color-primary);
+  --marker-color-medium: var(--color-primary-soft);
+  --marker-color-low: var(--color-primary-medium);
+  --marker-color-very-high: var(--color-primary-hover);
+}
+
+[data-theme="dark"] .world-map-widget {
+  --marker-color-high: var(--color-primary-soft);
+  --marker-color-medium: var(--color-primary-medium);
+  --marker-color-low: var(--color-primary-low);
+  --marker-color-very-high: var(--color-primary);
 }
 
 .widget-header {

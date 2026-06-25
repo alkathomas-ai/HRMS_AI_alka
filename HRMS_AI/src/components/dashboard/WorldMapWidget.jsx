@@ -9,6 +9,7 @@ import {
 import { useRef, useEffect } from 'react';
 import './WorldMapWidget.css';
 
+let cachedGeoData = null;
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
 const employeeLocations = [
@@ -28,15 +29,41 @@ const countryCoordinates = {
   "Vietnam": [108.2772, 14.0583]
 };
 
-const WorldMapWidget = () => {
+const WorldMapWidget = ({ isSelected = true }) => {
+  const [geoData, setGeoData] = useState(cachedGeoData);
   const [showCities, setShowCities] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [center, setCenter] = useState([80, 20]);
   const [hoveredMarker, setHoveredMarker] = useState(null);
   const [selectedCountry, setSelectedCountry] = useState('All countries');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [colorKey, setColorKey] = useState(0); // Force re-render when colors change
   const dropdownRef = useRef(null);
   const ZOOM_THRESHOLD = 2.5;
+
+  useEffect(() => {
+    if (!isSelected || cachedGeoData) return;
+    fetch(geoUrl)
+      .then(res => res.json())
+      .then(data => {
+        cachedGeoData = data;
+        setGeoData(data);
+      });
+  }, [isSelected]);
+
+  // Listen for theme/color changes
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setColorKey(prev => prev + 1); // Force re-render when theme changes
+    });
+    
+    observer.observe(document.documentElement, { 
+      attributes: true, 
+      attributeFilter: ['style', 'data-theme'] 
+    });
+    
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -104,10 +131,15 @@ const WorldMapWidget = () => {
   };
 
   const getMarkerColor = (count) => {
-    if (count > 500) return "#7c2d12";
-    if (count > 250) return "#dc2626";
-    if (count > 150) return "#ea580c";
-    return "#16a34a";
+    const widget = document.querySelector('.world-map-widget');
+    if (!widget) return '#dc2626'; // Fallback color
+    
+    const computedStyles = getComputedStyle(widget);
+    
+    if (count > 500) return computedStyles.getPropertyValue('--marker-color-very-high').trim() || '#7c2d12';
+    if (count > 250) return computedStyles.getPropertyValue('--marker-color-high').trim() || '#dc2626';
+    if (count > 150) return computedStyles.getPropertyValue('--marker-color-medium').trim() || '#ea580c';
+    return computedStyles.getPropertyValue('--marker-color-low').trim() || '#16a34a';
   };
 
   const getCountryTotals = () => {
@@ -128,6 +160,24 @@ const WorldMapWidget = () => {
   const totalEmployees = filteredLocations.reduce((sum, location) => sum + location.count, 0);
   const maxCount = Math.max(...filteredLocations.map(loc => loc.count));
   const countries = ['All countries', ...new Set(employeeLocations.map(loc => loc.country))];
+
+  if (!isSelected || !geoData) {
+    return (
+      <div className="world-map-widget">
+        <div className="widget-header">
+          <div className="total-employees">
+            <span className="map-total-count">{totalEmployees}</span>
+            <span className="total-label">Total Employees</span>
+          </div>
+        </div>
+        <div className="map-content">
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px', color: 'var(--color-text-secondary)' }}>
+            {!isSelected ? 'Select widget to view map' : 'Loading map data...'}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="world-map-widget">
@@ -196,7 +246,7 @@ const WorldMapWidget = () => {
               minZoom={1}
               maxZoom={8}
             >
-              <Geographies geography={geoUrl}>
+              <Geographies geography={geoData}>
                 {({ geographies }) =>
                   geographies.map((geo) => (
                     <Geography
@@ -214,6 +264,7 @@ const WorldMapWidget = () => {
                 filteredLocations.map(({ name, coordinates, count }) => (
                   <Marker key={name} coordinates={coordinates}>
                     <circle
+                      key={`${name}-${colorKey}`}
                       r={getMarkerSize(count) / zoom}
                       fill={getMarkerColor(count)}
                       stroke="#fff"
@@ -241,6 +292,7 @@ const WorldMapWidget = () => {
                 Object.entries(countryTotals).map(([country, data]) => (
                   <Marker key={country} coordinates={data.coordinates}>
                     <circle
+                      key={`${country}-${colorKey}`}
                       r={getMarkerSize(data.count) / zoom}
                       fill={getMarkerColor(data.count)}
                       stroke="#fff"
