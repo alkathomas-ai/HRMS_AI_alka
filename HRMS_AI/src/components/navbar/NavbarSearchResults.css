@@ -241,10 +241,18 @@
   height: 100%;
   width: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 10px;
   color: var(--color-text-secondary);
-  font-size: 20px;
+  font-size: 14px;
+  padding: 60px 20px;
+}
+
+.no-search-results .material-symbols-outlined {
+  font-size: 48px;
+  opacity: 0.25;
 }
 
 /* .project-badge:hover {
@@ -440,6 +448,7 @@
   display: flex;
   flex-direction: column;
   padding: 30px 15px 50px 15px;
+  height: 100%;
 }
 
 .navbar-employee-cards-list:has(.navbar-employee-card) {

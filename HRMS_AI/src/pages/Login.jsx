@@ -188,7 +188,7 @@ const Login = () => {
                     />
                     <span>Remember me</span>
                   </label>
-                  <a href="#" className="forgot-password">Forgot password?</a>
+                  {/* <a href="#" className="forgot-password">Forgot password?</a> */}
                 </div>
       
                 <button type="submit" className="login-button">
@@ -198,9 +198,9 @@ const Login = () => {
               </form>
             </div>
   
-            <div className="login-footer">
+            {/* <div className="login-footer">
               <p>Don't have an account? <a href="#">Sign up</a></p>
-            </div>
+            </div> */}
           
         </div>
         

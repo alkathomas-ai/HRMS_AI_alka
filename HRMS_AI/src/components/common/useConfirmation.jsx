@@ -38,9 +38,9 @@ const useConfirmation = () => {
             <p>{config.message}</p>
           </div>
           <div className="modal-footer">
-            <button className="btn-cancel" onClick={config.onCancel}>
+            {/* <button className="btn-cancel" onClick={config.onCancel}>
               Cancel
-            </button>
+            </button> */}
             <button className="btn-confirm" onClick={config.onConfirm}>
               Ok
             </button>

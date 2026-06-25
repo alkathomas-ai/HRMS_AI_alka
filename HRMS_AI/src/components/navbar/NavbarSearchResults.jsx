@@ -7,7 +7,7 @@ const NavbarSearchResults = ({ searchQuery }) => {
   const { searchResult } = useContext(EmployeeContext);
   const [activeSkill, setActiveSkill] = useState([]);
   const [showAllSkills, setShowAllSkills] = useState({});
-  const [filterText, setFilterText] = useState('');
+  const [filterText, setFilterText] = useState("");
   const [showDeptDropdown, setShowDeptDropdown] = useState(false);
   const [showExpDropdown, setShowExpDropdown] = useState(false);
   const [showLocDropdown, setShowLocDropdown] = useState(false);
@@ -22,77 +22,101 @@ const NavbarSearchResults = ({ searchQuery }) => {
   const techDropdownRef = useRef(null);
   const [showReason, setShowReason] = useState(false);
 
-  console.log("activeSkill", typeof activeSkill,activeSkill)
-
-
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (deptDropdownRef.current && !deptDropdownRef.current.contains(e.target)) {
+      if (
+        deptDropdownRef.current &&
+        !deptDropdownRef.current.contains(e.target)
+      ) {
         setShowDeptDropdown(false);
       }
-      if (expDropdownRef.current && !expDropdownRef.current.contains(e.target)) {
+      if (
+        expDropdownRef.current &&
+        !expDropdownRef.current.contains(e.target)
+      ) {
         setShowExpDropdown(false);
       }
-      if (techDropdownRef.current && !techDropdownRef.current.contains(e.target)) {
+      if (
+        techDropdownRef.current &&
+        !techDropdownRef.current.contains(e.target)
+      ) {
         setShowTechDropdown(false);
       }
-      if (locDropdownRef.current && !locDropdownRef.current.contains(e.target)) {
+      if (
+        locDropdownRef.current &&
+        !locDropdownRef.current.contains(e.target)
+      ) {
         setShowLocDropdown(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-
-
-  if (!searchResult?.result || searchResult.result.length === 0) {
-    return <div className="no-search-results">No results found.</div>;
-  }
 
   const uniqueDepts = useMemo(() => {
     if (!searchResult?.result) return [];
-    return [...new Set(searchResult.result.map(e => e.employee_department).filter(Boolean))];
+    return [
+      ...new Set(
+        searchResult.result.map((e) => e.employee_department).filter(Boolean),
+      ),
+    ];
   }, [searchResult]);
 
   const uniqueLocs = useMemo(() => {
     if (!searchResult?.result) return [];
-    return [...new Set(searchResult.result.map(e => e.emp_location).filter(Boolean))];
+    return [
+      ...new Set(
+        searchResult.result.map((e) => e.emp_location).filter(Boolean),
+      ),
+    ];
   }, [searchResult]);
 
   const uniqueTech = useMemo(() => {
     if (!searchResult?.result) return [];
-    return [...new Set(searchResult.result.map(e => e.tech_group).filter(Boolean))];
+    return [
+      ...new Set(searchResult.result.map((e) => e.tech_group).filter(Boolean)),
+    ];
   }, [searchResult]);
 
   const filteredResults = useMemo(() => {
     if (!searchResult?.result) return [];
-    
+
     let filtered = searchResult.result;
-    
-    filtered = filtered.filter(emp => 
-      emp.display_name?.toLowerCase().includes(filterText.toLowerCase()) ||
-      emp.employee_id?.toLowerCase().includes(filterText.toLowerCase()) ||
-      emp.designation?.toLowerCase().includes(filterText.toLowerCase())
+
+    filtered = filtered.filter(
+      (emp) =>
+        (emp.display_name ?? "")
+          .toLowerCase()
+          .includes(filterText.toLowerCase()) ||
+        (emp.employee_id ?? "")
+          .toLowerCase()
+          .includes(filterText.toLowerCase()) ||
+        (emp.designation ?? "")
+          .toLowerCase()
+          .includes(filterText.toLowerCase()),
     );
-    
-    const selectedDepts = Object.keys(deptFilters).filter(k => deptFilters[k]);
+
+    const selectedDepts = Object.keys(deptFilters).filter(
+      (k) => deptFilters[k],
+    );
     if (selectedDepts.length > 0) {
-      filtered = filtered.filter(e => selectedDepts.includes(e.employee_department));
-    }
-    
-    const selectedLocs = Object.keys(locFilters).filter(k => locFilters[k]);
-    if (selectedLocs.length > 0) {
-      filtered = filtered.filter(e => selectedLocs.includes(e.emp_location));
+      filtered = filtered.filter((e) =>
+        selectedDepts.includes(e.employee_department),
+      );
     }
 
-    const selectedTech = Object.keys(techFilters).filter(k => techFilters[k]);
-    if (selectedTech.length > 0) {
-      filtered = filtered.filter(e => selectedTech.includes(e.tech_group));
+    const selectedLocs = Object.keys(locFilters).filter((k) => locFilters[k]);
+    if (selectedLocs.length > 0) {
+      filtered = filtered.filter((e) => selectedLocs.includes(e.emp_location));
     }
-    
+
+    const selectedTech = Object.keys(techFilters).filter((k) => techFilters[k]);
+    if (selectedTech.length > 0) {
+      filtered = filtered.filter((e) => selectedTech.includes(e.tech_group));
+    }
+
     if (expFilter) {
-      filtered = filtered.filter(e => {
+      filtered = filtered.filter((e) => {
         const exp = parseInt(e.total_exp);
         if (expFilter === "0-2") return exp >= 0 && exp <= 2;
         if (expFilter === "3-5") return exp >= 3 && exp <= 5;
@@ -101,112 +125,216 @@ const NavbarSearchResults = ({ searchQuery }) => {
         return true;
       });
     }
-    
+
     if (activeSkill.length > 0) {
-      filtered = filtered.filter(e => {
+      filtered = filtered.filter((e) => {
         if (!e.skill_set) return false;
-        const empSkills = e.skill_set.toLowerCase().split(',').map(s => s.trim());
-        return activeSkill.every(selectedSkill => 
-          empSkills.includes(selectedSkill.toLowerCase().trim())
+        const empSkills = (e.skill_set ?? "")
+          .toLowerCase()
+          .split(",")
+          .map((s) => s.trim());
+        return activeSkill.every((selectedSkill) =>
+          empSkills.includes(selectedSkill.toLowerCase().trim()),
         );
       });
     }
-    
+
     return filtered;
-  }, [searchResult?.result, filterText, deptFilters, locFilters, techFilters, expFilter, activeSkill]);
+  }, [
+    searchResult?.result,
+    filterText,
+    deptFilters,
+    locFilters,
+    techFilters,
+    expFilter,
+    activeSkill,
+  ]);
 
   // Pagination calculations (only used when viewMode is 'pagination')
   // const totalPages = Math.ceil(filteredResults.length / rowsPerPage);
   // const startIndex = (currentPage - 1) * rowsPerPage;
   // const paginatedResults = filteredResults.slice(startIndex, startIndex + rowsPerPage);
 
+  if (!searchResult?.result || searchResult.result.length === 0) {
+    return <div className="no-search-results">No results found.</div>;
+  }
 
   return (
     <>
       <div className="navbar-search-results-toolbar">
-          <div className="toolbar-left">
-            <div className="navbar-search-filter">
-              <span className="material-symbols-outlined">search</span>
-              <input
-                type="text"
-                placeholder="Filter search results..."
-                value={filterText}
-                onChange={(e) => {
-                  setFilterText(e.target.value.replace(/\s+/g, ' ').trimStart());
-                }}
-              />
+        <div className="toolbar-left">
+          <div className="navbar-search-filter">
+            <span className="material-symbols-outlined">search</span>
+            <input
+              type="text"
+              placeholder="Search by name, ID, or designation..."
+              value={filterText}
+              onChange={(e) => {
+                setFilterText(e.target.value.replace(/\s+/g, " ").trimStart());
+              }}
+            />
+          </div>
+          <div className="quick-filters">
+            <div className="custom-select-wrapper" ref={deptDropdownRef}>
+              <div
+                className={`select-trigger navbar-search-result-filter ${showDeptDropdown ? "open" : ""}`}
+                onClick={() => setShowDeptDropdown(!showDeptDropdown)}
+              >
+                <span>Department</span>
+                <i className="fa-solid fa-chevron-down"></i>
+              </div>
+              {showDeptDropdown && (
+                <div className="dropdown-menu" style={{ display: "block" }}>
+                  {uniqueDepts.map((dept) => (
+                    <div
+                      key={dept}
+                      className="option"
+                      onClick={() =>
+                        setDeptFilters((prev) => ({
+                          ...prev,
+                          [dept]: !prev[dept],
+                        }))
+                      }
+                    >
+                      <input
+                        type="checkbox"
+                        checked={deptFilters[dept] || false}
+                        readOnly
+                      />
+                      {dept}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="quick-filters">
-              <div className="custom-select-wrapper" ref={deptDropdownRef}>
-                <div className={`select-trigger navbar-search-result-filter ${showDeptDropdown ? 'open' : ''}`} onClick={() => setShowDeptDropdown(!showDeptDropdown)}>
-                  <span>Department</span>
-                  <i className="fa-solid fa-chevron-down"></i>
-                </div>
-                {showDeptDropdown && (
-                  <div className="dropdown-menu" style={{ display: 'block' }}>
-                    {uniqueDepts.map(dept => (
-                      <div key={dept} className="option" onClick={() => setDeptFilters(prev => ({...prev, [dept]: !prev[dept]}))}>
-                        <input type="checkbox" checked={deptFilters[dept] || false} readOnly />
-                        {dept}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-  
-              <div className="custom-select-wrapper" ref={expDropdownRef}>
-                <div className={`select-trigger navbar-search-result-filter ${showExpDropdown ? 'open' : ''}`} onClick={() => setShowExpDropdown(!showExpDropdown)}>
-                  <span>{expFilter || "Experience"}</span>
-                  <i className="fa-solid fa-chevron-down"></i>
-                </div>
-                {showExpDropdown && (
-                  <div className="dropdown-menu" style={{ display: 'block' }}>
-                    <div className="option" onClick={() => { setExpFilter(""); setShowExpDropdown(false); }}>All</div>
-                    <div className="option" onClick={() => { setExpFilter("0-2"); setShowExpDropdown(false); }}>0-2 years</div>
-                    <div className="option" onClick={() => { setExpFilter("3-5"); setShowExpDropdown(false); }}>3-5 years</div>
-                    <div className="option" onClick={() => { setExpFilter("6-10"); setShowExpDropdown(false); }}>6-10 years</div>
-                    <div className="option" onClick={() => { setExpFilter("10+"); setShowExpDropdown(false); }}>10+ years</div>
-                  </div>
-                )}
-              </div>
-  
-              <div className="custom-select-wrapper" ref={locDropdownRef}>
-                <div className={`select-trigger navbar-search-result-filter ${showLocDropdown ? 'open' : ''}`} onClick={() => setShowLocDropdown(!showLocDropdown)}>
-                  <span>Location</span>
-                  <i className="fa-solid fa-chevron-down"></i>
-                </div>
-                {showLocDropdown && (
-                  <div className="dropdown-menu" style={{ display: 'block' }}>
-                    {uniqueLocs.map(loc => (
-                      <div key={loc} className="option" onClick={() => setLocFilters(prev => ({...prev, [loc]: !prev[loc]}))}>
-                        <input type="checkbox" checked={locFilters[loc] || false} readOnly />
-                        {loc}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
 
-              <div className="custom-select-wrapper" ref={techDropdownRef}>
-                <div className={`select-trigger navbar-search-result-filter ${showTechDropdown ? 'open' : ''}`} onClick={() => setShowTechDropdown(!showTechDropdown)}>
-                  <span>Tech Group</span>
-                  <i className="fa-solid fa-chevron-down"></i>
-                </div>
-                {showTechDropdown && (
-                  <div className="dropdown-menu" style={{ display: 'block' }}>
-                    {uniqueTech.map(loc => (
-                      <div key={loc} className="option" onClick={() => setTechFilters(prev => ({...prev, [loc]: !prev[loc]}))}>
-                        <input type="checkbox" checked={techFilters[loc] || false} readOnly />
-                        {loc}
-                      </div>
-                    ))}
-                  </div>
-                )}
+            <div className="custom-select-wrapper" ref={expDropdownRef}>
+              <div
+                className={`select-trigger navbar-search-result-filter ${showExpDropdown ? "open" : ""}`}
+                onClick={() => setShowExpDropdown(!showExpDropdown)}
+              >
+                <span>{expFilter || "Experience"}</span>
+                <i className="fa-solid fa-chevron-down"></i>
               </div>
+              {showExpDropdown && (
+                <div className="dropdown-menu" style={{ display: "block" }}>
+                  <div
+                    className="option"
+                    onClick={() => {
+                      setExpFilter("");
+                      setShowExpDropdown(false);
+                    }}
+                  >
+                    All
+                  </div>
+                  <div
+                    className="option"
+                    onClick={() => {
+                      setExpFilter("0-2");
+                      setShowExpDropdown(false);
+                    }}
+                  >
+                    0-2 years
+                  </div>
+                  <div
+                    className="option"
+                    onClick={() => {
+                      setExpFilter("3-5");
+                      setShowExpDropdown(false);
+                    }}
+                  >
+                    3-5 years
+                  </div>
+                  <div
+                    className="option"
+                    onClick={() => {
+                      setExpFilter("6-10");
+                      setShowExpDropdown(false);
+                    }}
+                  >
+                    6-10 years
+                  </div>
+                  <div
+                    className="option"
+                    onClick={() => {
+                      setExpFilter("10+");
+                      setShowExpDropdown(false);
+                    }}
+                  >
+                    10+ years
+                  </div>
+                </div>
+              )}
+            </div>
 
+            <div className="custom-select-wrapper" ref={locDropdownRef}>
+              <div
+                className={`select-trigger navbar-search-result-filter ${showLocDropdown ? "open" : ""}`}
+                onClick={() => setShowLocDropdown(!showLocDropdown)}
+              >
+                <span>Location</span>
+                <i className="fa-solid fa-chevron-down"></i>
+              </div>
+              {showLocDropdown && (
+                <div className="dropdown-menu" style={{ display: "block" }}>
+                  {uniqueLocs.map((loc) => (
+                    <div
+                      key={loc}
+                      className="option"
+                      onClick={() =>
+                        setLocFilters((prev) => ({
+                          ...prev,
+                          [loc]: !prev[loc],
+                        }))
+                      }
+                    >
+                      <input
+                        type="checkbox"
+                        checked={locFilters[loc] || false}
+                        readOnly
+                      />
+                      {loc}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="custom-select-wrapper" ref={techDropdownRef}>
+              <div
+                className={`select-trigger navbar-search-result-filter ${showTechDropdown ? "open" : ""}`}
+                onClick={() => setShowTechDropdown(!showTechDropdown)}
+              >
+                <span>Tech Group</span>
+                <i className="fa-solid fa-chevron-down"></i>
+              </div>
+              {showTechDropdown && (
+                <div className="dropdown-menu" style={{ display: "block" }}>
+                  {uniqueTech.map((loc) => (
+                    <div
+                      key={loc}
+                      className="option"
+                      onClick={() =>
+                        setTechFilters((prev) => ({
+                          ...prev,
+                          [loc]: !prev[loc],
+                        }))
+                      }
+                    >
+                      <input
+                        type="checkbox"
+                        checked={techFilters[loc] || false}
+                        readOnly
+                      />
+                      {loc}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-          {/* <div className="toolbar-right">
+        </div>
+        {/* <div className="toolbar-right">
             <div className="quick-filters">
               <div className="filter-dropdown-wrapper" ref={deptDropdownRef}>
               <span className="filter-label">Filter by:</span>
@@ -307,250 +435,314 @@ const NavbarSearchResults = ({ searchQuery }) => {
             </div>
           </div> */}
 
-          <div className="view-controls">
-            <div className="navbar-search-results-info">
-              <span className="results-count">{filteredResults.length} results found</span>
-            </div>
+        <div className="view-controls">
+          <div className="navbar-search-results-info">
+            <span className="results-count">
+              {filteredResults.length} results found
+            </span>
           </div>
+        </div>
       </div>
       <div className="navbar-employee-cards-list scrollable-results">
-      {filteredResults.map((employee) => {
-        const {
-          display_name,
-          designation,
-          employee_id,
-          employee_department,
-          emp_location,
-          tech_group,
-          total_exp,
-          ai_score,
-          skill_set,
-          ai_reason,
-        } = employee;
-
-        const getScoreClass = () => {
-          if (ai_score >= 70) return "high";
-          if (ai_score >= 50) return "medium";
-          return "low";
-        };
-
-        const scoreClass = getScoreClass();
-        const showSkills = showAllSkills[employee_id] || false;
-
-        
-  // AI-powered UI with scores and criteria
-  if (ai_reason) {
-    return (
-      <div className={`navbar-employee-card ${scoreClass}-score`}>
-        {ai_score && <div className={`navbar-match-badge ${scoreClass}`}>
-          <div className="navbar-score-text"><span>{ai_score || 0}%</span> match</div>
-        </div>}
-        <div className="navbar-employee-card-content">
-          <div className="navbar-employee-name-row">
-            <h2 className="navbar-employee-name-search">{display_name}</h2>
-            <span className="navbar-employee-designation-badge">{designation}</span>
+        {filteredResults.length === 0 ? (
+          <div className="no-search-results">
+            <span className="material-symbols-outlined">person_search</span>
+            <p>No resources found matching your filters.</p>
           </div>
-          <div className="navbar-employee-info-section">
-            <div className="navbar-employee-header">
-              <div className="navbar-employee-details-text">
-                <p>
-                  <i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;
-                </p>
-                <p>
-                  <i className="fa-solid fa-building"></i> {employee_department}{" "}
-                  &nbsp;
-                </p>
-                <p>
-                  <i className="fa-solid fa-location-dot"></i> {emp_location}{" "}
-                  &nbsp;
-                </p>
-                <p>
-                  <i className="fa-solid fa-laptop-code"></i> {tech_group} &nbsp;
-                </p>
-                <p>
-                  <i className="fa-solid fa-business-time"></i> {total_exp}
-                </p>
-              </div>
-            </div>
+        ) : (
+          filteredResults.map((employee) => {
+          const {
+            display_name,
+            designation,
+            employee_id,
+            employee_department,
+            emp_location,
+            tech_group,
+            total_exp,
+            ai_score,
+            skill_set,
+            ai_reason,
+          } = employee;
 
-            <div className="navbar-employee-skill-description">
-              {employee.projects && employee.projects.length > 0 && (
-                <div className="navbar-employee-projects-section">
-                  <div className="results-projects-container">
-                    {employee.projects.map((project, projectIndex) => (
-                      <span key={projectIndex} className="project-badge">
-                        <span className="navbar-project-name">{project.project_name}</span> ({project.customer}) - {project.occupancy}%
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {skill_set && (
-                <div className="navbar-employee-skills-section">
-                  {/* <span className="navbar-skills-label">Skills:</span> */}
-                  <div className="skills-container">
-                    {skill_set
-                      .split(",")
-                      .slice(0, showAllSkills ? undefined : 8)
-                      .map((skill, skillIndex) => {
-                        const trimmedSkill = skill.trim();
+          const scoreClass = ai_score >= 70 ? "high" : ai_score >= 50 ? "medium" : "low";
+          const showSkills = showAllSkills[employee_id] || false;
 
-                        return (
-                          <span
-                            key={skillIndex}
-                            onClick={() => {
-                              setActiveSkill(prev => 
-                                prev.includes(trimmedSkill)
-                                  ? prev.filter(skill => skill !== trimmedSkill)
-                                  : [...prev, trimmedSkill]
-                              );
-                            }}
-                            className={
-                              activeSkill.includes(trimmedSkill)
-                                ? "navbar-skill-badge active-skill-badge"
-                                : "navbar-skill-badge"
-                            }
-                          >
-                            {trimmedSkill}
-                          </span>
-                        );
-                      })}
-                    {skill_set.split(",").length > 8 && (
-                      <button
-                        onClick={() => setShowAllSkills(!showAllSkills)}
-                        className="navbar-skill-more-btn"
-                      >
-                        {showAllSkills
-                          ? "Show Less"
-                          : `+${skill_set.split(",").length - 8} More`}
-                      </button>
-                    )}
+          // AI-powered UI with scores and criteria
+          if (ai_reason) {
+            return (
+              <div key={employee_id} className={`navbar-employee-card ${scoreClass}-score`}>
+                {ai_score && (
+                  <div className={`navbar-match-badge ${scoreClass}`}>
+                    <div className="navbar-score-text">
+                      <span>{ai_score || 0}%</span> match
                     </div>
-                </div>
-              )}
+                  </div>
+                )}
+                <div className="navbar-employee-card-content">
+                  <div className="navbar-employee-name-row">
+                    <h2 className="navbar-employee-name-search">
+                      {display_name}
+                    </h2>
+                    <span className="navbar-employee-designation-badge">
+                      {designation}
+                    </span>
+                  </div>
+                  <div className="navbar-employee-info-section">
+                    <div className="navbar-employee-header">
+                      <div className="navbar-employee-details-text">
+                        <p>
+                          <i className="fa-regular fa-id-card"></i>{" "}
+                          {employee_id} &nbsp;
+                        </p>
+                        <p>
+                          <i className="fa-solid fa-building"></i>{" "}
+                          {employee_department} &nbsp;
+                        </p>
+                        <p>
+                          <i className="fa-solid fa-location-dot"></i>{" "}
+                          {emp_location} &nbsp;
+                        </p>
+                        <p>
+                          <i className="fa-solid fa-laptop-code"></i>{" "}
+                          {tech_group} &nbsp;
+                        </p>
+                        <p>
+                          <i className="fa-solid fa-business-time"></i>{" "}
+                          {total_exp}
+                        </p>
+                      </div>
+                    </div>
 
-
-              <div className="navbar-ai-reason-section">
-                <button
-                  onClick={() => setShowReason(!showReason)}
-                  className="navbar-reason-toggle-btn"
-                >
-                  <span className="navbar-reason-label">Why this match?</span>
-                  <i
-                    className={`fa-solid fa-chevron-${showReason ? "up" : "down"}`}
-                  ></i>
-                </button>
-                {!showReason && <p className="navbar-reason-text">{ai_reason}</p>}
-              </div>
-            </div>
-            <div className="navbar-employee-score-section">
-              {employee.ai_criteria && (
-                <div className="navbar-criteria-list">
-                  {Object.entries(employee.ai_criteria).map(
-                    ([criteria, criteriaScore]) => {
-                      const criteriaClass =
-                        criteriaScore >= 70
-                          ? "high"
-                          : criteriaScore >= 50
-                            ? "medium"
-                            : "low";
-                      return (
-                        <div key={criteria} className="navbar-criteria-item">
-                          <div className="navbar-criteria-header">
-                            <span className="navbar-criteria-name">{criteria}</span>
-                            <span className="navbar-criteria-score">
-                              {criteriaScore}%
-                            </span>
-                          </div>
-                          <div className="navbar-criteria-bar-bg">
-                            <div
-                              className={`navbar-criteria-bar-fill ${criteriaClass}`}
-                              style={{ width: `${criteriaScore}%` }}
-                            />
+                    <div className="navbar-employee-skill-description">
+                      {employee.projects && employee.projects.length > 0 && (
+                        <div className="navbar-employee-projects-section">
+                          <div className="results-projects-container">
+                            {employee.projects.map((project, projectIndex) => (
+                              <span
+                                key={projectIndex}
+                                className="project-badge"
+                              >
+                                <span className="navbar-project-name">
+                                  {project.project_name}
+                                </span>{" "}
+                                ({project.customer}) - {project.occupancy}%
+                              </span>
+                            ))}
                           </div>
                         </div>
-                      );
-                    },
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+                      )}
+                      {skill_set && (
+                        <div className="navbar-employee-skills-section">
+                          {/* <span className="navbar-skills-label">Skills:</span> */}
+                          <div className="skills-container">
+                            {skill_set
+                              .split(",")
+                              .slice(0, showSkills ? undefined : 8)
+                              .map((skill, skillIndex) => {
+                                const trimmedSkill = skill.trim();
 
-  // Simple UI without AI features
-  return (
-    <div key={employee_id} className="navbar-employee-card-list">
-      <div className="navbar-employee-card-content">
-        <div className="navbar-employee-name-row">
-          <h2 className="navbar-employee-name-search">{display_name}</h2>
-          <span className="navbar-employee-designation-badge">{designation}</span>
-        </div>
-        <div className="navbar-employee-info-section-plain">
-          <div className="navbar-employee-header">
-            <div className="navbar-employee-details-text">
-              <p><i className="fa-regular fa-id-card"></i> {employee_id} &nbsp;</p>
-              <p><i className="fa-solid fa-building"></i> {employee_department} &nbsp;</p>
-              <p><i className="fa-solid fa-location-dot"></i> {emp_location} &nbsp;</p>
-              <p><i className="fa-solid fa-laptop-code"></i> {tech_group} &nbsp;</p>
-              <p><i className="fa-solid fa-business-time"></i> {total_exp}</p>
-            </div>
-          </div>
-          <div className="navbar-employee-skill-description">
-            {employee.projects && employee.projects.length > 0 && (
-              <div className="navbar-employee-projects-section">
-                <div className="result-projects-container">
-                  {employee.projects.map((project, projectIndex) => (
-                    <span key={projectIndex} className="project-badge">
-                      {project.project_name} ({project.customer}) - {project.occupancy}%
-                    </span>
-                  ))}
+                                return (
+                                  <span
+                                    key={skillIndex}
+                                    onClick={() => {
+                                      setActiveSkill((prev) =>
+                                        prev.includes(trimmedSkill)
+                                          ? prev.filter(
+                                              (skill) => skill !== trimmedSkill,
+                                            )
+                                          : [...prev, trimmedSkill],
+                                      );
+                                    }}
+                                    className={
+                                      activeSkill.includes(trimmedSkill)
+                                        ? "navbar-skill-badge active-skill-badge"
+                                        : "navbar-skill-badge"
+                                    }
+                                  >
+                                    {trimmedSkill}
+                                  </span>
+                                );
+                              })}
+                            {skill_set.split(",").length > 8 && (
+                              <button
+                                onClick={() => setShowAllSkills(prev => ({ ...prev, [employee_id]: !showSkills }))}
+                                className="navbar-skill-more-btn"
+                              >
+                                {showSkills
+                                  ? "Show Less"
+                                  : `+${skill_set.split(",").length - 8} More`}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="navbar-ai-reason-section">
+                        <button
+                          onClick={() => setShowReason(!showReason)}
+                          className="navbar-reason-toggle-btn"
+                        >
+                          <span className="navbar-reason-label">
+                            Why this match?
+                          </span>
+                          <i
+                            className={`fa-solid fa-chevron-${showReason ? "up" : "down"}`}
+                          ></i>
+                        </button>
+                        {!showReason && (
+                          <p className="navbar-reason-text">{ai_reason}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="navbar-employee-score-section">
+                      {employee.ai_criteria && (
+                        <div className="navbar-criteria-list">
+                          {Object.entries(employee.ai_criteria).map(
+                            ([criteria, criteriaScore]) => {
+                              const criteriaClass =
+                                criteriaScore >= 70
+                                  ? "high"
+                                  : criteriaScore >= 50
+                                    ? "medium"
+                                    : "low";
+                              return (
+                                <div
+                                  key={criteria}
+                                  className="navbar-criteria-item"
+                                >
+                                  <div className="navbar-criteria-header">
+                                    <span className="navbar-criteria-name">
+                                      {criteria}
+                                    </span>
+                                    <span className="navbar-criteria-score">
+                                      {criteriaScore}%
+                                    </span>
+                                  </div>
+                                  <div className="navbar-criteria-bar-bg">
+                                    <div
+                                      className={`navbar-criteria-bar-fill ${criteriaClass}`}
+                                      style={{ width: `${criteriaScore}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            },
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
-            )}
-            {skill_set && (
-              <div className="navbar-employee-skills-section">
-                {/* <span className="navbar-skills-label">Skills:</span> */}
-                <div className="skills-container">
-                  {skill_set.split(",").slice(0, showSkills ? undefined : 8).map((skill, skillIndex) => {
-                    const trimmedSkill = skill.trim();
-                    return (
-                      <span
-                        key={skillIndex}
-                        onClick={() => {
-                          setActiveSkill(prev => 
-                            prev.includes(trimmedSkill)
-                              ? prev.filter(skill => skill !== trimmedSkill)
-                              : [...prev, trimmedSkill]
-                          );
-                        }}
-                        className={activeSkill.includes(trimmedSkill) ? "navbar-skill-badge active-skill-badge" : "navbar-skill-badge"}
-                      >
-                        {trimmedSkill}
-                      </span>
-                    );
-                  })}
-                  {skill_set.split(",").length > 8 && (
-                    <button
-                      onClick={() => setShowAllSkills({...showAllSkills, [employee_id]: !showSkills})}
-                      className="navbar-skill-more-btn"
-                    >
-                      {showSkills ? "Show Less" : `+${skill_set.split(",").length - 8} More`}
-                    </button>
-                  )}
+            );
+          }
+
+          // Simple UI without AI features
+          return (
+            <div key={employee_id} className="navbar-employee-card-list">
+              <div className="navbar-employee-card-content">
+                <div className="navbar-employee-name-row">
+                  <h2 className="navbar-employee-name-search">
+                    {display_name}
+                  </h2>
+                  <span className="navbar-employee-designation-badge">
+                    {designation}
+                  </span>
+                </div>
+                <div className="navbar-employee-info-section-plain">
+                  <div className="navbar-employee-header">
+                    <div className="navbar-employee-details-text">
+                      <p>
+                        <i className="fa-regular fa-id-card"></i> {employee_id}{" "}
+                        &nbsp;
+                      </p>
+                      <p>
+                        <i className="fa-solid fa-building"></i>{" "}
+                        {employee_department} &nbsp;
+                      </p>
+                      <p>
+                        <i className="fa-solid fa-location-dot"></i>{" "}
+                        {emp_location} &nbsp;
+                      </p>
+                      <p>
+                        <i className="fa-solid fa-laptop-code"></i> {tech_group}{" "}
+                        &nbsp;
+                      </p>
+                      <p>
+                        <i className="fa-solid fa-business-time"></i>{" "}
+                        {total_exp}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="navbar-employee-skill-description">
+                    {employee.projects && employee.projects.length > 0 && (
+                      <div className="navbar-employee-projects-section">
+                        <div className="result-projects-container">
+                          {employee.projects.map((project, projectIndex) => (
+                            <span key={projectIndex} className="project-badge">
+                              {project.project_name} ({project.customer}) -{" "}
+                              {project.occupancy}%
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {skill_set && (
+                      <div className="navbar-employee-skills-section">
+                        {/* <span className="navbar-skills-label">Skills:</span> */}
+                        <div className="skills-container">
+                          {skill_set
+                            .split(",")
+                            .slice(0, showSkills ? undefined : 8)
+                            .map((skill, skillIndex) => {
+                              const trimmedSkill = skill.trim();
+                              return (
+                                <span
+                                  key={skillIndex}
+                                  onClick={() => {
+                                    setActiveSkill((prev) =>
+                                      prev.includes(trimmedSkill)
+                                        ? prev.filter(
+                                            (skill) => skill !== trimmedSkill,
+                                          )
+                                        : [...prev, trimmedSkill],
+                                    );
+                                  }}
+                                  className={
+                                    activeSkill.includes(trimmedSkill)
+                                      ? "navbar-skill-badge active-skill-badge"
+                                      : "navbar-skill-badge"
+                                  }
+                                >
+                                  {trimmedSkill}
+                                </span>
+                              );
+                            })}
+                          {skill_set.split(",").length > 8 && (
+                            <button
+                              onClick={() =>
+                                setShowAllSkills({
+                                  ...showAllSkills,
+                                  [employee_id]: !showSkills,
+                                })
+                              }
+                              className="navbar-skill-more-btn"
+                            >
+                              {showSkills
+                                ? "Show Less"
+                                : `+${skill_set.split(",").length - 8} More`}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-      })}
+            </div>
+          );
+        })
+        )}
       </div>
     </>
   );
